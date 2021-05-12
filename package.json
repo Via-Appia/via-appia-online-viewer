@@ -16,6 +16,7 @@
   "dependencies": {
     "@nuxt/content": "^1.14.0",
     "core-js": "^3.9.1",
+    "daisyui": "^0.26.3",
     "nuxt": "^2.15.3"
   },
   "devDependencies": {
@@ -35,7 +36,6 @@
     "eslint-plugin-vue": "^7.7.0",
     "jsdom": "^16.5.1",
     "jsdom-global": "^3.0.2",
-    "nuxt-vite": "^0.0.39",
     "postcss": "^8.2.8",
     "require-extension-hooks": "^0.3.3",
     "require-extension-hooks-babel": "^1.0.0",
