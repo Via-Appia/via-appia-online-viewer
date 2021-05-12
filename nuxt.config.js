@@ -11,11 +11,76 @@ export default {
     },
     meta: [
       { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' }
+      {
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1'
+      },
+      {
+        hid: 'description',
+        name: 'description',
+        content: ''
+      }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: '/Potree_1.8/build/potree/potree.css'
+      },
+      {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: '/Potree_1.8/libs/jquery-ui/jquery-ui.min.css'
+      },
+      {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: '/Potree_1.8/libs/openlayers3/ol.css'
+      },
+      {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: '/Potree_1.8/libs/spectrum/spectrum.css'
+      },
+      {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: '/Potree_1.8/libs/jstree/themes/mixed/style.css'
+      }
+    ],
+
+    script: [
+      { src: '/Potree_1.8/libs/jquery/jquery-3.1.1.min.js' },
+      { src: '/Potree_1.8/libs/spectrum/spectrum.js' },
+      { src: '/Potree_1.8/libs/jquery-ui/jquery-ui.min.js' },
+      { src: '/Potree_1.8/libs/other/BinaryHeap.js' },
+      { src: '/Potree_1.8/libs/tween/tween.min.js' },
+      { src: '/Potree_1.8/libs/d3/d3.js' },
+      { src: '/Potree_1.8/libs/proj4/proj4.js' },
+      { src: '/Potree_1.8/libs/openlayers3/ol.js' },
+      { src: '/Potree_1.8/libs/i18next/i18next.js' },
+      { src: '/Potree_1.8/libs/jstree/jstree.js' },
+      { src: '/Potree_1.8/libs/plasio/js/laslaz.js' },
+      { src: '/Potree_1.8/build/potree/potree.js' }
+
+      // { src: '/Potree_1.8/libs/jquery/jquery-3.1.1.min.js' },
+      // { src: '/Potree_1.8/libs/proj4/proj4.js' },
+      // { src: '/Potree_1.8/libs/three.js/build/three.min.js' },
+      // { src: '/Potree_1.8/build/potree/potree.js' }
+
+      // { src: '/Potree_1.8/libs/spectrum/spectrum.js' },
+      // { src: '/Potree_1.8/libs/jquery-ui/jquery-ui.min.js' },
+      // { src: '/Potree_1.8/libs/three.js/build/three.js' },
+      // { src: '/Potree_1.8/libs/three.interaction.0.2.3.js' },
+      // { src: '/Potree_1.8/libs/other/BinaryHeap.js' },
+      // { src: '/Potree_1.8/libs/tween/tween.min.js' },
+      // { src: '/Potree_1.8/libs/d3/d3.js' },
+      // { src: '/Potree_1.8/libs/openlayers3/ol.js' },
+      // { src: '/Potree_1.8/libs/ci18next/i18next.js' },
+      // { src: '/Potree_1.8/libs/jstree/jstree.js' },
+      // { src: '/Potree_1.8/build/potree/potree.js' },
+      // { src: '/Potree_1.8/libs/plasio/js/laslaz.js' }
     ]
   },
 

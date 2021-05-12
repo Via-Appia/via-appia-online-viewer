@@ -13,11 +13,12 @@
             Explore one of the earliest and strategically most important
             Roman roads of the ancient republic.
           </p>
-          <a
-            href="#"
+          <nuxt-link
+            to="/examples"
             class="btn btn-primary bg-transparent hover:bg-yellow-300 text-yellow-300 hover:text-black rounded shadow hover:shadow-lg py-2 px-4 border border-yellow-300 hover:border-transparent"
           >
-            Explore Now</a>
+            Explore Now
+          </nuxt-link>
         </div>
         <div class="p-8 mt-12 mb-6 md:mb-0 md:mt-0 ml-0 md:ml-12 lg:w-2/3  justify-center">
           <div class="h-48 flex flex-wrap content-center">
