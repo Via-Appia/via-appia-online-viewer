@@ -1,8 +1,14 @@
 <template>
-  <div id="potree-viewer" />
+  <div
+    id="potree_container"
+    ref="potree_container"
+  >
+    <div id="potree_sidebar_container" />
+  </div>
 </template>
 
 <script>
+/* eslint no-implicit-globals: "error" */
 import Vue from 'vue'
 // import { pathOverview } from './path'
 const { Potree, THREE } = window
@@ -29,6 +35,11 @@ export default {
       type: Array,
       required: false,
       default: () => []
+    }
+  },
+  data () {
+    return {
+      viewer: null
     }
   },
   // watch: {
@@ -64,25 +75,57 @@ export default {
   //   }
   // },
   mounted () {
-    Vue.prototype.$viewer = new Potree.Viewer(this.$el)
+    // this.viewer = new Potree.Viewer(this.$el)
+    // window.viewer = new Potree.Viewer(document.getElementById("potree_render_area"));
+    Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container)
     this.$viewer.setFOV(80)
     this.$viewer.setBackground('skybox')
-    switch (this.graphics) {
-      case 'low':
-        this.$viewer.useEDL = false
-        this.$viewer.useHQ = false
-        break
-      case 'medium':
-        this.$viewer.useEDL = true
-        this.$viewer.useHQ = false
-        break
-      case 'high':
-        this.$viewer.useEDL = true
-        this.$viewer.useHQ = true
-        break
-      default:
-        break
-    }
+
+    this.$viewer.setEDLEnabled(false)
+    this.$viewer.setPointBudget(1_000_000)
+    this.$viewer.loadSettingsFromURL()
+
+    // this.$viewer.setDescription('Point cloud courtesy of <a target=\'_blank\' href=\'https://www.sigeom.ch/\'>sigeom sa</a>')
+
+    this.$viewer.loadGUI(() => {
+      this.$viewer.setLanguage('en')
+      $('#menu_tools').next().show()
+      $('#menu_clipping').next().show()
+      this.$viewer.toggleSidebar()
+    })
+
+    // Load and add point cloud to scene
+    // Potree.loadPointCloud('../pointclouds/vol_total/cloud.js', 'sigeom.sa', (e) => {
+    Potree.loadPointCloud('../pointclouds/vol_total/cloud.js', 'example map', (e) => {
+      const scene = this.$viewer.scene
+      const pointcloud = e.pointcloud
+
+      const material = pointcloud.material
+      material.size = 1
+      material.pointSizeType = Potree.PointSizeType.ADAPTIVE
+      material.shape = Potree.PointShape.SQUARE
+
+      scene.addPointCloud(pointcloud)
+
+      this.$viewer.fitToScreen()
+    })
+
+    // switch (this.graphics) {
+    //   case 'low':
+    //     this.$viewer.useEDL = false
+    //     this.$viewer.useHQ = false
+    //     break
+    //   case 'medium':
+    //     this.$viewer.useEDL = true
+    //     this.$viewer.useHQ = false
+    //     break
+    //   case 'high':
+    //     this.$viewer.useEDL = true
+    //     this.$viewer.useHQ = true
+    //     break
+    //   default:
+    //     break
+    // }
     // this.$viewer.setPointBudget(this.numPoints)
     // this.pointClouds.forEach((pc) => {
     //   Potree.loadPointCloud(`pointclouds/${pc.name.toLowerCase()}/ept.json`, pc.name, (e) => {
@@ -141,8 +184,36 @@ export default {
 </script>
 
 <style>
-#potree-viewer {
-  width: 100%;
+#potree_container {
+  z-index: 0;
+  position: absolute;
+  width: 100vw;
   height: 100vh;
+}
+
+#potree_sidebar_container {
+  position: absolute;
+  z-index: 1000;
+  left: 0px;
+  top: 0px;
+  background: black;
+  color: white;
+  /*padding: 0.3em 0.8em;*/
+  font-family: "system-ui";
+  border-radius: 0em 0em 0.3em 0.3em;
+  /*display: flex;*/
+}
+
+.potree_toolbar_label {
+  text-align: center;
+  font-size: smaller;
+  opacity: 0.9;
+}
+
+.potree_toolbar_separator {
+  background: white;
+  padding: 0px;
+  margin: 5px 10px;
+  width: 1px;
 }
 </style>
