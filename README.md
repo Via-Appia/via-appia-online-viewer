@@ -1,5 +1,6 @@
 # via-appia-viewer
 
+Previous project (2015-2016): https://github.com/Via-Appia/PattyVis
 
 ## Build Setup
 
