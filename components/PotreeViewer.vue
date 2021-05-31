@@ -1,34 +1,31 @@
 <template>
-  <div
-    id="potree_container"
-    ref="potree_container"
-  >
+  <div id="potree_container" ref="potree_container">
     <div id="potree_sidebar_container" />
   </div>
 </template>
 
 <script>
 /* eslint no-implicit-globals: "error" */
-import Vue from 'vue'
+import Vue from "vue";
 // import { pathOverview } from './path'
-const { Potree, THREE } = window
+const { Potree, THREE } = window;
 export default {
-  name: 'PotreeViewer',
+  name: "PotreeViewer",
   props: {
     graphics: {
       type: String,
       required: false,
-      default: 'medium',
-      validator (value) {
-        return ['low', 'medium', 'high'].includes(value)
+      default: "medium",
+      validator(value) {
+        return ["low", "medium", "high"].includes(value);
       }
     },
     numPoints: {
       type: Number,
       required: false,
       default: 6000000,
-      validator (value) {
-        return value > 0 && value < 50000000
+      validator(value) {
+        return value > 0 && value < 50000000;
       }
     },
     pointClouds: {
@@ -37,10 +34,10 @@ export default {
       default: () => []
     }
   },
-  data () {
+  data() {
     return {
       viewer: null
-    }
+    };
   },
   // watch: {
   //   graphics (value) {
@@ -74,41 +71,49 @@ export default {
   //     deep: true
   //   }
   // },
-  mounted () {
+  mounted() {
     // this.viewer = new Potree.Viewer(this.$el)
     // window.viewer = new Potree.Viewer(document.getElementById("potree_render_area"));
-    Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container)
-    this.$viewer.setFOV(80)
-    this.$viewer.setBackground('skybox')
+    Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container);
+    this.$viewer.setFOV(80);
+    this.$viewer.setBackground("skybox");
 
-    this.$viewer.setEDLEnabled(false)
-    this.$viewer.setPointBudget(1_000_000)
-    this.$viewer.loadSettingsFromURL()
+    this.$viewer.setEDLEnabled(false);
+    this.$viewer.setPointBudget(1_000_000);
+    this.$viewer.loadSettingsFromURL();
 
     // this.$viewer.setDescription('Point cloud courtesy of <a target=\'_blank\' href=\'https://www.sigeom.ch/\'>sigeom sa</a>')
 
     this.$viewer.loadGUI(() => {
-      this.$viewer.setLanguage('en')
-      $('#menu_tools').next().show()
-      $('#menu_clipping').next().show()
-      this.$viewer.toggleSidebar()
-    })
+      this.$viewer.setLanguage("en");
+      $("#menu_tools")
+        .next()
+        .show();
+      $("#menu_clipping")
+        .next()
+        .show();
+      this.$viewer.toggleSidebar();
+    });
 
     // Load and add point cloud to scene
     // Potree.loadPointCloud('../pointclouds/vol_total/cloud.js', 'sigeom.sa', (e) => {
-    Potree.loadPointCloud('../pointclouds/vol_total/cloud.js', 'example map', (e) => {
-      const scene = this.$viewer.scene
-      const pointcloud = e.pointcloud
+    Potree.loadPointCloud(
+      "../pointclouds/DRIVE_1_V3_levels_8/cloud.js",
+      "Drive Map",
+      e => {
+        const scene = this.$viewer.scene;
+        const pointcloud = e.pointcloud;
 
-      const material = pointcloud.material
-      material.size = 1
-      material.pointSizeType = Potree.PointSizeType.ADAPTIVE
-      material.shape = Potree.PointShape.SQUARE
+        const material = pointcloud.material;
+        material.size = 1;
+        material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+        material.shape = Potree.PointShape.SQUARE;
 
-      scene.addPointCloud(pointcloud)
+        scene.addPointCloud(pointcloud);
 
-      this.$viewer.fitToScreen()
-    })
+        this.$viewer.fitToScreen();
+      }
+    );
 
     // switch (this.graphics) {
     //   case 'low':
@@ -148,39 +153,39 @@ export default {
     // })
   },
   methods: {
-    onPointCloudLoaded (pointcloud, size) {
-      this.$viewer.scene.addPointCloud(pointcloud)
-      const { material } = pointcloud
-      material.size = size
-      material.pointSizeType = Potree.PointSizeType.ADAPTIVE
-      if (pointcloud.name === 'AHN2') {
-        const { offset } = pointcloud.pcoGeometry
-        const { center } = pointcloud.boundingSphere
-        const bbox = pointcloud.boundingBox
-        const lengthX = bbox.max.x + offset.x - (bbox.min.x + offset.x)
-        const lengthY = bbox.max.y + offset.y - (bbox.min.y + offset.y)
-        const meshGeometry = new THREE.PlaneGeometry(lengthX, lengthY)
+    onPointCloudLoaded(pointcloud, size) {
+      this.$viewer.scene.addPointCloud(pointcloud);
+      const { material } = pointcloud;
+      material.size = size;
+      material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+      if (pointcloud.name === "AHN2") {
+        const { offset } = pointcloud.pcoGeometry;
+        const { center } = pointcloud.boundingSphere;
+        const bbox = pointcloud.boundingBox;
+        const lengthX = bbox.max.x + offset.x - (bbox.min.x + offset.x);
+        const lengthY = bbox.max.y + offset.y - (bbox.min.y + offset.y);
+        const meshGeometry = new THREE.PlaneGeometry(lengthX, lengthY);
         const meshMaterial = new THREE.MeshBasicMaterial({
-          color: 0x4B433B,
+          color: 0x4b433b,
           side: THREE.DoubleSide
-        })
-        const meshPlane = new THREE.Mesh(meshGeometry, meshMaterial)
-        meshPlane.position.set(center.x + offset.x, center.y + offset.y, 0)
-        this.$viewer.scene.scene.add(meshPlane)
+        });
+        const meshPlane = new THREE.Mesh(meshGeometry, meshMaterial);
+        meshPlane.position.set(center.x + offset.x, center.y + offset.y, 0);
+        this.$viewer.scene.scene.add(meshPlane);
       }
     },
-    createAnnotations () {
-      this.$viewer.scene.annotations.children = []
+    createAnnotations() {
+      this.$viewer.scene.annotations.children = [];
       this.$viewer.scene.addAnnotation([236790, 548513, 69], {
         // title: this.$t('commanderHouse')
-        title: 'commanderHouse'
-      })
+        title: "commanderHouse"
+      });
       this.$viewer.scene.addAnnotation([237079, 548442, 69], {
-        title: 'campTerrain'
-      })
+        title: "campTerrain"
+      });
     }
   }
-}
+};
 </script>
 
 <style>
