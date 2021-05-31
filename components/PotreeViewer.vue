@@ -1,6 +1,7 @@
 <template>
   <div id="potree_container" ref="potree_container">
-    <div id="potree_sidebar_container" />
+    <!--    Only show the toolbar when developing locally-->
+    <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" />
   </div>
 </template>
 
