@@ -1,7 +1,10 @@
 <template>
   <div id="potree_container" ref="potree_container">
     <!--    Only show the toolbar when developing locally-->
-    <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" />
+    <div v-if="$nuxt.context.isDev && sidebarVisible" id="potree_sidebar_container" />
+    <div class="btn absolute z-20 right-4 bottom-4" @click="toggleSidebar">
+      Toggle Panel
+    </div>
   </div>
 </template>
 
@@ -76,23 +79,21 @@ export default {
     // this.viewer = new Potree.Viewer(this.$el)
     // window.viewer = new Potree.Viewer(document.getElementById("potree_render_area"));
     Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container)
-    this.$viewer.setFOV(80)
+    this.$viewer.setFOV(60)
     this.$viewer.setBackground('skybox')
 
     this.$viewer.setEDLEnabled(false)
     this.$viewer.setPointBudget(1_000_000)
     this.$viewer.loadSettingsFromURL()
+    // hide menu button in the sidebar
+    $('#potree_quick_buttons').hide()
 
     // this.$viewer.setDescription('Point cloud courtesy of <a target=\'_blank\' href=\'https://www.sigeom.ch/\'>sigeom sa</a>')
 
     this.$viewer.loadGUI(() => {
       this.$viewer.setLanguage('en')
-      $('#menu_tools')
-        .next()
-        .show()
-      $('#menu_clipping')
-        .next()
-        .show()
+      $('#menu_tools').next().show()
+      $('#menu_clipping').next().show()
       this.$viewer.toggleSidebar()
     })
 
@@ -154,6 +155,10 @@ export default {
     // })
   },
   methods: {
+    toggleSidebar () {
+      $('#potree_sidebar_container').toggle()
+    },
+
     onPointCloudLoaded (pointcloud, size) {
       this.$viewer.scene.addPointCloud(pointcloud)
       const { material } = pointcloud

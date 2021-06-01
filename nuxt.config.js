@@ -23,31 +23,11 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      {
-        rel: 'stylesheet',
-        type: 'text/css',
-        href: '/Potree_1.8/build/potree/potree.css'
-      },
-      {
-        rel: 'stylesheet',
-        type: 'text/css',
-        href: '/Potree_1.8/libs/jquery-ui/jquery-ui.min.css'
-      },
-      {
-        rel: 'stylesheet',
-        type: 'text/css',
-        href: '/Potree_1.8/libs/openlayers3/ol.css'
-      },
-      {
-        rel: 'stylesheet',
-        type: 'text/css',
-        href: '/Potree_1.8/libs/spectrum/spectrum.css'
-      },
-      {
-        rel: 'stylesheet',
-        type: 'text/css',
-        href: '/Potree_1.8/libs/jstree/themes/mixed/style.css'
-      }
+      { rel: 'stylesheet', type: 'text/css', href: '/Potree_1.8/build/potree/potree.css' },
+      { rel: 'stylesheet', type: 'text/css', href: '/Potree_1.8/libs/jquery-ui/jquery-ui.min.css' },
+      { rel: 'stylesheet', type: 'text/css', href: '/Potree_1.8/libs/openlayers3/ol.css' },
+      { rel: 'stylesheet', type: 'text/css', href: '/Potree_1.8/libs/spectrum/spectrum.css' },
+      { rel: 'stylesheet', type: 'text/css', href: '/Potree_1.8/libs/jstree/themes/mixed/style.css' }
     ],
 
     script: [
