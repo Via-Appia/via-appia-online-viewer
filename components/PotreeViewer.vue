@@ -41,7 +41,8 @@ export default {
   },
   data() {
     return {
-      viewer: null
+      viewer: null,
+      position: {}
     };
   },
   // watch: {
@@ -105,16 +106,16 @@ export default {
 				<div class="accordion-content ui-widget pv-menu-list"></div>
 			`);
       let content = section.last();
-      content.html(`
+      content.html(
+        `
 			<div class="pv-menu-list">
 				A custom Section in the sidebar!<br>
-				<br>	
-				Uncomment "content.hide();" to hide content by default.<br>
-				<br>
-				Take a look at src/viewer/sidebar.html and sidebar.js to 
-				learn how the other sections were populated.
+			  <input type="number" id="points" name="points" step="1" value="` +
+          this.position.x +
+          `">
 			</div>
-			`);
+			`
+      );
       section.first().click(() => content.slideToggle());
       section.insertBefore($("#menu_about"));
       this.$viewer.toggleSidebar();
@@ -133,13 +134,19 @@ export default {
         material.size = 1;
         material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
         material.shape = Potree.PointShape.SQUARE;
-
+        console.log("point loaded");
         scene.addPointCloud(pointcloud);
-
         this.$viewer.fitToScreen();
       }
     );
-
+    const pos = this.$viewer.scene.getActiveCamera();
+    this.position = pos.position;
+    console.log("mounted", this.position);
+    // this.$viewer.onPointCloudLoaded(e => {
+    //   debugger;
+    //   const pos = this.$viewer.scene.getActiveCamera();
+    //   console.log("pos", pos, pos.position.x);
+    // });
     // switch (this.graphics) {
     //   case 'low':
     //     this.$viewer.useEDL = false
@@ -184,6 +191,7 @@ export default {
 
     onPointCloudLoaded(pointcloud, size) {
       this.$viewer.scene.addPointCloud(pointcloud);
+
       const { material } = pointcloud;
       material.size = size;
       material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
