@@ -10,26 +10,27 @@
 
 <script>
 /* eslint no-implicit-globals: "error" */
-import Vue from 'vue'
+/* eslint-disable */
+import Vue from "vue";
 // import { pathOverview } from './path'
-const { Potree, THREE } = window
+const { Potree, THREE } = window;
 export default {
-  name: 'PotreeViewer',
+  name: "PotreeViewer",
   props: {
     graphics: {
       type: String,
       required: false,
-      default: 'medium',
-      validator (value) {
-        return ['low', 'medium', 'high'].includes(value)
+      default: "medium",
+      validator(value) {
+        return ["low", "medium", "high"].includes(value);
       }
     },
     numPoints: {
       type: Number,
       required: false,
       default: 6000000,
-      validator (value) {
-        return value > 0 && value < 50000000
+      validator(value) {
+        return value > 0 && value < 50000000;
       }
     },
     pointClouds: {
@@ -38,10 +39,10 @@ export default {
       default: () => []
     }
   },
-  data () {
+  data() {
     return {
       viewer: null
-    }
+    };
   },
   // watch: {
   //   graphics (value) {
@@ -75,47 +76,69 @@ export default {
   //     deep: true
   //   }
   // },
-  mounted () {
+  mounted() {
     // this.viewer = new Potree.Viewer(this.$el)
     // window.viewer = new Potree.Viewer(document.getElementById("potree_render_area"));
-    Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container)
-    this.$viewer.setFOV(60)
-    this.$viewer.setBackground('skybox')
+    Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container);
+    this.$viewer.setFOV(60);
+    this.$viewer.setBackground("skybox");
 
-    this.$viewer.setEDLEnabled(false)
-    this.$viewer.setPointBudget(1_000_000)
-    this.$viewer.loadSettingsFromURL()
+    this.$viewer.setEDLEnabled(false);
+    this.$viewer.setPointBudget(1_000_000);
+    this.$viewer.loadSettingsFromURL();
     // hide menu button in the sidebar
-    $('#potree_quick_buttons').hide()
+    $("#potree_quick_buttons").hide();
 
     // this.$viewer.setDescription('Point cloud courtesy of <a target=\'_blank\' href=\'https://www.sigeom.ch/\'>sigeom sa</a>')
 
     this.$viewer.loadGUI(() => {
-      this.$viewer.setLanguage('en')
-      $('#menu_tools').next().show()
-      $('#menu_clipping').next().show()
-      this.$viewer.toggleSidebar()
-    })
+      this.$viewer.setLanguage("en");
+      $("#menu_tools")
+        .next()
+        .show();
+      $("#menu_clipping")
+        .next()
+        .show();
+      // Add custom section
+      let section = $(`
+				<h3 id="menu_meta" class="accordion-header ui-widget"><span>Camera Position</span></h3>
+				<div class="accordion-content ui-widget pv-menu-list"></div>
+			`);
+      let content = section.last();
+      content.html(`
+			<div class="pv-menu-list">
+				A custom Section in the sidebar!<br>
+				<br>	
+				Uncomment "content.hide();" to hide content by default.<br>
+				<br>
+				Take a look at src/viewer/sidebar.html and sidebar.js to 
+				learn how the other sections were populated.
+			</div>
+			`);
+      section.first().click(() => content.slideToggle());
+      section.insertBefore($("#menu_about"));
+      this.$viewer.toggleSidebar();
+    });
 
     // Load and add point cloud to scene
     // Potree.loadPointCloud('../pointclouds/vol_total/cloud.js', 'sigeom.sa', (e) => {
     Potree.loadPointCloud(
-      '../pointclouds/DRIVE_1_V3_levels_8/cloud.js',
-      'Drive Map',
-      (e) => {
-        const scene = this.$viewer.scene
-        const pointcloud = e.pointcloud
+      "../pointclouds/DRIVE_1_V3_levels_8/cloud.js",
+      "Drive Map",
+      e => {
+        const scene = this.$viewer.scene;
+        const pointcloud = e.pointcloud;
 
-        const material = pointcloud.material
-        material.size = 1
-        material.pointSizeType = Potree.PointSizeType.ADAPTIVE
-        material.shape = Potree.PointShape.SQUARE
+        const material = pointcloud.material;
+        material.size = 1;
+        material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+        material.shape = Potree.PointShape.SQUARE;
 
-        scene.addPointCloud(pointcloud)
+        scene.addPointCloud(pointcloud);
 
-        this.$viewer.fitToScreen()
+        this.$viewer.fitToScreen();
       }
-    )
+    );
 
     // switch (this.graphics) {
     //   case 'low':
@@ -155,48 +178,48 @@ export default {
     // })
   },
   methods: {
-    toggleSidebar () {
-      $('#potree_sidebar_container').toggle()
+    toggleSidebar() {
+      $("#potree_sidebar_container").toggle();
     },
 
-    onPointCloudLoaded (pointcloud, size) {
-      this.$viewer.scene.addPointCloud(pointcloud)
-      const { material } = pointcloud
-      material.size = size
-      material.pointSizeType = Potree.PointSizeType.ADAPTIVE
-      if (pointcloud.name === 'AHN2') {
-        const { offset } = pointcloud.pcoGeometry
-        const { center } = pointcloud.boundingSphere
-        const bbox = pointcloud.boundingBox
-        const lengthX = bbox.max.x + offset.x - (bbox.min.x + offset.x)
-        const lengthY = bbox.max.y + offset.y - (bbox.min.y + offset.y)
-        const meshGeometry = new THREE.PlaneGeometry(lengthX, lengthY)
+    onPointCloudLoaded(pointcloud, size) {
+      this.$viewer.scene.addPointCloud(pointcloud);
+      const { material } = pointcloud;
+      material.size = size;
+      material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+      if (pointcloud.name === "AHN2") {
+        const { offset } = pointcloud.pcoGeometry;
+        const { center } = pointcloud.boundingSphere;
+        const bbox = pointcloud.boundingBox;
+        const lengthX = bbox.max.x + offset.x - (bbox.min.x + offset.x);
+        const lengthY = bbox.max.y + offset.y - (bbox.min.y + offset.y);
+        const meshGeometry = new THREE.PlaneGeometry(lengthX, lengthY);
         const meshMaterial = new THREE.MeshBasicMaterial({
-          color: 0x4B433B,
+          color: 0x4b433b,
           side: THREE.DoubleSide
-        })
-        const meshPlane = new THREE.Mesh(meshGeometry, meshMaterial)
-        meshPlane.position.set(center.x + offset.x, center.y + offset.y, 0)
-        this.$viewer.scene.scene.add(meshPlane)
+        });
+        const meshPlane = new THREE.Mesh(meshGeometry, meshMaterial);
+        meshPlane.position.set(center.x + offset.x, center.y + offset.y, 0);
+        this.$viewer.scene.scene.add(meshPlane);
       }
     },
-    createAnnotations () {
-      this.$viewer.scene.annotations.children = []
+    createAnnotations() {
+      this.$viewer.scene.annotations.children = [];
       this.$viewer.scene.addAnnotation([236790, 548513, 69], {
         // title: this.$t('commanderHouse')
-        title: 'commanderHouse'
-      })
+        title: "commanderHouse"
+      });
       this.$viewer.scene.addAnnotation([237079, 548442, 69], {
-        title: 'campTerrain'
-      })
+        title: "campTerrain"
+      });
     }
   }
-}
+};
 </script>
 
 <style>
-#potree_menu img{
-  display: inline-block
+#potree_menu img {
+  display: inline-block;
 }
 #potree_container {
   z-index: 0;
