@@ -1,7 +1,7 @@
 <template>
   <div id="potree_container" ref="potree_container">
     <!--    Only show the toolbar when developing locally-->
-    <div v-if="$nuxt.context.isDev && sidebarVisible" id="potree_sidebar_container" />
+    <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" />
     <div class="btn absolute z-20 right-4 bottom-4" @click="toggleSidebar">
       Toggle Panel
     </div>
