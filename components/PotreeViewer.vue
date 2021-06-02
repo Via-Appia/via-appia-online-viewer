@@ -1,10 +1,13 @@
 <template>
-  <div id="potree_container" ref="potree_container">
-    <!--    Only show the toolbar when developing locally-->
-    <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" />
-    <div class="btn absolute z-20 right-4 bottom-4" @click="toggleSidebar">
-      Toggle Panel
+  <div>
+    <div id="potree_container" ref="potree_container">
+      <!--    Only show the toolbar when developing locally-->
+      <div v-if="$nuxt.context.isDev" id="potree_sidebar_container"></div>
+      <div class="btn absolute z-20 right-4 bottom-4" @click="toggleSidebar">
+        Toggle Panel
+      </div>
     </div>
+    <camera-section :position="position" :viewerScene="viewerScene" />
   </div>
 </template>
 
@@ -23,7 +26,7 @@ export default {
       default: "medium",
       validator(value) {
         return ["low", "medium", "high"].includes(value);
-      }
+      },
     },
     numPoints: {
       type: Number,
@@ -31,56 +34,35 @@ export default {
       default: 6000000,
       validator(value) {
         return value > 0 && value < 50000000;
-      }
+      },
     },
     pointClouds: {
       type: Array,
       required: false,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   data() {
     return {
       viewer: null,
-      position: {}
+      position: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
+      viewerScene: null,
     };
   },
-  // watch: {
-  //   graphics (value) {
-  //     switch (value) {
-  //       case 'low':
-  //         this.$viewer.useEDL = false
-  //         this.$viewer.useHQ = false
-  //         break
-  //       case 'medium':
-  //         this.$viewer.useEDL = true
-  //         this.$viewer.useHQ = false
-  //         break
-  //       case 'high':
-  //         this.$viewer.useEDL = true
-  //         this.$viewer.useHQ = true
-  //         break
-  //       default:
-  //         break
-  //     }
-  //   },
-  //   numPoints (value) {
-  //     this.$viewer.setPointBudget(value)
-  //   },
-  //   pointClouds: {
-  //     handler (pointClouds = []) {
-  //       pointClouds.forEach((pc) => {
-  //         const pcPotree = this.$viewer.scene.pointclouds.filter(v => v.name === pc.name)[0]
-  //         if (pcPotree) { pcPotree.visible = pc.visible }
-  //       })
-  //     },
-  //     deep: true
-  //   }
-  // },
+
   mounted() {
-    // this.viewer = new Potree.Viewer(this.$el)
-    // window.viewer = new Potree.Viewer(document.getElementById("potree_render_area"));
     Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container);
+
+    this.viewerScene = this.$viewer.scene;
+    // Get active camera position
+    const cameraPosition = this.viewerScene.getActiveCamera();
+    // Set the position
+    this.position = cameraPosition.position;
+
     this.$viewer.setFOV(60);
     this.$viewer.setBackground("skybox");
 
@@ -90,43 +72,10 @@ export default {
     // hide menu button in the sidebar
     $("#potree_quick_buttons").hide();
 
-    // this.$viewer.setDescription('Point cloud courtesy of <a target=\'_blank\' href=\'https://www.sigeom.ch/\'>sigeom sa</a>')
-
-    this.$viewer.loadGUI(() => {
-      this.$viewer.setLanguage("en");
-      $("#menu_tools")
-        .next()
-        .show();
-      $("#menu_clipping")
-        .next()
-        .show();
-      // Add custom section
-      let section = $(`
-				<h3 id="menu_meta" class="accordion-header ui-widget"><span>Camera Position</span></h3>
-				<div class="accordion-content ui-widget pv-menu-list"></div>
-			`);
-      let content = section.last();
-      content.html(
-        `
-			<div class="pv-menu-list">
-				A custom Section in the sidebar!<br>
-			  <input type="number" id="points" name="points" step="1" value="` +
-          this.position.x +
-          `">
-			</div>
-			`
-      );
-      section.first().click(() => content.slideToggle());
-      section.insertBefore($("#menu_about"));
-      this.$viewer.toggleSidebar();
-    });
-
-    // Load and add point cloud to scene
-    // Potree.loadPointCloud('../pointclouds/vol_total/cloud.js', 'sigeom.sa', (e) => {
     Potree.loadPointCloud(
       "../pointclouds/DRIVE_1_V3_levels_8/cloud.js",
       "Drive Map",
-      e => {
+      (e) => {
         const scene = this.$viewer.scene;
         const pointcloud = e.pointcloud;
 
@@ -134,14 +83,35 @@ export default {
         material.size = 1;
         material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
         material.shape = Potree.PointShape.SQUARE;
-        console.log("point loaded");
+
         scene.addPointCloud(pointcloud);
         this.$viewer.fitToScreen();
       }
     );
-    const pos = this.$viewer.scene.getActiveCamera();
-    this.position = pos.position;
-    console.log("mounted", this.position);
+
+    this.$viewer.loadGUI(() => {
+      this.$viewer.setLanguage("en");
+      $("#menu_tools").next().show();
+      $("#menu_clipping").next().show();
+
+      // Add custom section for Camera
+      let section = $(`
+				<h3 id="menu_meta" class="accordion-header ui-widget"><span>Camera Position</span></h3>
+				<div class="accordion-content ui-widget pv-menu-list"></div>
+			`);
+      // get vue component for Camera Section
+      let axisSection = document.getElementById("cameraSection");
+      let content = section.last();
+      content.html(axisSection);
+      section.first().click(() => content.slideToggle());
+      section.insertBefore($("#menu_appearance"));
+      this.$viewer.toggleSidebar();
+    });
+    this.$viewer.addEventListener("move_speed_changed", () => {
+      // Set the position
+      this.position = cameraPosition.position;
+    });
+
     // this.$viewer.onPointCloudLoaded(e => {
     //   debugger;
     //   const pos = this.$viewer.scene.getActiveCamera();
@@ -191,7 +161,6 @@ export default {
 
     onPointCloudLoaded(pointcloud, size) {
       this.$viewer.scene.addPointCloud(pointcloud);
-
       const { material } = pointcloud;
       material.size = size;
       material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
@@ -204,7 +173,7 @@ export default {
         const meshGeometry = new THREE.PlaneGeometry(lengthX, lengthY);
         const meshMaterial = new THREE.MeshBasicMaterial({
           color: 0x4b433b,
-          side: THREE.DoubleSide
+          side: THREE.DoubleSide,
         });
         const meshPlane = new THREE.Mesh(meshGeometry, meshMaterial);
         meshPlane.position.set(center.x + offset.x, center.y + offset.y, 0);
@@ -215,13 +184,13 @@ export default {
       this.$viewer.scene.annotations.children = [];
       this.$viewer.scene.addAnnotation([236790, 548513, 69], {
         // title: this.$t('commanderHouse')
-        title: "commanderHouse"
+        title: "commanderHouse",
       });
       this.$viewer.scene.addAnnotation([237079, 548442, 69], {
-        title: "campTerrain"
+        title: "campTerrain",
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -260,5 +229,13 @@ export default {
   padding: 0px;
   margin: 5px 10px;
   width: 1px;
+}
+.pv-menu-list > li > input {
+  margin-bottom: 5px;
+  padding: 5px;
+  color: black;
+}
+input[type="number"]::-webkit-inner-spin-button {
+  opacity: 1;
 }
 </style>
