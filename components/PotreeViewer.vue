@@ -7,7 +7,8 @@
         Toggle Panel
       </div>
     </div>
-    <camera-section :position="position" :viewerScene="viewerScene" />
+    <camera-section :position="position" :view="view" />
+    <target-section :target="target" :view="view" />>
   </div>
 </template>
 
@@ -15,6 +16,7 @@
 /* eslint no-implicit-globals: "error" */
 /* eslint-disable */
 import Vue from "vue";
+import TargetSection from "./TargetSection.vue";
 // import { pathOverview } from './path'
 const { Potree, THREE } = window;
 export default {
@@ -50,18 +52,25 @@ export default {
         y: 0,
         z: 0,
       },
-      viewerScene: null,
+      target: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
+      camera: null,
+      view: null,
     };
   },
 
   mounted() {
     Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container);
-
-    this.viewerScene = this.$viewer.scene;
-    // Get active camera position
-    const cameraPosition = this.viewerScene.getActiveCamera();
+    const { scene } = this.$viewer;
+    this.camera = scene.getActiveCamera();
+    this.view = scene.view;
     // Set the position
-    this.position = cameraPosition.position;
+    this.position = this.camera.position;
+    // Set the Target
+    this.target = this.view.getPivot();
 
     this.$viewer.setFOV(60);
     this.$viewer.setBackground("skybox");
@@ -94,22 +103,35 @@ export default {
       $("#menu_tools").next().show();
       $("#menu_clipping").next().show();
 
+      // Add custom section for Target
+      let targetSection = $(`
+				<h3 id="menu_target" class="accordion-header ui-widget"><span>Target</span></h3>
+				<div class="accordion-content ui-widget pv-menu-list"></div>
+			`);
+      // get the vue component for target section
+      const targetSectionHTML = document.getElementById("targetSection");
+      const targetContent = targetSection.last();
+      targetContent.html(targetSectionHTML);
+      targetSection.first().click(() => targetContent.slideToggle());
+      targetSection.insertBefore($("#menu_appearance"));
+
       // Add custom section for Camera
-      let section = $(`
-				<h3 id="menu_meta" class="accordion-header ui-widget"><span>Camera Position</span></h3>
+      let cameraSection = $(`
+				<h3 id="menu_camera" class="accordion-header ui-widget"><span>Camera Position</span></h3>
 				<div class="accordion-content ui-widget pv-menu-list"></div>
 			`);
       // get vue component for Camera Section
-      let axisSection = document.getElementById("cameraSection");
-      let content = section.last();
-      content.html(axisSection);
-      section.first().click(() => content.slideToggle());
-      section.insertBefore($("#menu_appearance"));
+      const cameraSectionHTML = document.getElementById("cameraSection");
+      const content = cameraSection.last();
+      content.html(cameraSectionHTML);
+      cameraSection.first().click(() => content.slideToggle());
+      cameraSection.insertBefore($("#menu_target"));
+
       this.$viewer.toggleSidebar();
     });
     this.$viewer.addEventListener("move_speed_changed", () => {
       // Set the position
-      this.position = cameraPosition.position;
+      this.position = this.camera.position;
     });
 
     // this.$viewer.onPointCloudLoaded(e => {
