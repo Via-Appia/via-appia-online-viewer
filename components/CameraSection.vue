@@ -17,28 +17,51 @@ export default {
       required: true,
       default: () => {},
     },
-    viewerScene: {
+    view: {
       type: Object,
       required: true,
       default: () => {},
     },
   },
-  watch: {
-    position: {
-      handler: function (oldValue, newValue) {
-        console.log(
-          "position in watch",
-          this.position,
-          this.viewerScene.getActiveCamera()
-        );
-      },
-      deep: true,
-    },
-  },
+  // watch: {
+  //   position: {
+  //     handler: function (oldValue, newValue) {
+  //       console.log("position in watch", this.position);
+  //     },
+  //     deep: true,
+  //   },
+  // },
   mounted() {
     // Add event listener
-    $(':input[type="number"]').on("change", () => console.log("change"));
-    console.log("inputs", $(':input[type="number"]'));
+    $(':input[type="number"]').on("change", this.onValueChange);
+  },
+  methods: {
+    onValueChange(e) {
+      console.log("val", e.target.value);
+      switch (e.target.id) {
+        case "pointx":
+          this.view.position.set(
+            e.target.value,
+            this.position.y,
+            this.position.z
+          );
+          break;
+        case "pointy":
+          this.view.position.set(
+            this.position.x,
+            e.target.value,
+            this.position.z
+          );
+          break;
+        case "pointz":
+          this.view.position.set(
+            this.position.x,
+            this.position.y,
+            e.target.value
+          );
+          break;
+      }
+    },
   },
 };
 </script>
