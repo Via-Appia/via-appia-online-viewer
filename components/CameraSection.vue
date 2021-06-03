@@ -1,10 +1,16 @@
 <template>
   <div class="pv-menu-list" id="cameraSection">
-    <li>
-      x:<input type="number" id="pointx" step="0.01" :value="position.x" />
-    </li>
-    <li>y:<input type="number" id="pointy" step="1" :value="position.y" /></li>
-    <li>z:<input type="number" id="pointz" step="1" :value="position.z" /></li>
+    <li>x:<input type="text" id="pointx" :value="position.x" /></li>
+    <li>y:<input type="text" id="pointy" :value="position.y" /></li>
+    <li>z:<input type="text" id="pointz" :value="position.z" /></li>
+    <!-- <li>
+      x:<input
+        type="number"
+        id="pointx"
+        step="1"
+        :value="parseFloat(position.x)"
+      />
+    </li> -->
   </div>
 </template>
 <script>
@@ -23,42 +29,24 @@ export default {
       default: () => {},
     },
   },
-  // watch: {
-  //   position: {
-  //     handler: function (oldValue, newValue) {
-  //       console.log("position in watch", this.position);
-  //     },
-  //     deep: true,
-  //   },
-  // },
+
   mounted() {
     // Add event listener
-    $(':input[type="number"]').on("change", this.onValueChange);
+    $(':input[type="text"]').on("change", this.onValueChange);
+    // $(':input[type="number"]').on("change", this.onValueChange);
   },
   methods: {
     onValueChange(e) {
-      console.log("val", e.target.value);
+      const val = parseFloat(e.target.value);
       switch (e.target.id) {
         case "pointx":
-          this.view.position.set(
-            e.target.value,
-            this.position.y,
-            this.position.z
-          );
+          this.view.position.set(val, this.position.y, this.position.z);
           break;
         case "pointy":
-          this.view.position.set(
-            this.position.x,
-            e.target.value,
-            this.position.z
-          );
+          this.view.position.set(this.position.x, val, this.position.z);
           break;
         case "pointz":
-          this.view.position.set(
-            this.position.x,
-            this.position.y,
-            e.target.value
-          );
+          this.view.position.set(this.position.x, this.position.y, val);
           break;
       }
     },
