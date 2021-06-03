@@ -42,7 +42,8 @@ export default {
       { src: '/Potree_1.8/libs/i18next/i18next.js' },
       { src: '/Potree_1.8/libs/jstree/jstree.js' },
       { src: '/Potree_1.8/libs/plasio/js/laslaz.js' },
-      { src: '/Potree_1.8/build/potree/potree.js' }
+      { src: '/Potree_1.8/build/potree/potree.js' },
+      { src: '/Potree_1.8/libs/three.js/build/three.js' }
 
       // { src: '/Potree_1.8/libs/jquery/jquery-3.1.1.min.js' },
       // { src: '/Potree_1.8/libs/proj4/proj4.js' },
@@ -51,7 +52,6 @@ export default {
 
       // { src: '/Potree_1.8/libs/spectrum/spectrum.js' },
       // { src: '/Potree_1.8/libs/jquery-ui/jquery-ui.min.js' },
-      // { src: '/Potree_1.8/libs/three.js/build/three.js' },
       // { src: '/Potree_1.8/libs/three.interaction.0.2.3.js' },
       // { src: '/Potree_1.8/libs/other/BinaryHeap.js' },
       // { src: '/Potree_1.8/libs/tween/tween.min.js' },

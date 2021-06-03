@@ -2,13 +2,13 @@
   <div>
     <div id="potree_container" ref="potree_container">
       <!--    Only show the toolbar when developing locally-->
-      <div v-if="$nuxt.context.isDev" id="potree_sidebar_container"></div>
+      <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" />
       <div class="btn absolute z-20 right-4 bottom-4" @click="toggleSidebar">
         Toggle Panel
       </div>
     </div>
-    <camera-section :position="position" :view="view" />
-    <target-section :target="target" :view="view" />>
+    <camera-section :active-camera="camera" :position="position" :view="view" />
+    <target-section :target="target" :view="view" />
   </div>
 </template>
 
@@ -16,7 +16,6 @@
 /* eslint no-implicit-globals: "error" */
 /* eslint-disable */
 import Vue from "vue";
-import TargetSection from "./TargetSection.vue";
 // import { pathOverview } from './path'
 const { Potree, THREE } = window;
 export default {
@@ -59,6 +58,7 @@ export default {
       },
       camera: null,
       view: null,
+      viewerScene: null,
     };
   },
 
@@ -67,6 +67,14 @@ export default {
     const { scene } = this.$viewer;
     this.camera = scene.getActiveCamera();
     this.view = scene.view;
+
+    this.viewerScene = this.$viewer.scene;
+    // Get active camera position
+    const cameraPosition = this.viewerScene.getActiveCamera();
+
+    console.log('🎹🎹🎹🎹🎹🎹', cameraPosition.updateProjectionMatrix)
+    this.activeCamera =cameraPosition
+
     // Set the position
     this.position = this.camera.position;
     // Set the Target

@@ -1,8 +1,8 @@
 <template>
-  <div class="pv-menu-list" id="cameraSection">
-    <li>x:<input type="text" id="pointx" :value="position.x" /></li>
-    <li>y:<input type="text" id="pointy" :value="position.y" /></li>
-    <li>z:<input type="text" id="pointz" :value="position.z" /></li>
+  <div id="cameraSection" class="pv-menu-list">
+    <li>x:<input id="pointx" type="text" :value="position.x"></li>
+    <li>y:<input id="pointy" type="text" :value="position.y"></li>
+    <li>z:<input id="pointz" type="text" :value="position.z"></li>
     <!-- <li>
       x:<input
         type="number"
@@ -11,6 +11,16 @@
         :value="parseFloat(position.x)"
       />
     </li> -->
+
+    <div>
+      FOV: {{ fov }}
+      <div id="fov" class="ui-slider" />
+    </div>
+
+    <div>
+      Aspect Ratio: {{ aspectRatio }}
+      <div id="aspectRatio" class="ui-slider" />
+    </div>
   </div>
 </template>
 <script>
@@ -18,22 +28,43 @@
 export default {
   name: "CameraSection",
   props: {
-    position: {
-      type: Object,
-      required: true,
-      default: () => {},
-    },
-    view: {
-      type: Object,
-      required: true,
-      default: () => {},
-    },
+    activeCamera: { type: Object, required: true, default: () => {}},
+    position: { type: Object, required: true, default: () => {}},
+    view: { type: Object, required: true, default: () => {}},
   },
-
+  data() {
+    return {
+      fov: 60,
+      aspectRatio: 3/4,
+    }
+  },
   mounted() {
     // Add event listener
     $(':input[type="text"]').on("change", this.onValueChange);
     // $(':input[type="number"]').on("change", this.onValueChange);
+
+
+    // Field Of View Slider
+    $( "#fov" ).slider(
+      {
+        min: 20,
+        max: 100,
+        value: this.fov,
+        slide:(event, ui) =>{
+          this.fov = ui.value
+          this.$viewer.setFOV(ui.value)
+        }
+      }
+    )
+    // Field Of View Slider
+    $( "#aspectRatio" ).slider(
+      {
+        min: 0,
+        max: 1,
+        value: this.aspectRatio,
+        slide:(event, ui) =>{ this.aspectRatio = ui.value }
+      }
+    )
   },
   methods: {
     onValueChange(e) {

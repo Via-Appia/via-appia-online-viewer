@@ -1,7 +1,8 @@
 module.exports = {
   mode: 'jit',
   plugins: [
-    require('daisyui')
+    require('daisyui'),
+    require('@tailwindcss/typography')
   ],
   theme: {
     container: {
