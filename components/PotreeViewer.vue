@@ -113,7 +113,7 @@ export default {
       const targetContent = targetSection.last();
       targetContent.html(targetSectionHTML);
       targetSection.first().click(() => targetContent.slideToggle());
-      targetSection.insertBefore($("#menu_appearance"));
+      targetSection.insertBefore($("#menu_tools"));
 
       // Add custom section for Camera
       let cameraSection = $(`
