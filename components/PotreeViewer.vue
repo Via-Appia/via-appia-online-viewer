@@ -72,7 +72,6 @@ export default {
     // Get active camera position
     const cameraPosition = this.viewerScene.getActiveCamera();
 
-    console.log('🎹🎹🎹🎹🎹🎹', cameraPosition.updateProjectionMatrix)
     this.activeCamera =cameraPosition
 
     // Set the position
@@ -90,7 +89,7 @@ export default {
     $("#potree_quick_buttons").hide();
 
     Potree.loadPointCloud(
-      "../pointclouds/DRIVE_1_V3_levels_8/cloud.js",
+      "../../pointclouds/DRIVE_1_V3_levels_8/cloud.js",
       "Drive Map",
       (e) => {
         const scene = this.$viewer.scene;

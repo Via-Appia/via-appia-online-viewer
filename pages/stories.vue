@@ -9,15 +9,6 @@
     <transition>
       <NuxtChild id="steps" class="absolute top-20 z-10 min-w-[500px] left-[350px] p-3 prose" />
     </transition>
-    <!-- Nativation-->
-    <div id="navigation" class="flex">
-      <button class="back btn mr-6">
-        Back
-      </button>
-      <div class="next btn ">
-        Next
-      </div>
-    </div>
   </div>
 </template>
 
@@ -67,10 +58,5 @@ export default {
   right: 40%;
   z-index: 1;
 }
-#navigation{
-  position: absolute;
-  bottom: 15px;
-  right: 190px;
-  z-index: 1;
-}
+
 </style>

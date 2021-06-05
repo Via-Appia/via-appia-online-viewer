@@ -17,7 +17,7 @@
               Roman roads of the ancient republic.
             </p>
             <nuxt-link
-              to="/steps"
+              to="stories"
               class="btn btn-primary bg-transparent hover:bg-yellow-300 text-yellow-300 hover:text-black rounded shadow hover:shadow-lg py-2 px-4 border border-yellow-300 hover:border-transparent"
             >
               Explore Now
