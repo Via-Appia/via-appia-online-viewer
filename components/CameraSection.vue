@@ -28,7 +28,7 @@
 export default {
   name: "CameraSection",
   props: {
-    activeCamera: { type: Object, required: true, default: () => {}},
+    activeCamera: { default: () => {}},
     position: { type: Object, required: true, default: () => {}},
     view: { type: Object, required: true, default: () => {}},
   },
