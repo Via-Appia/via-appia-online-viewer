@@ -9,9 +9,9 @@
     </div>
     <camera-section :active-camera="camera" :position="position" :view="view" />
     <image-orientation-section
-      :viewer="$viewer"
-      :active-image="activeImage"
+      :position="position"
       :offset="offset"
+      @on-image-clicked="hello"
     />
     <target-section :target="target" :view="view" />
   </div>
@@ -140,11 +140,9 @@ export default {
         ).then(([images, controls]) => {
           this.$viewer.scene.addOrientedImages(images);
 
-          const material = that.createMaterial();
-          material.transparent = true;
-          images.images[0].mesh.material = material;
-
-          const that = this
+          // const material = this.createMaterial();
+          // material.transparent = true;
+          // images.images[0].mesh.material = material;
         });
       }
     );
@@ -202,53 +200,56 @@ export default {
     });
   },
   methods: {
+    hello(image){
+      console.log('hello.... is it me you\'re looking for?', image)
+    },
     toggleSidebar() {
       $("#potree_sidebar_container").toggle();
     },
 
-    createMaterial() {
-      let vertexShader = `
-        uniform float uNear;
-        varying vec2 vUV;
-        varying vec4 vDebug;
+    // createMaterial() {
+    //   let vertexShader = `
+    //     uniform float uNear;
+    //     varying vec2 vUV;
+    //     varying vec4 vDebug;
         
-        void main(){
-          vDebug = vec4(0.0, 1.0, 0.0, 1.0);
-          vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
-          // make sure that this mesh is at least in front of the near plane
-          modelViewPosition.xyz += normalize(modelViewPosition.xyz) * uNear;
-          gl_Position = projectionMatrix * modelViewPosition;
-          vUV = uv;
-        }`;
+    //     void main(){
+    //       vDebug = vec4(0.0, 1.0, 0.0, 1.0);
+    //       vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
+    //       // make sure that this mesh is at least in front of the near plane
+    //       modelViewPosition.xyz += normalize(modelViewPosition.xyz) * uNear;
+    //       gl_Position = projectionMatrix * modelViewPosition;
+    //       vUV = uv;
+    //     }`;
 
-      let fragmentShader = `
-        uniform sampler2D tColor;
-        uniform float uOpacity;
-        varying vec2 vUV;
-        varying vec4 vDebug;
-        void main(){
-          vec4 color = texture2D(tColor, vUV);          
-          gl_FragColor = color;
-          gl_FragColor.a = uOpacity;
-        }`;
+    //   let fragmentShader = `
+    //     uniform sampler2D tColor;
+    //     uniform float uOpacity;
+    //     varying vec2 vUV;
+    //     varying vec4 vDebug;
+    //     void main(){
+    //       vec4 color = texture2D(tColor, vUV);          
+    //       gl_FragColor = color;
+    //       gl_FragColor.a = uOpacity;
+    //     }`;
 
-      const material = new THREE.ShaderMaterial({
-        uniforms: {
-          // time: { value: 1.0 },
-          // resolution: { value: new THREE.Vector2() }
-          tColor: { value: new THREE.Texture() },
-          uNear: { value: 0.0 },
-          uOpacity: { value: 0.5 }
-        },
-        vertexShader: vertexShader,
-        fragmentShader: fragmentShader,
-        side: THREE.DoubleSide
-      });
+    //   const material = new THREE.ShaderMaterial({
+    //     uniforms: {
+    //       // time: { value: 1.0 },
+    //       // resolution: { value: new THREE.Vector2() }
+    //       tColor: { value: new THREE.Texture() },
+    //       uNear: { value: 0.0 },
+    //       uOpacity: { value: 0.5 }
+    //     },
+    //     vertexShader: vertexShader,
+    //     fragmentShader: fragmentShader,
+    //     side: THREE.DoubleSide
+    //   });
 
-      material.side = THREE.DoubleSide;
+    //   material.side = THREE.DoubleSide;
 
-      return material;
-    },
+    //   return material;
+    // },
 
     createAnnotations() {
       this.$viewer.scene.annotations.children = [];
