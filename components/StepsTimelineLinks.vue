@@ -1,6 +1,26 @@
 <template>
   <div class="container">
     <div v-if="menu" class="container">
+      <label for="my-modal-2" class="btn  modal-button">Explore other stories</label>
+      <input id="my-modal-2" type="checkbox" class="modal-toggle">
+      <div class="modal z-100">
+        <div class="modal-box ">
+          <nuxt-link
+            v-for="(item,index) in menu.items"
+            :key="index"
+            tab-index="0"
+            class="btn"
+            :to="item.route"
+            for="my-modal-2"
+          >
+            {{ item.tooltip }}
+          </nuxt-link>
+          <div class="modal-action">
+            <label for="my-modal-2" class="btn">Close</label>
+          </div>
+        </div>
+      </div>
+
       <div v-for="(story,i) in menu.items" :key="i" class="flex flex-col md:grid mx-auto text-blue-50">
         <div class="mr-10 md:mx-auto relative h-20">
           <div class="h-full w-6 flex items-center justify-center">
@@ -31,7 +51,6 @@
 
 <script>
 export default {
-  name: 'StepsTimelineLinks',
   data () {
     return {
       menu: {}
