@@ -103,9 +103,38 @@ export class VAOrientedImage {
 
     mesh.updateMatrixWorld()
     const dir = mesh.getWorldDirection()
+
     const alpha = THREE.Math.degToRad(fov / 2)
     const d = -0.5 / Math.tan(alpha)
+
+    console.log('d value is: ' + d)
+
     const move = dir.clone().multiplyScalar(d)
+    mesh.position.add(move)
+
+    line.position.copy(mesh.position)
+    line.scale.copy(mesh.scale)
+    line.rotation.copy(mesh.rotation)
+  }
+
+  setPosition (position, rotation, offset) {
+    const radians = rotation.map(THREE.Math.degToRad)
+
+    this.position.set(...position)
+    this.mesh.position.set(...position)
+
+    this.rotation.set(...radians)
+    this.mesh.rotation.set(...radians)
+
+    this.updateTransformOffset(offset)
+  }
+
+  updateTransformOffset (offset) {
+    const { mesh, line } = this
+
+    mesh.updateMatrixWorld()
+    const dir = mesh.getWorldDirection()
+    const move = dir.clone().multiplyScalar(offset)
     mesh.position.add(move)
 
     line.position.copy(mesh.position)
@@ -210,7 +239,7 @@ export class VAOrientedImageLoader {
   }
 
   static async load (cameraParamsPath, imageParamsPath, viewer) {
-    const tStart = performance.now()
+    // const tStart = performance.now()
 
     const [cameraParams, imageParams] = await Promise.all([
       VAOrientedImageLoader.loadCameraParams(cameraParamsPath),
@@ -220,8 +249,8 @@ export class VAOrientedImageLoader {
     const orientedImageControls = new VAOrientedImageControls(viewer)
     const raycaster = new THREE.Raycaster()
 
-    const tEnd = performance.now()
-    console.log(tEnd - tStart)
+    // const tEnd = performance.now()
+    // console.log(tEnd - tStart)
 
     const { width, height } = cameraParams
     const orientedImages = []
