@@ -7,7 +7,8 @@ export default {
   head: {
     title: 'via-appia-viewer',
     htmlAttrs: {
-      lang: 'en'
+      lang: 'en',
+      'data-theme': 'light' // https://daisyui.com/docs/default-themes
     },
     meta: [
       { charset: 'utf-8' },

@@ -8,11 +8,11 @@
       </div>
     </div>
     <camera-section :active-camera="camera" :position="position" :view="view" />
-    <image-orientation-section
-      :position="position"
-      :offset="offset"
-      @on-image-clicked="hello"
-    />
+    <!--    <image-orientation-section-->
+    <!--      :position="position"-->
+    <!--      :offset="offset"-->
+    <!--      @on-image-clicked="hello"-->
+    <!--    />-->
     <target-section :target="target" :view="view" />
   </div>
 </template>
@@ -83,13 +83,18 @@ export default {
 
     this.viewerScene = this.$viewer.scene;
     // Get active camera position
-    const cameraPosition = this.viewerScene.getActiveCamera();
-
-    console.log("🎹🎹🎹🎹🎹🎹", cameraPosition.updateProjectionMatrix);
-    this.activeCamera = cameraPosition;
+    this.activeCamera = this.viewerScene.getActiveCamera();
 
     // Set the position
     this.position = this.camera.position;
+    this.$viewer.scene.view.position.set(
+      296263.44478442846,
+      4633690.564590737,
+      136.8239176625768,
+    )
+
+
+
 
     // Set the Target
     this.target = this.view.getPivot();
@@ -100,6 +105,16 @@ export default {
     this.$viewer.setEDLEnabled(false);
     this.$viewer.setPointBudget(1_000_000);
     this.$viewer.loadSettingsFromURL();
+
+    //
+    // event listener when clicking the image
+    //
+    this.$viewer.addEventListener('image clicked', (image) => {
+      // this.activeImage = image
+      console.log('🎹image clicked',image )
+    })
+
+
     // hide menu button in the sidebar
     $("#potree_quick_buttons").hide();
 
@@ -149,12 +164,8 @@ export default {
 
     this.$viewer.loadGUI(() => {
       this.$viewer.setLanguage("en");
-      $("#menu_tools")
-        .next()
-        .show();
-      $("#menu_clipping")
-        .next()
-        .show();
+      $("#menu_tools").next().show();
+      $("#menu_clipping").next().show();
 
       // Add custom section for Target
       let targetSection = $(`
@@ -212,7 +223,7 @@ export default {
     //     uniform float uNear;
     //     varying vec2 vUV;
     //     varying vec4 vDebug;
-        
+
     //     void main(){
     //       vDebug = vec4(0.0, 1.0, 0.0, 1.0);
     //       vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
@@ -228,7 +239,7 @@ export default {
     //     varying vec2 vUV;
     //     varying vec4 vDebug;
     //     void main(){
-    //       vec4 color = texture2D(tColor, vUV);          
+    //       vec4 color = texture2D(tColor, vUV);
     //       gl_FragColor = color;
     //       gl_FragColor.a = uOpacity;
     //     }`;

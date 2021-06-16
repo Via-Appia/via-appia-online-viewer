@@ -39,7 +39,7 @@ export class VAOrientedImageControls extends Potree.EventDispatcher {
       '<input type="button" value="🡄" style="position: absolute; top: calc(50%); left: 10px; z-index: 1000" />'
     )
     this.elExit = $(
-      '<input type="button" value="Back to 3D view" style="position: absolute; bottom: 10px; right: 10px; z-index: 1000" />'
+      '<input type="button" class="btn btn-accent absolute" value="Back to 3D view" style="position: absolute; bottom: 10px; right: 10px; z-index: 1000" />'
     )
 
     this.elExit.click(() => {

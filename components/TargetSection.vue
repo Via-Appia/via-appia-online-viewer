@@ -1,10 +1,10 @@
 <template>
-  <div class="pv-menu-list" id="targetSection">
+  <div id="targetSection" class="pv-menu-list">
     <li>
-      x:<input type="number" id="targetx" step="0.01" :value="target.x" />
+      x:<input id="targetx" type="number" step="0.01" :value="target.x">
     </li>
-    <li>y:<input type="number" id="targety" step="1" :value="target.y" /></li>
-    <li>z:<input type="number" id="targetz" step="1" :value="target.z" /></li>
+    <li>y:<input id="targety" type="number" step="1" :value="target.y"></li>
+    <li>z:<input id="targetz" type="number" step="1" :value="target.z"></li>
   </div>
 </template>
 <script>
