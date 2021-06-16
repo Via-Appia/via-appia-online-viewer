@@ -46,6 +46,7 @@ function createMaterial () {
   })
 
   material.side = THREE.DoubleSide
+  material.transparent = true
 
   return material
 }
@@ -135,10 +136,6 @@ export class VAOrientedImages extends Potree.EventDispatcher {
     }
 
     this._visible = visible
-    this.dispatchEvent({
-      type: 'visibility_changed',
-      images: this
-    })
   }
 
   get visible () {
@@ -363,7 +360,7 @@ export class VAOrientedImageLoader {
       }
       viewer.dispatchEvent({
         type: 'image clicked',
-        image: this
+        image
       })
     }
 

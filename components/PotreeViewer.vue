@@ -3,7 +3,7 @@
     <div id="potree_container" ref="potree_container">
       <!--    Only show the toolbar when developing locally-->
       <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" />
-      <div class="btn absolute z-20 right-4 bottom-4" @click="toggleSidebar">
+      <div class="absolute z-20 btn right-4 bottom-4" @click="toggleSidebar">
         Toggle Panel
       </div>
     </div>
@@ -73,8 +73,6 @@ export default {
   },
 
   mounted() {
-    var that = this;
-
     Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container);
 
     const { scene } = this.$viewer;
@@ -93,9 +91,6 @@ export default {
       136.8239176625768,
     )
 
-
-
-
     // Set the Target
     this.target = this.view.getPivot();
 
@@ -105,14 +100,6 @@ export default {
     this.$viewer.setEDLEnabled(false);
     this.$viewer.setPointBudget(1_000_000);
     this.$viewer.loadSettingsFromURL();
-
-    //
-    // event listener when clicking the image
-    //
-    this.$viewer.addEventListener('image clicked', (image) => {
-      // this.activeImage = image
-      console.log('🎹image clicked',image )
-    })
 
 
     // hide menu button in the sidebar

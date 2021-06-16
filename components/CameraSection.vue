@@ -39,13 +39,13 @@
           @input="setCameraPosition({z:$event.target.value})"
         >
       </li>
-      <button class="btn btn-sm btn-outline text-xs" @click="copyCameraPosition">
+      <button class="text-xs btn btn-sm btn-outline" @click="copyCameraPosition">
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" /></svg>
         Copy Camera pos.
       </button>
 
       Target
-      <button class="btn btn-sm text-xs" @click="copyCameraPosition">
+      <button class="text-xs btn btn-sm" @click="copyCameraPosition">
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" /></svg>
         Copy Target pos.
       </button>
@@ -85,6 +85,19 @@
       <div>
         Offset:
       </div>
+      <div v-if="activeImage">
+        {{ activeImage.mesh.material.uniforms.uOpacity }}
+
+        opacity: <input
+          :value="activeImage.mesh.material.uniforms.uOpacity.value"
+          class="input input-xs"
+          step="0.1"
+          type="range"
+          min="0.0"
+          max="1.0"
+          @input="setActiveImageOpacity($event.target.value)"
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -93,15 +106,21 @@ export default {
   name: 'CameraSection',
   data () {
     return {
+      activeImage: null,
       activeCamera: this.$viewer.scene.getActiveCamera(),
       target: this.$viewer.scene.view.getPivot(),
       fov: 60
     }
   },
+  mounted () {
+    this.$viewer.addEventListener('image clicked', (payload) => {
+      this.activeImage = payload.image
+      console.log('🎹image clicked', payload.image)
+    })
+  },
 
   methods: {
     copyCameraPosition () {
-      debugger
       event.clipboardData.setData('Text', 'hello??')
       // this.activeCamera.position.x,this.activeCamera.position.y,this.activeCamera.position.z
     },
@@ -111,6 +130,9 @@ export default {
         parseFloat(position.y || this.activeCamera.position.y),
         parseFloat(position.z || this.activeCamera.position.z)
       )
+    },
+    setActiveImageOpacity (value) {
+      this.activeImage.mesh.material.uniforms.uOpacity.value = parseFloat(value)
     }
   }
 }
