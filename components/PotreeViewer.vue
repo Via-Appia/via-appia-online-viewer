@@ -8,42 +8,36 @@
       </div>
     </div>
     <camera-section :active-camera="camera" :position="position" :view="view" />
-    <!--    <image-orientation-section-->
-    <!--      :position="position"-->
-    <!--      :offset="offset"-->
-    <!--      @on-image-clicked="hello"-->
-    <!--    />-->
-    <target-section :target="target" :view="view" />
   </div>
 </template>
 
 <script>
-/* eslint no-implicit-globals: "error" */
-/* eslint-disable */
-import Vue from "vue";
+import Vue from 'vue'
 
-import { VAOrientedImage, VAOrientedImageLoader } from './overrides/VAOrientedImages'
-import { VAOrientedImageControls } from './overrides/VAOrientedImageControls';
-
+import {
+  // VAOrientedImage,
+  VAOrientedImageLoader
+} from './overrides/VAOrientedImages'
+// import { VAOrientedImageControls } from './overrides/VAOrientedImageControls'
 // import { pathOverview } from './path'
-const { Potree, THREE } = window;
+
 export default {
-  name: "PotreeViewer",
+  name: 'PotreeViewer',
   props: {
     graphics: {
       type: String,
       required: false,
-      default: "medium",
-      validator(value) {
-        return ["low", "medium", "high"].includes(value);
+      default: 'medium',
+      validator (value) {
+        return ['low', 'medium', 'high'].includes(value)
       }
     },
     numPoints: {
       type: Number,
       required: false,
       default: 6000000,
-      validator(value) {
-        return value > 0 && value < 50000000;
+      validator (value) {
+        return value > 0 && value < 50000000
       }
     },
     pointClouds: {
@@ -52,152 +46,128 @@ export default {
       default: () => []
     }
   },
-  data() {
+  data () {
     return {
-      position: {
-        x: 0,
-        y: 0,
-        z: 0
-      },
-      target: {
-        x: 0,
-        y: 0,
-        z: 0
-      },
+      position: { x: 0, y: 0, z: 0 },
+      target: { x: 0, y: 0, z: 0 },
       camera: null,
       view: null,
       viewerScene: null,
       offset: 0,
       activeImage: null
-    };
+    }
   },
 
-  mounted() {
-    Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container);
+  mounted () {
+    Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container)
 
-    const { scene } = this.$viewer;
-    this.camera = scene.getActiveCamera();
-    this.view = scene.view;
+    const { scene } = this.$viewer
+    this.camera = scene.getActiveCamera()
+    this.view = scene.view
 
-    this.viewerScene = this.$viewer.scene;
+    this.viewerScene = this.$viewer.scene
     // Get active camera position
-    this.activeCamera = this.viewerScene.getActiveCamera();
+    this.activeCamera = this.viewerScene.getActiveCamera()
 
     // Set the position
-    this.position = this.camera.position;
-    this.$viewer.scene.view.position.set(
-      296263.44478442846,
-      4633690.564590737,
-      136.8239176625768,
-    )
+    this.position = this.camera.position
 
     // Set the Target
-    this.target = this.view.getPivot();
+    this.target = this.view.getPivot()
 
-    this.$viewer.setFOV(60);
-    this.$viewer.setBackground("skybox");
+    this.$viewer.setFOV(60)
+    this.$viewer.setBackground('skybox')
 
-    this.$viewer.setEDLEnabled(false);
-    this.$viewer.setPointBudget(1_000_000);
-    this.$viewer.loadSettingsFromURL();
-
+    this.$viewer.setEDLEnabled(false)
+    this.$viewer.setPointBudget(1_000_000)
+    this.$viewer.loadSettingsFromURL()
 
     // hide menu button in the sidebar
-    $("#potree_quick_buttons").hide();
-
+    $('#potree_quick_buttons').hide()
 
     Potree.loadPointCloud(
-      "../pointclouds/DRIVE_1_V3_levels_8/cloud.js",
-      "Drive Map",
-      e => {
-        const scene = this.$viewer.scene;
-        const pointcloud = e.pointcloud;
+      '../pointclouds/DRIVE_1_V3_levels_8/cloud.js',
+      'Drive Map',
+      (e) => {
+        const scene = this.$viewer.scene
+        const pointcloud = e.pointcloud
 
-        const material = pointcloud.material;
-        material.size = 1;
-        material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
-        material.shape = Potree.PointShape.SQUARE;
+        const material = pointcloud.material
+        material.size = 1
+        material.pointSizeType = Potree.PointSizeType.ADAPTIVE
+        material.shape = Potree.PointShape.SQUARE
 
-        scene.addPointCloud(pointcloud);
+        scene.addPointCloud(pointcloud)
 
         scene.view.position.set(
-          296262.1791907831,
-          4633681.103795228,
-          129.37539058990467,
-        );
-        // this.$viewer.fitToScreen();
+          296264.39688606694,
+          4633679.776566018,
+          129.77835768357866
+        )
+        this.$viewer.scene.view.yaw = 0.3
+        this.$viewer.scene.view.pitch = 0
 
-        const cameraParamsPath = "http://localhost:3000/images/images.xml";
-        const imageParamsPath = "http://localhost:3000/images/pyramid.txt";
+        // this command hides the camera
+
+        const cameraParamsPath = 'http://localhost:3000/images/images.xml'
+        const imageParamsPath = 'http://localhost:3000/images/pyramid.txt'
 
         VAOrientedImageLoader.load(
           cameraParamsPath,
           imageParamsPath,
           this.$viewer
         ).then(([images, controls]) => {
-          this.$viewer.scene.addOrientedImages(images);
+          this.$viewer.scene.addOrientedImages(images)
 
           // const material = this.createMaterial();
           // material.transparent = true;
           // images.images[0].mesh.material = material;
-        });
+        })
       }
-    );
+    )
 
     this.$viewer.loadGUI(() => {
-      this.$viewer.setLanguage("en");
-      $("#menu_tools").next().show();
-      $("#menu_clipping").next().show();
-
-      // Add custom section for Target
-      let targetSection = $(`
-				<h3 id="menu_target" class="accordion-header ui-widget"><span>Target</span></h3>
-				<div class="accordion-content ui-widget pv-menu-list"></div>
-			`);
-      // get the vue component for target section
-      const targetSectionHTML = document.getElementById("targetSection");
-      const targetSectionContent = targetSection.last();
-      targetSectionContent.html(targetSectionHTML);
-      targetSection.first().click(() => targetSectionContent.slideToggle());
-      targetSection.insertBefore($("#menu_tools"));
+      this.$viewer.setLanguage('en')
+      $('#menu_tools').next().show()
+      $('#menu_clipping').next().show()
 
       // Add custom section for Camera
-      let cameraSection = $(`
-				<h3 id="menu_camera" class="accordion-header ui-widget"><span>Camera Position</span></h3>
-				<div class="accordion-content ui-widget pv-menu-list"></div>
-			`);
+      const cameraSection = $(`
+        <h3 id="menu_camera" class="accordion-header ui-widget"><span>Camera Position</span></h3>
+        <div class="accordion-content ui-widget pv-menu-list"></div>
+        `)
       // get vue component for Camera Section
-      const cameraSectionHTML = document.getElementById("cameraSection");
-      const cameraSectionContent = cameraSection.last();
-      cameraSectionContent.html(cameraSectionHTML);
-      cameraSection.first().click(() => cameraSectionContent.slideToggle());
-      cameraSection.insertBefore($("#menu_target"));
+      const cameraSectionHTML = document.getElementById('cameraSection')
+      const cameraSectionContent = cameraSection.last()
+      cameraSectionContent.html(cameraSectionHTML)
+      cameraSection.first().click(() => cameraSectionContent.slideToggle())
+      cameraSection.insertBefore($('#menu_tools'))
 
       // Add custom section for Camera
-      let imageOrientationSection = $(`
-				<h3 id="menu_camera" class="accordion-header ui-widget"><span>Image Orientation</span></h3>
-				<div class="accordion-content ui-widget pv-menu-list"></div>
-			`);
+      const imageOrientationSection = $(`
+        <h3 id="menu_camera" class="accordion-header ui-widget"><span>Image Orientation</span></h3>
+        <div class="accordion-content ui-widget pv-menu-list"></div>
+       `)
       // get vue component for Image Orientation
-      const imageOrientationSectionHTML = document.getElementById("imageOrientationSection");
-      const imageOrientationSectioncontent = imageOrientationSection.last();
-      imageOrientationSectioncontent.html(imageOrientationSectionHTML);
-      imageOrientationSection.first().click(() => imageOrientationSectioncontent.slideToggle());
-      imageOrientationSection.insertBefore($("#menu_tools"));
+      const imageOrientationSectionHTML = document.getElementById('imageOrientationSection')
+      const imageOrientationSectioncontent = imageOrientationSection.last()
+      imageOrientationSectioncontent.html(imageOrientationSectionHTML)
+      imageOrientationSection.first().click(() => imageOrientationSectioncontent.slideToggle())
+      imageOrientationSection.insertBefore($('#menu_tools'))
 
-      this.$viewer.toggleSidebar();
-    });
-    this.$viewer.addEventListener("move_speed_changed", () => {
+      this.$viewer.toggleSidebar()
+    })
+    this.$viewer.addEventListener('move_speed_changed', () => {
       // Set the position
-      this.position = this.camera.position;
-    });
+      this.position = this.camera.position
+    })
   },
   methods: {
-    hello(image){
+    hello (image) {
       console.log('hello.... is it me you\'re looking for?', image)
     },
-    toggleSidebar() {
-      $("#potree_sidebar_container").toggle();
+    toggleSidebar () {
+      $('#potree_sidebar_container').toggle()
     },
 
     // createMaterial() {
@@ -244,18 +214,18 @@ export default {
     //   return material;
     // },
 
-    createAnnotations() {
-      this.$viewer.scene.annotations.children = [];
+    createAnnotations () {
+      this.$viewer.scene.annotations.children = []
       this.$viewer.scene.addAnnotation([236790, 548513, 69], {
         // title: this.$t('commanderHouse')
-        title: "commanderHouse"
-      });
+        title: 'commanderHouse'
+      })
       this.$viewer.scene.addAnnotation([237079, 548442, 69], {
-        title: "campTerrain"
-      });
+        title: 'campTerrain'
+      })
     }
   }
-};
+}
 </script>
 
 <style>

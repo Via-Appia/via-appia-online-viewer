@@ -1,139 +1,125 @@
 <template>
-  <div>
-    <div id="cameraSection" class="pv-menu-list">
-      <div class="fixed top-[50px] left-[300px] z-10">
-        <pre class="bg-black bg-opacity-70">{{ activeCamera }}
-          camera position:
-        {{ activeCamera.position }}
-          <br>
-        target position:
-        {{ target }}
-        </pre>
+  <div id="cameraSection">
+    <div class="fixed top-[50px] left-[300px] z-10">
+      <pre class="bg-black bg-opacity-50">
+        {{ activeCamera.rotation }}
+
+        {{ $viewer.scene.view }}
+      </pre>
+    </div>
+    <button
+      class="text-xs font-capitalize btn btn-xs btn-outline text-gray-400"
+      @cdivck="copyCameraPosition"
+    >
+      <svg
+        class="w-3 h- mr-1"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          stroke-divnecap="round"
+          stroke-divnejoin="round"
+          stroke-width="2"
+          d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
+        />
+      </svg>
+      Copy coordinates
+    </button>
+    <!-- Camera position-->
+    <div class="font-bold mt-4">
+      Camera Position
+      <div class="mb-2">
+        x: <input
+          :value="activeCamera.position.x"
+          class="input input-xs"
+          type="number"
+          step=".01"
+          @input="setCameraPosition({x:$event.target.value})"
+        >
       </div>
-
-      <!--      Camera Position -->
-      <li>
-        x: <input
-          :value="activeCamera.position.x"
-          class="input input-xs"
-          type="number"
-          step=".1"
-          @input="setCameraPosition({x:$event.target.value})"
-        >
-      </li>
-      <li>
+      <div class="mb-2">
         y: <input
           :value="activeCamera.position.y"
           class="input input-xs"
           type="number"
-          step=".1"
+          step=".01"
           @input="setCameraPosition({y:$event.target.value})"
         >
-      </li>
-      <li>
+      </div>
+      <div class="mb-2">
         z: <input
           :value="activeCamera.position.z"
           class="input input-xs"
           type="number"
-          step=".1"
+          step=".01"
           @input="setCameraPosition({z:$event.target.value})"
         >
-      </li>
+      </div>
+    </div>
 
-      <!--      Camera Rotation -->
-      <li>
-        x: <input
-          :value="activeCamera.rotation.x"
+    <!-- Camera Rotation-->
+    <div class="font-bold mt-4">
+      Camera Rotation (Radians)
+      <div class="mb-2">
+        Yaw (left-right): <input
+          :value="$viewer.scene.view.yaw"
           class="input input-xs"
           type="number"
-          step=".1"
-          @input="setCameraRotation({x:$event.target.value})"
+          step=".01"
+          @input="setCameraRotation({yaw:$event.target.value})"
         >
-      </li>
-      <li>
-        y: <input
-          :value="activeCamera.rotation.y"
+      </div>
+      <div class="mb-2">
+        Pitch (up-down): <input
+          :value="$viewer.scene.view._pitch"
           class="input input-xs"
           type="number"
-          step=".1"
-          @input="setCameraRotation({y:$event.target.value})"
+          step=".01"
+          :min="$viewer.scene.view.minPitch"
+          :max="$viewer.scene.view.maxPitch"
+          @input="setCameraRotation({pitch:$event.target.value})"
         >
-      </li>
-      <li>
-        z: <input
-          :value="activeCamera.rotation.z"
-          class="input input-xs"
-          type="number"
-          step=".1"
-          @input="setCameraRotation({z:$event.target.value})"
-        >
-      </li>
+      </div>
+    </div>
 
-      <button class="text-xs btn btn-sm btn-outline" @click="copyCameraPosition">
-        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" /></svg>
-        Copy Camera pos.
-      </button>
-
-      Target
-      <button class="text-xs btn btn-sm" @click="copyCameraPosition">
-        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" /></svg>
-        Copy Target pos.
-      </button>
-      <li>
-        x: <input
-          :value="activeCamera.position.x"
-          class="input input-xs"
-          type="number"
-          step=".1"
-          @input="setCameraPosition({x:$event.target.value})"
-        >
-      </li>
-      <li>
-        y: <input
-          :value="activeCamera.position.y"
-          class="input input-xs"
-          type="number"
-          step=".1"
-          @input="setCameraPosition({y:$event.target.value})"
-        >
-      </li>
-      <li>
-        z: <input
-          :value="activeCamera.position.z"
-          class="input input-xs"
-          type="number"
-          step=".1"
-          @input="setCameraPosition({z:$event.target.value})"
-        >
-      </li>
-
+    <div class="font-bold mt-4">
+      FOV (Field of View): {{ activeCamera.fov }}
+    </div>
+    <input
+      type="range"
+      min="20"
+      max="100"
+      :value="activeCamera.fov"
+      @input="$viewer.setFOV($event.target.value)"
+    >
+    <div v-if="activeImage">
+      <div class="text-xl">
+        Active Image
+      </div>
+      <div class="btn btn-primary" @cdivck="setActiveImageOffset()">
+        Place Image
+      </div>
       <div>
-        FOV: {{ activeCamera.fov }}
-        <input type="range" min="20" max="100" :value="activeCamera.fov" @input="$viewer.setFOV($event.target.value)">
+        opacity: <input
+          :value="activeImage.mesh.material.uniforms.uOpacity.value"
+          class="input input-xs"
+          step="0.1"
+          type="range"
+          min="0.0"
+          max="1.0"
+          @input="setActiveImageOpacity($event.target.value)"
+        >
       </div>
-
-      <div />
-      <div v-if="activeImage">
-        <div>
-          opacity: <input
-            :value="activeImage.mesh.material.uniforms.uOpacity.value"
-            class="input input-xs"
-            step="0.1"
-            type="range"
-            min="0.0"
-            max="1.0"
-            @input="setActiveImageOpacity($event.target.value)"
-          >
-        </div>
-        <div>
-          Offset: <input
-            :value="offset"
-            class="input input-xs"
-            type="number"
-            step="0.02"
-            @input="setActiveImageOffset($event.target.value)"
-          >
-        </div>
+      <div>
+        Offset: <input
+          :value="offset"
+          class="input input-xs"
+          type="number"
+          step="0.02"
+          @input="setActiveImageOffset($event.target.value)"
+        >
       </div>
     </div>
   </div>
@@ -159,7 +145,7 @@ export default {
 
   methods: {
     copyCameraPosition () {
-      event.clipboardData.setData('Text', 'hello??')
+      event.cdivpboardData.setData('Text', 'hello??')
       // this.activeCamera.position.x,this.activeCamera.position.y,this.activeCamera.position.z
     },
     setCameraPosition (newPosition) {
@@ -170,26 +156,20 @@ export default {
       )
     },
     setCameraRotation (newRotation) {
-      // const position = new THREE.Vector3()
-      // const quaternion = new THREE.Quaternion()
-      // const scale = new THREE.Vector3()
-
-      // this.activeImage.mesh.matrixWorld.decompose(position, quaternion, scale)
-
-      // this.$viewer.camera.quaternion.copy(quaternion)
-
-      // mesh.updateMatrixWorld(true)
-
-      this.$viewer.scene.view.rotation.set(
-        parseFloat(newRotation.x || this.activeCamera.rotation.x),
-        parseFloat(newRotation.y || this.activeCamera.rotation.y),
-        parseFloat(newRotation.z || this.activeCamera.rotation.z)
-      )
+      console.log('🎹', this.$viewer.scene.view)
+      if (newRotation.yaw) {
+        this.$viewer.scene.view.yaw = parseFloat(newRotation.yaw)
+      }
+      if (newRotation.pitch) {
+        console.log('🎹', this.$viewer.scene.view.minPitch,
+          this.$viewer.scene.view.maxPitch)
+        this.$viewer.scene.view.pitch = parseFloat(newRotation.pitch)
+      }
     },
     setActiveImageOpacity (value) {
       this.activeImage.mesh.material.uniforms.uOpacity.value = parseFloat(value)
     },
-    setActiveImageOffset (offsetValue) {
+    setActiveImageOffset (offsetValue = this.offset) {
       this.offset = offsetValue
       // this.activeImage.mesh.material.uniforms.uNear.value = parseFloat(value)
       // const rotation = [90, 0, 0]
