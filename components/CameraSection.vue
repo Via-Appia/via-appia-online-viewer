@@ -192,8 +192,8 @@ export default {
     setActiveImageOffset (offsetValue) {
       this.offset = offsetValue
       // this.activeImage.mesh.material.uniforms.uNear.value = parseFloat(value)
-      const rotation = [90, 0, 0]
-      this.activeImage.setPosition(Object.values(this.activeCamera.position), rotation, offsetValue)
+      // const rotation = [90, 0, 0]
+      this.activeImage.setPosition(this.activeCamera, offsetValue)
     }
   }
 }

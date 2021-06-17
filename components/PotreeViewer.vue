@@ -120,17 +120,12 @@ export default {
 
         scene.addPointCloud(pointcloud);
 
-        // scene.view.position.set(
-        //   296222.037838164,
-        //   4633731.544238769,
-        //   134.34521355290298
-        // );
-        // scene.view.lookAt(
-        //   296222.037838164,
-        //   4633731.544238769,
-        //   134.34521355290298
-        // );
-        this.$viewer.fitToScreen();
+        scene.view.position.set(
+          296262.1791907831,
+          4633681.103795228,
+          129.37539058990467,
+        );
+        // this.$viewer.fitToScreen();
 
         const cameraParamsPath = "http://localhost:3000/images/images.xml";
         const imageParamsPath = "http://localhost:3000/images/pyramid.txt";

@@ -117,14 +117,14 @@ export class VAOrientedImage {
     line.rotation.copy(mesh.rotation)
   }
 
-  setPosition (position, rotation, offset) {
-    const radians = rotation.map(THREE.Math.degToRad)
+  setPosition (activeCamera, offset) {
+    // const radians = activeCamera.rotation.map(THREE.Math.degToRad)
 
-    this.position.set(...position)
-    this.mesh.position.set(...position)
+    this.position.copy(activeCamera.position)
+    this.mesh.position.copy(activeCamera.position)
 
-    this.rotation.set(...radians)
-    this.mesh.rotation.set(...radians)
+    this.rotation.copy(activeCamera.rotation)
+    this.mesh.rotation.copy(activeCamera.rotation)
 
     this.updateTransformOffset(offset)
   }
