@@ -273,7 +273,7 @@ export class VAOrientedImageLoader {
     }
 
     let hoveredElement = null
-    let clipVolume = null
+    // const clipVolume = null
 
     const onMouseMove = (evt) => {
       if (hoveredElement) {
@@ -298,63 +298,63 @@ export class VAOrientedImageLoader {
       const objects = orientedImages.map(i => i.mesh)
       raycaster.setFromCamera(mouse, camera)
       const intersects = raycaster.intersectObjects(objects)
-      let selectionChanged = false
+      // let selectionChanged = false
 
       if (intersects.length > 0) {
         // console.log(intersects);
         const intersection = intersects[0]
         const orientedImage = intersection.object.orientedImage
         orientedImage.line.material.color.setRGB(1, 0, 0)
-        selectionChanged = hoveredElement !== orientedImage
+        // selectionChanged = hoveredElement !== orientedImage
         hoveredElement = orientedImage
       } else {
         hoveredElement = null
       }
 
-      const shouldAddClipVolume = clipVolume === null && hoveredElement !== null
+      // const shouldAddClipVolume = clipVolume === null && hoveredElement !== null
 
-      if (
-        clipVolume !== null &&
-        (hoveredElement === null || selectionChanged)
-      ) {
-        // remove existing
-        viewer.scene.removePolygonClipVolume(clipVolume)
-        clipVolume = null
-      }
+      // if (
+      //   clipVolume !== null &&
+      //   (hoveredElement === null || selectionChanged)
+      // ) {
+      //   // remove existing
+      //   viewer.scene.removePolygonClipVolume(clipVolume)
+      //   clipVolume = null
+      // }
 
-      if (shouldAddClipVolume || selectionChanged) {
-        const img = hoveredElement
-        const fov = cameraParams.fov
-        const aspect = cameraParams.width / cameraParams.height
-        const near = 1.0
-        const far = 1000 * 1000
-        const camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
-        camera.rotation.order = viewer.scene.getActiveCamera().rotation.order
-        camera.rotation.copy(img.mesh.rotation)
-        {
-          const mesh = img.mesh
-          const dir = mesh.getWorldDirection()
-          const pos = mesh.position
-          const alpha = THREE.Math.degToRad(fov / 2)
-          const d = 0.5 / Math.tan(alpha)
-          const newCamPos = pos.clone().add(dir.clone().multiplyScalar(d))
-          camera.position.copy(newCamPos)
-        }
-        const volume = new Potree.PolygonClipVolume(camera)
-        const m0 = new THREE.Mesh()
-        const m1 = new THREE.Mesh()
-        const m2 = new THREE.Mesh()
-        const m3 = new THREE.Mesh()
-        m0.position.set(-1, -1, 0)
-        m1.position.set(1, -1, 0)
-        m2.position.set(1, 1, 0)
-        m3.position.set(-1, 1, 0)
-        volume.markers.push(m0, m1, m2, m3)
-        volume.initialized = true
+      // if (shouldAddClipVolume || selectionChanged) {
+      //   const img = hoveredElement
+      //   const fov = cameraParams.fov
+      //   const aspect = cameraParams.width / cameraParams.height
+      //   const near = 1.0
+      //   const far = 1000 * 1000
+      //   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
+      //   camera.rotation.order = viewer.scene.getActiveCamera().rotation.order
+      //   camera.rotation.copy(img.mesh.rotation)
+      //   {
+      //     const mesh = img.mesh
+      //     const dir = mesh.getWorldDirection()
+      //     const pos = mesh.position
+      //     const alpha = THREE.Math.degToRad(fov / 2)
+      //     const d = 0.5 / Math.tan(alpha)
+      //     const newCamPos = pos.clone().add(dir.clone().multiplyScalar(d))
+      //     camera.position.copy(newCamPos)
+      //   }
+      //   const volume = new Potree.PolygonClipVolume(camera)
+      //   const m0 = new THREE.Mesh()
+      //   const m1 = new THREE.Mesh()
+      //   const m2 = new THREE.Mesh()
+      //   const m3 = new THREE.Mesh()
+      //   m0.position.set(-1, -1, 0)
+      //   m1.position.set(1, -1, 0)
+      //   m2.position.set(1, 1, 0)
+      //   m3.position.set(-1, 1, 0)
+      //   volume.markers.push(m0, m1, m2, m3)
+      //   volume.initialized = true
 
-        viewer.scene.addPolygonClipVolume(volume)
-        clipVolume = volume
-      }
+      //   viewer.scene.addPolygonClipVolume(volume)
+      //   clipVolume = volume
+      // }
     }
 
     const moveToImage = (image) => {
@@ -366,6 +366,7 @@ export class VAOrientedImageLoader {
 
       viewer.scene.view.setView(newCamPos, newCamTarget, 500, () => {
         orientedImageControls.capture(image)
+        orientedImageControls.release()
       })
 
       if (image.texture === null) {

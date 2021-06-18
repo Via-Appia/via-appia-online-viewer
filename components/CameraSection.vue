@@ -98,8 +98,9 @@
       <div class="text-xl">
         Active Image
       </div>
-      <div class="btn btn-primary" @cdivck="setActiveImageOffset()">
-        Place Image
+      <div>
+        <input type="checkbox" class="form-checkbox" @change="setImageFollowsCamera($event.target.checked)">
+        Follow camera
       </div>
       <div>
         opacity: <input
@@ -133,13 +134,13 @@ export default {
       activeImage: null,
       activeCamera: this.$viewer.scene.getActiveCamera(),
       target: this.$viewer.scene.view.getPivot(),
-      fov: 60
+      fov: 60,
+      imageFollowsCamera: false
     }
   },
   mounted () {
     this.$viewer.addEventListener('image clicked', (payload) => {
       this.activeImage = payload.image
-      console.log('🎹image clicked', payload.image)
     })
   },
 
@@ -154,16 +155,21 @@ export default {
         parseFloat(newPosition.y || this.activeCamera.position.y),
         parseFloat(newPosition.z || this.activeCamera.position.z)
       )
+
+      if (this.activeImage && this.imageFollowsCamera) {
+        this.activeImage.setPosition(this.activeCamera, this.offset)
+      }
     },
     setCameraRotation (newRotation) {
-      console.log('🎹', this.$viewer.scene.view)
       if (newRotation.yaw) {
         this.$viewer.scene.view.yaw = parseFloat(newRotation.yaw)
       }
       if (newRotation.pitch) {
-        console.log('🎹', this.$viewer.scene.view.minPitch,
-          this.$viewer.scene.view.maxPitch)
         this.$viewer.scene.view.pitch = parseFloat(newRotation.pitch)
+      }
+
+      if (this.activeImage && this.imageFollowsCamera) {
+        this.activeImage.setPosition(this.activeCamera, this.offset)
       }
     },
     setActiveImageOpacity (value) {
@@ -171,10 +177,20 @@ export default {
     },
     setActiveImageOffset (offsetValue = this.offset) {
       this.offset = offsetValue
-      // this.activeImage.mesh.material.uniforms.uNear.value = parseFloat(value)
-      // const rotation = [90, 0, 0]
       this.activeImage.setPosition(this.activeCamera, offsetValue)
+    },
+    setImageFollowsCamera (value) {
+      this.imageFollowsCamera = value
+      if (this.imageFollowsCamera) {
+        this.$viewer.fpControls.registerForUpdate(this)
+      } else {
+        this.$viewer.fpControls.deRegisterForUpdate(this)
+      }
+    },
+    update () {
+      this.activeImage.setPosition(this.activeCamera, this.offset)
     }
+
   }
 }
 </script>

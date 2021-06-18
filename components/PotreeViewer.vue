@@ -15,11 +15,12 @@
 import Vue from 'vue'
 
 import {
-  // VAOrientedImage,
   VAOrientedImageLoader
 } from './overrides/VAOrientedImages'
-// import { VAOrientedImageControls } from './overrides/VAOrientedImageControls'
-// import { pathOverview } from './path'
+
+import {
+  VAFirstPersonControls
+} from './overrides/VAFirstPersonControls'
 
 export default {
   name: 'PotreeViewer',
@@ -107,7 +108,12 @@ export default {
         this.$viewer.scene.view.yaw = 0.3
         this.$viewer.scene.view.pitch = 0
 
-        // this command hides the camera
+        this.$viewer.fpControls = new VAFirstPersonControls(this.$viewer)
+        this.$viewer.fpControls.addEventListener('start', this.$viewer.disableAnnotations.bind(this.$viewer))
+        this.$viewer.fpControls.addEventListener('end', this.$viewer.enableAnnotations.bind(this.$viewer))
+
+        this.$viewer.setControls(this.$viewer.fpControls)
+        this.$viewer.setMoveSpeed(3.5)
 
         const cameraParamsPath = 'http://localhost:3000/images/images.xml'
         const imageParamsPath = 'http://localhost:3000/images/pyramid.txt'
