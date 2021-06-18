@@ -1,8 +1,11 @@
 ---
 title: Mausoleo Rotondo - Page 1
-description: ''
-cameraPosition: []
-lookAt: []
+initialCameraPosition: [x, y, z, yaw, pitch, offset]
+image:
+  - path: img/img.jpg
+  - size: [1024,768]
+  - position: [x, y, z, yaw, pitch, offset]
+  - opacity: 1
 ---
 
 The road is named after Appius Claudius Caecus, the Roman censor who began and completed the first section as a military road to the south in 312 BC[4] during the Samnite Wars.
