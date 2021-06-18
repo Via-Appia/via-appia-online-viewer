@@ -1,0 +1,2 @@
+#Label	    X/Easting	     Y/Northing	        Z/Altitude	        Omega	    Phi	        Kappa
+02_Anderson.jpg	296262.1791907831 4633681.103795228	129.37539058990467	90.0	0.0	    0.0

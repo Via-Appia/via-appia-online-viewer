@@ -35,6 +35,7 @@ export default {
   data () {
     return {
       steps: [
+        { title: '🛖', tooltip: 'Home', route: '/steps' },
         { title: 'I', tooltip: 'I Mausoleo Rotondo', route: '/steps/I' },
         { title: 'II', tooltip: 'II Laterizio I+II', route: '/steps/II' },
         { title: 'III', tooltip: 'III Tumulo dei Curiazi', route: '/steps/III' },

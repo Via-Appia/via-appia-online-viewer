@@ -4,15 +4,19 @@
       <stepsTimelineLinks />
     </div>
 
-    <NuxtChild id="steps" />
     <potree-viewer />
+
+    <transition>
+      <NuxtChild id="steps" class="absolute top-20 z-10 min-w-[500px] left-[350px] p-3 prose" />
+    </transition>
+    <!-- Nativation-->
     <div id="navigation" class="flex">
-      <!--      <button class="back btn mr-6">-->
-      <!--        Back-->
-      <!--      </button>-->
-      <!--      <div class="next btn ">-->
-      <!--        Next-->
-      <!--      </div>-->
+      <button class="back btn mr-6">
+        Back
+      </button>
+      <div class="next btn ">
+        Next
+      </div>
     </div>
   </div>
 </template>
@@ -24,6 +28,33 @@ export default {
 </script>
 
 <style scoped>
+
+/* Transitions using the page hook */
+.page-enter-active {
+  animation: acrossIn .40s ease-out both;
+}
+/*.page-leave-active {*/
+/*  animation: acrossOut .60s ease-in both;*/
+/*}*/
+@keyframes acrossIn {
+  0% {
+    transform: translate3d(0, 10px, 0);
+    opacity: 0;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+@keyframes acrossOut {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
 #header{
   position: absolute;
   top: 20px;
@@ -38,8 +69,8 @@ export default {
 }
 #navigation{
   position: absolute;
-  bottom: 20px;
-  right: 20px;
+  bottom: 15px;
+  right: 190px;
   z-index: 1;
 }
 </style>

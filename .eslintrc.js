@@ -16,6 +16,9 @@ module.exports = {
   // add your custom rules here
   rules: {},
   globals: {
-    $: true
+    $: true,
+    window: true,
+    THREE: true,
+    Potree: true
   }
 }
