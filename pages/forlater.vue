@@ -1,24 +1,50 @@
 <template>
-  <div class="bg-gray-700 bg-opacity-90 rounded ">
-    <h2> {{ page.title }} </h2>
-    <div class="w-full">
-      <nuxt-content :document="page" class="text-gray-400 prose prose-sm sm:prose lg:prose-lg" />
+  <div>
+    the other wole page
+    <transition>
+      <NuxtChild />
+    </transition>
+
+    <!-- Nativation-->
+    <div class="flex fixed z-10 bottom-[15px] right-[190px]">
+      <NuxtLink v-if="prev" :to="{ to: 'stories', params: { slug: prev.slug } }">
+        <button class="back btn mr-6">
+          Back
+        </button>
+      </NuxtLink>
+
+      <NuxtLink v-if="next" :to="{ to: 'stories', params: { slug: next.slug }}">
+        <div class="next btn ">
+          Next - {{ next.slug }}
+        </div>
+      </NuxtLink>
+      <div class="btn" @click="targetTo">
+        target
+      </div>
     </div>
-    <div class="btn" @click="targetTo">
-      target
+
+    <div class="bg-gray-700 bg-opacity-90 rounded ">
+      <h2> {{ prev.title }} </h2>
+      <div class="w-full">
+        <nuxt-content :document="prev" class="text-gray-400 prose prose-sm sm:prose lg:prose-lg" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  async asyncData ({ $content }) {
-    const page = await $content('I').fetch()
-
+  async asyncData ({
+    $content,
+    params
+  }) {
+    const [prev, next] = await $content('story_1', { deep: true }).fetch()
     return {
-      page
+      prev,
+      next
     }
   },
+
   methods: {
     /*
     *

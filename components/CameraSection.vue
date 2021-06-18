@@ -1,12 +1,12 @@
 <template>
   <div id="cameraSection">
-    <div class="fixed top-[50px] left-[300px] z-10">
-      <pre class="bg-black bg-opacity-50">
-        {{ activeCamera.rotation }}
+    <!--    <div class="fixed top-[50px] left-[300px] z-10">-->
+    <!--      <pre class="bg-black bg-opacity-50">-->
+    <!--        {{ activeCamera.rotation }}-->
 
-        {{ $viewer.scene.view }}
-      </pre>
-    </div>
+    <!--        {{ $viewer.scene.view }}-->
+    <!--      </pre>-->
+    <!--    </div>-->
     <button
       class="text-xs font-capitalize btn btn-xs btn-outline text-gray-400"
       @cdivck="copyCameraPosition"
@@ -95,32 +95,45 @@
       @input="$viewer.setFOV($event.target.value)"
     >
     <div v-if="activeImage">
-      <div class="text-xl">
+      <div class="mt-4 font-medium">
         Active Image
       </div>
       <div>
-        <input type="checkbox" class="form-checkbox" @change="setImageFollowsCamera($event.target.checked)">
-        Follow camera
-      </div>
-      <div>
-        opacity: <input
-          :value="activeImage.mesh.material.uniforms.uOpacity.value"
-          class="input input-xs"
-          step="0.1"
-          type="range"
-          min="0.0"
-          max="1.0"
-          @input="setActiveImageOpacity($event.target.value)"
-        >
-      </div>
-      <div>
-        Offset: <input
-          :value="offset"
-          class="input input-xs"
-          type="number"
-          step="0.02"
-          @input="setActiveImageOffset($event.target.value)"
-        >
+        <div class="p-3 card bordered">
+          <div class="form-control">
+            <label class="cursor-pointer flex justify-between">
+              <span class="label-text">Follow the camera</span>
+              <div>
+                <input type="checkbox" class="toggle toggle-primary" @change="setImageFollowsCamera($event.target.checked)">
+                <span class="toggle-mark" />
+              </div>
+            </label>
+            <div class="flex items-center mt-2">
+              <div class="label-text flex-grow w-full">
+                Opacity {{ activeImage.mesh.material.uniforms.uOpacity.value }}
+              </div>
+              <input
+                :value="activeImage.mesh.material.uniforms.uOpacity.value"
+                class="input input-xs ml-2"
+                step="0.01"
+                type="range"
+                min="0"
+                max="1"
+                @input="setActiveImageOpacity($event.target.value)"
+              >
+            </div>
+            <div class="mt-3">
+              <label class="label-text"> Offset </label>
+              <input
+                :value="offset"
+                class="input input-xs"
+                type="number"
+                step="0.02"
+                @input="setActiveImageOffset($event.target.value)"
+              >
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

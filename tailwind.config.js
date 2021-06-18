@@ -4,6 +4,7 @@ module.exports = {
     require('daisyui'),
     require('@tailwindcss/typography')
   ],
+  daisyui: {},
   theme: {
     container: {
       center: true,

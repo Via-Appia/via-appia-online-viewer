@@ -149,18 +149,6 @@ export default {
       cameraSection.first().click(() => cameraSectionContent.slideToggle())
       cameraSection.insertBefore($('#menu_tools'))
 
-      // Add custom section for Camera
-      const imageOrientationSection = $(`
-        <h3 id="menu_camera" class="accordion-header ui-widget"><span>Image Orientation</span></h3>
-        <div class="accordion-content ui-widget pv-menu-list"></div>
-       `)
-      // get vue component for Image Orientation
-      const imageOrientationSectionHTML = document.getElementById('imageOrientationSection')
-      const imageOrientationSectioncontent = imageOrientationSection.last()
-      imageOrientationSectioncontent.html(imageOrientationSectionHTML)
-      imageOrientationSection.first().click(() => imageOrientationSectioncontent.slideToggle())
-      imageOrientationSection.insertBefore($('#menu_tools'))
-
       this.$viewer.toggleSidebar()
     })
     this.$viewer.addEventListener('move_speed_changed', () => {
