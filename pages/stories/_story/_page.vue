@@ -1,9 +1,6 @@
 <template>
   <div>
     <div class="flex mb-4">
-      <button class="btn btn-outline btn-xs mt-4 text-2xl" @click="targetTo">
-        Change Camera(dev)
-      </button>
       <div class="flex-grow" />
       <NuxtLink
         tag="button"
@@ -73,22 +70,6 @@ export default {
     return {
       error: false
     }
-  },
-  methods: {
-    targetTo (target) {
-      const { view } = this.$viewer.scene
-      // const { direction, radius } = view
-
-      // position
-      view.position.set(296409.834, 4633292.402, 284.229)
-      // target
-      view.lookAt(new THREE.Vector3(296389.882, 4633364.782, 267.282))
-
-      // const endPosition = new THREE.Vector3(295767.711, 4631801.029, 586.717)
-      //   .addScaledVector(direction, -radius) // notice do not forget the negative symbol here
-      // view.position.copy(endPosition)
-    }
   }
-
 }
 </script>
