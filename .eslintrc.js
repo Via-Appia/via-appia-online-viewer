@@ -18,6 +18,7 @@ module.exports = {
   globals: {
     $: true,
     window: true,
-    THREE: true
+    THREE: true,
+    Potree: true
   }
 }

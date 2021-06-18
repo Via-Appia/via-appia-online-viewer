@@ -3,224 +3,235 @@
     <div id="potree_container" ref="potree_container">
       <!--    Only show the toolbar when developing locally-->
       <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" />
-      <div class="btn absolute z-20 right-4 bottom-4" @click="toggleSidebar">
+      <div class="absolute z-20 btn right-4 bottom-4" @click="toggleSidebar">
         Toggle Panel
       </div>
     </div>
     <camera-section :active-camera="camera" :position="position" :view="view" />
-    <target-section :target="target" :view="view" />
   </div>
 </template>
 
 <script>
-/* eslint no-implicit-globals: "error" */
-/* eslint-disable */
-import Vue from "vue";
-// import { pathOverview } from './path'
-const { Potree, THREE } = window;
+import Vue from 'vue'
+
+import {
+  VAOrientedImageLoader
+} from './overrides/VAOrientedImages'
+
+import {
+  VAFirstPersonControls
+} from './overrides/VAFirstPersonControls'
+
 export default {
-  name: "PotreeViewer",
+  name: 'PotreeViewer',
   props: {
     graphics: {
       type: String,
       required: false,
-      default: "medium",
-      validator(value) {
-        return ["low", "medium", "high"].includes(value);
-      },
+      default: 'medium',
+      validator (value) {
+        return ['low', 'medium', 'high'].includes(value)
+      }
     },
     numPoints: {
       type: Number,
       required: false,
       default: 6000000,
-      validator(value) {
-        return value > 0 && value < 50000000;
-      },
+      validator (value) {
+        return value > 0 && value < 50000000
+      }
     },
     pointClouds: {
       type: Array,
       required: false,
-      default: () => [],
-    },
+      default: () => []
+    }
   },
-  data() {
+  data () {
     return {
-      viewer: null,
-      position: {
-        x: 0,
-        y: 0,
-        z: 0,
-      },
-      target: {
-        x: 0,
-        y: 0,
-        z: 0,
-      },
+      position: { x: 0, y: 0, z: 0 },
+      target: { x: 0, y: 0, z: 0 },
       camera: null,
       view: null,
       viewerScene: null,
-    };
+      offset: 0,
+      activeImage: null
+    }
   },
 
-  mounted() {
-    Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container);
-    const { scene } = this.$viewer;
-    this.camera = scene.getActiveCamera();
-    this.view = scene.view;
+  mounted () {
+    Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container)
 
-    this.viewerScene = this.$viewer.scene;
+    const { scene } = this.$viewer
+    this.camera = scene.getActiveCamera()
+    this.view = scene.view
+
+    this.viewerScene = this.$viewer.scene
     // Get active camera position
-    const cameraPosition = this.viewerScene.getActiveCamera();
-
-    this.activeCamera =cameraPosition
+    this.activeCamera = this.viewerScene.getActiveCamera()
 
     // Set the position
-    this.position = this.camera.position;
+    this.position = this.camera.position
+
     // Set the Target
-    this.target = this.view.getPivot();
+    this.target = this.view.getPivot()
 
-    this.$viewer.setFOV(60);
-    this.$viewer.setBackground("skybox");
+    this.$viewer.setFOV(60)
+    this.$viewer.setBackground('skybox')
 
-    this.$viewer.setEDLEnabled(false);
-    this.$viewer.setPointBudget(1_000_000);
-    this.$viewer.loadSettingsFromURL();
+    this.$viewer.setEDLEnabled(false)
+    this.$viewer.setPointBudget(1_000_000)
+    this.$viewer.loadSettingsFromURL()
+
     // hide menu button in the sidebar
-    $("#potree_quick_buttons").hide();
+    $('#potree_quick_buttons').hide()
 
     Potree.loadPointCloud(
-      "../../pointclouds/DRIVE_1_V3_levels_8/cloud.js",
-      "Drive Map",
+      '../pointclouds/DRIVE_1_V3_levels_8/cloud.js',
+      'Drive Map',
       (e) => {
-        const scene = this.$viewer.scene;
-        const pointcloud = e.pointcloud;
+        const scene = this.$viewer.scene
+        const pointcloud = e.pointcloud
 
-        const material = pointcloud.material;
-        material.size = 1;
-        material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
-        material.shape = Potree.PointShape.SQUARE;
+        const material = pointcloud.material
+        material.size = 1
+        material.pointSizeType = Potree.PointSizeType.ADAPTIVE
+        material.shape = Potree.PointShape.SQUARE
 
-        scene.addPointCloud(pointcloud);
-        this.$viewer.fitToScreen();
+        scene.addPointCloud(pointcloud)
+
+        scene.view.position.set(
+          296264.39688606694,
+          4633679.776566018,
+          129.77835768357866
+        )
+        this.$viewer.scene.view.yaw = 0.3
+        this.$viewer.scene.view.pitch = 0
+
+        this.$viewer.fpControls = new VAFirstPersonControls(this.$viewer)
+        this.$viewer.fpControls.addEventListener('start', this.$viewer.disableAnnotations.bind(this.$viewer))
+        this.$viewer.fpControls.addEventListener('end', this.$viewer.enableAnnotations.bind(this.$viewer))
+
+        this.$viewer.setControls(this.$viewer.fpControls)
+        this.$viewer.setMoveSpeed(3.5)
+
+        const cameraParamsPath = 'http://localhost:3000/images/images.xml'
+        const imageParamsPath = 'http://localhost:3000/images/pyramid.txt'
+
+        VAOrientedImageLoader.load(
+          cameraParamsPath,
+          imageParamsPath,
+          this.$viewer
+        ).then(([images, controls]) => {
+          this.$viewer.scene.addOrientedImages(images)
+
+          // const material = this.createMaterial();
+          // material.transparent = true;
+          // images.images[0].mesh.material = material;
+        })
       }
-    );
+    )
 
     this.$viewer.loadGUI(() => {
-      this.$viewer.setLanguage("en");
-      $("#menu_tools").next().show();
-      $("#menu_clipping").next().show();
-
-      // Add custom section for Target
-      let targetSection = $(`
-				<h3 id="menu_target" class="accordion-header ui-widget"><span>Target</span></h3>
-				<div class="accordion-content ui-widget pv-menu-list"></div>
-			`);
-      // get the vue component for target section
-      const targetSectionHTML = document.getElementById("targetSection");
-      const targetContent = targetSection.last();
-      targetContent.html(targetSectionHTML);
-      targetSection.first().click(() => targetContent.slideToggle());
-      targetSection.insertBefore($("#menu_tools"));
+      this.$viewer.setLanguage('en')
+      $('#menu_tools').next().show()
+      $('#menu_clipping').next().show()
 
       // Add custom section for Camera
-      let cameraSection = $(`
-				<h3 id="menu_camera" class="accordion-header ui-widget"><span>Camera Position</span></h3>
-				<div class="accordion-content ui-widget pv-menu-list"></div>
-			`);
+      const cameraSection = $(`
+        <h3 id="menu_camera" class="accordion-header ui-widget"><span>Camera Position</span></h3>
+        <div class="accordion-content ui-widget pv-menu-list"></div>
+        `)
       // get vue component for Camera Section
-      const cameraSectionHTML = document.getElementById("cameraSection");
-      const content = cameraSection.last();
-      content.html(cameraSectionHTML);
-      cameraSection.first().click(() => content.slideToggle());
-      cameraSection.insertBefore($("#menu_target"));
+      const cameraSectionHTML = document.getElementById('cameraSection')
+      const cameraSectionContent = cameraSection.last()
+      cameraSectionContent.html(cameraSectionHTML)
+      cameraSection.first().click(() => cameraSectionContent.slideToggle())
+      cameraSection.insertBefore($('#menu_tools'))
 
-      this.$viewer.toggleSidebar();
-    });
-    this.$viewer.addEventListener("move_speed_changed", () => {
+      // Add custom section for Camera
+      const imageOrientationSection = $(`
+        <h3 id="menu_camera" class="accordion-header ui-widget"><span>Image Orientation</span></h3>
+        <div class="accordion-content ui-widget pv-menu-list"></div>
+       `)
+      // get vue component for Image Orientation
+      const imageOrientationSectionHTML = document.getElementById('imageOrientationSection')
+      const imageOrientationSectioncontent = imageOrientationSection.last()
+      imageOrientationSectioncontent.html(imageOrientationSectionHTML)
+      imageOrientationSection.first().click(() => imageOrientationSectioncontent.slideToggle())
+      imageOrientationSection.insertBefore($('#menu_tools'))
+
+      this.$viewer.toggleSidebar()
+    })
+    this.$viewer.addEventListener('move_speed_changed', () => {
       // Set the position
-      this.position = this.camera.position;
-    });
-
-    // this.$viewer.onPointCloudLoaded(e => {
-    //   debugger;
-    //   const pos = this.$viewer.scene.getActiveCamera();
-    //   console.log("pos", pos, pos.position.x);
-    // });
-    // switch (this.graphics) {
-    //   case 'low':
-    //     this.$viewer.useEDL = false
-    //     this.$viewer.useHQ = false
-    //     break
-    //   case 'medium':
-    //     this.$viewer.useEDL = true
-    //     this.$viewer.useHQ = false
-    //     break
-    //   case 'high':
-    //     this.$viewer.useEDL = true
-    //     this.$viewer.useHQ = true
-    //     break
-    //   default:
-    //     break
-    // }
-    // this.$viewer.setPointBudget(this.numPoints)
-    // this.pointClouds.forEach((pc) => {
-    //   Potree.loadPointCloud(`pointclouds/${pc.name.toLowerCase()}/ept.json`, pc.name, (e) => {
-    //     this.onPointCloudLoaded(e.pointcloud, 0.65)
-    //   })
-    // })
-    // this.$viewer.setNavigationMode(Potree.PathControls)
-    // this.$viewer.setMoveSpeed(2)
-    // this.$viewer.pathControls.setPath(pathOverview)
-    // this.$viewer.pathControls.rotationSpeed = 50
-    // this.$viewer.pathControls.position = 0.2
-    // this.$viewer.pathControls.loop = false
-    // this.$viewer.pathControls.lockViewToPath = 'moving'
-    // this.$viewer.scene.view.direction = this.$viewer.pathControls.path.getTangentAt(
-    //   this.$viewer.pathControls.position
-    // )
-    // this.createAnnotations()
-    // this.$watch('$i18n.locale', () => {
-    //   this.createAnnotations()
-    // })
+      this.position = this.camera.position
+    })
   },
   methods: {
-    toggleSidebar() {
-      $("#potree_sidebar_container").toggle();
+    hello (image) {
+      console.log('hello.... is it me you\'re looking for?', image)
+    },
+    toggleSidebar () {
+      $('#potree_sidebar_container').toggle()
     },
 
-    onPointCloudLoaded(pointcloud, size) {
-      this.$viewer.scene.addPointCloud(pointcloud);
-      const { material } = pointcloud;
-      material.size = size;
-      material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
-      if (pointcloud.name === "AHN2") {
-        const { offset } = pointcloud.pcoGeometry;
-        const { center } = pointcloud.boundingSphere;
-        const bbox = pointcloud.boundingBox;
-        const lengthX = bbox.max.x + offset.x - (bbox.min.x + offset.x);
-        const lengthY = bbox.max.y + offset.y - (bbox.min.y + offset.y);
-        const meshGeometry = new THREE.PlaneGeometry(lengthX, lengthY);
-        const meshMaterial = new THREE.MeshBasicMaterial({
-          color: 0x4b433b,
-          side: THREE.DoubleSide,
-        });
-        const meshPlane = new THREE.Mesh(meshGeometry, meshMaterial);
-        meshPlane.position.set(center.x + offset.x, center.y + offset.y, 0);
-        this.$viewer.scene.scene.add(meshPlane);
-      }
-    },
-    createAnnotations() {
-      this.$viewer.scene.annotations.children = [];
+    // createMaterial() {
+    //   let vertexShader = `
+    //     uniform float uNear;
+    //     varying vec2 vUV;
+    //     varying vec4 vDebug;
+
+    //     void main(){
+    //       vDebug = vec4(0.0, 1.0, 0.0, 1.0);
+    //       vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
+    //       // make sure that this mesh is at least in front of the near plane
+    //       modelViewPosition.xyz += normalize(modelViewPosition.xyz) * uNear;
+    //       gl_Position = projectionMatrix * modelViewPosition;
+    //       vUV = uv;
+    //     }`;
+
+    //   let fragmentShader = `
+    //     uniform sampler2D tColor;
+    //     uniform float uOpacity;
+    //     varying vec2 vUV;
+    //     varying vec4 vDebug;
+    //     void main(){
+    //       vec4 color = texture2D(tColor, vUV);
+    //       gl_FragColor = color;
+    //       gl_FragColor.a = uOpacity;
+    //     }`;
+
+    //   const material = new THREE.ShaderMaterial({
+    //     uniforms: {
+    //       // time: { value: 1.0 },
+    //       // resolution: { value: new THREE.Vector2() }
+    //       tColor: { value: new THREE.Texture() },
+    //       uNear: { value: 0.0 },
+    //       uOpacity: { value: 0.5 }
+    //     },
+    //     vertexShader: vertexShader,
+    //     fragmentShader: fragmentShader,
+    //     side: THREE.DoubleSide
+    //   });
+
+    //   material.side = THREE.DoubleSide;
+
+    //   return material;
+    // },
+
+    createAnnotations () {
+      this.$viewer.scene.annotations.children = []
       this.$viewer.scene.addAnnotation([236790, 548513, 69], {
         // title: this.$t('commanderHouse')
-        title: "commanderHouse",
-      });
+        title: 'commanderHouse'
+      })
       this.$viewer.scene.addAnnotation([237079, 548442, 69], {
-        title: "campTerrain",
-      });
-    },
-  },
-};
+        title: 'campTerrain'
+      })
+    }
+  }
+}
 </script>
 
 <style>
