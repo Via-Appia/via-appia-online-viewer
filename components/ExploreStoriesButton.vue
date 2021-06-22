@@ -1,0 +1,46 @@
+<template>
+  <div>
+    <label for="my-modal-2" class="btn modal-button">Explore other stories</label>
+    <input
+      id="my-modal-2"
+      type="checkbox"
+      class="modal-toggle"
+    >
+    <label class="modal" for="my-modal-2">
+      <label class="grid-modal modal-box max-w-[700px] ">
+        <label
+          v-for=" (item,index) in menu.items"
+          :key="index"
+          tab-index="0"
+          for="my-modal-2"
+          class="cursor-pointer transition hover:bg-gray-800 rounded p-4"
+          @click="$router.push(item.route)"
+        >
+          <img class="rounded w-36 mx-auto" :src="item.image || '/images/menu/placeholder.jpg'">
+          <div class="font-medium text-center text-xl mt-2">{{ item.tooltip }}</div>
+        </label>
+      </label>
+    </label>
+  </div>
+</template>
+<script>
+export default {
+  name: 'ExploreStories',
+  data () {
+    return {
+      menu: {}
+    }
+  },
+  async mounted () {
+    this.menu = await this.$content('menu-items').fetch()
+  }
+}
+</script>
+<style scoped>
+.grid-modal{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 4px
+}
+</style>
