@@ -16,7 +16,7 @@
           class="cursor-pointer transition hover:bg-gray-800 rounded p-4"
           @click="$router.push(item.route)"
         >
-          <img class="rounded object-cover w-36 h-28 mx-auto" :src="item.image || '/images/menu/placeholder.jpg'">
+          <img class="rounded object-cover w-36 h-24 mx-auto" :src="item.image || '/images/menu/placeholder.jpg'">
           <div class="font-medium text-center text-xl mt-2">{{ item.tooltip }}</div>
         </label>
       </label>
