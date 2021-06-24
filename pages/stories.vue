@@ -1,13 +1,13 @@
 <template>
   <div class="flex">
-    <div id="header">
-      <stepsTimelineLinks />
-    </div>
-
     <potree-viewer />
 
+    <div id="header">
+      <explore-stories-button />
+      <stepsTimelineLinks />
+    </div>
     <transition>
-      <NuxtChild id="steps" class="absolute top-20 z-10 min-w-[500px] left-[350px] p-3 prose" />
+      <NuxtChild id="steps" class="absolute top-20  min-w-[500px] left-[350px] p-3 prose" />
     </transition>
   </div>
 </template>
@@ -50,13 +50,11 @@ export default {
   position: absolute;
   top: 20px;
   right: 20px;
-  z-index: 1;
 }
 #steps{
   position: absolute;
   top: 20px;
   right: 40%;
-  z-index: 1;
 }
 
 </style>

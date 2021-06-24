@@ -21,6 +21,10 @@
       </NuxtLink>
     </div>
 
+    <!--    page time line -->
+    <div class="fixed top-48 right-0">
+      <steps-timeline-links :pages="pages" />
+    </div>
     <div>
       <div class="bg-gray-700 bg-opacity-90 rounded p-4">
         <div class="text-2xl font-bold text-accent">
@@ -40,13 +44,11 @@ export default {
     $content,
     params
   }) {
-    const coordinates = await $content(params.story)
+    const pages = await $content(params.story)
       .sortBy('slug', 'asc')
-      .only(['cameraPosition', 'lookAt'])
+      .only('title', 'description')
       .fetch()
       .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
-
-    console.log('🎹', coordinates)
 
     const page = await $content(params.story, params.page)
       .fetch()
@@ -60,6 +62,7 @@ export default {
       .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
 
     return {
+      pages,
       page,
       prev,
       next,
