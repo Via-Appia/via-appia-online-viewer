@@ -33,7 +33,13 @@
 <script>
 
 export default {
-  props: ['pages']
+  props: {
+    pages: {
+      type: Array,
+      required: true,
+      default: () => [{ title: 'No Page title' }]
+    }
+  }
 }
 
 </script>
