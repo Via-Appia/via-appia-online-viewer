@@ -2,7 +2,10 @@ export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
   ssr: false,
-
+  // Debug local server from outside
+  server: {
+    host: '0' // default: localhost
+  },
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'via-appia-viewer',
