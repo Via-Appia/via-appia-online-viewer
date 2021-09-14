@@ -1,7 +1,6 @@
 {
   "name": "via-appia-viewer",
   "version": "1.0.0",
-  "node": 14,
   "private": true,
   "scripts": {
     "dev": "nuxt",
