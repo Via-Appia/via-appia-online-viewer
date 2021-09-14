@@ -36,8 +36,8 @@ export default {
   props: {
     pages: {
       type: Array,
-      required: true,
-      default: () => [{ title: 'No Page title' }]
+      required: false,
+      default: () => []
     }
   }
 }
