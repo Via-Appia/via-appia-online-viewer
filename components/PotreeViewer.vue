@@ -7,7 +7,7 @@
         Toggle Panel
       </div>
     </div>
-    <camera-section :active-camera="camera" :position="position" :view="view" />
+    <camera-section v-if="camera" :active-camera="camera" :position="position" :view="view" />
   </div>
 </template>
 
