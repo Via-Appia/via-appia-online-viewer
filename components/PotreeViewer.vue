@@ -1,8 +1,9 @@
 <template>
   <div>
     <div id="potree_container" ref="potree_container">
-      <!--    Only show the toolbar when developing locally-->
-      <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" />
+      <!--  Only show the toolbar when developing locally-->
+      <!--  <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" /> -->
+      <div id="potree_sidebar_container" />
       <div class="absolute z-20 btn right-4 bottom-4" @click="toggleSidebar">
         Toggle Panel
       </div>
@@ -60,6 +61,11 @@ export default {
   },
 
   mounted () {
+    // hide toolbar if production mode
+    if (!this.$nuxt.context.isDev) {
+      this.toggleSidebar()
+    }
+
     Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container)
 
     const { scene } = this.$viewer
@@ -83,13 +89,18 @@ export default {
     this.$viewer.setPointBudget(1_000_000)
     this.$viewer.loadSettingsFromURL()
 
+    const POINT_CLOUD_URL = this.$nuxt.context.isDev
+      ? '../pointclouds/DRIVE_1_V3_levels_8/cloud.js'
+      : 'https://storage.googleapis.com/via-appia-20540.appspot.com/cloud.js'
+
     // hide menu button in the sidebar
     $('#potree_quick_buttons').hide()
     Potree.loadPointCloud(
       // locally
       // '../pointclouds/DRIVE_1_V3_levels_8/cloud.js',
       // Cloud storage
-      'https://storage.googleapis.com/via-appia-20540.appspot.com/cloud.js',
+
+      POINT_CLOUD_URL,
       'Drive Map',
       (e) => {
         const scene = this.$viewer.scene

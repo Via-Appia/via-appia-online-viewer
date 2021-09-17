@@ -27,11 +27,11 @@
     </div>
     <div>
       <div class="bg-gray-700 bg-opacity-90 rounded p-4">
-        <div class="text-2xl font-bold text-accent">
+        <div class="text-xl font-bold ">
           {{ page && page.title }}
         </div>
-        <div class="w-full">
-          <nuxt-content :document="page" class="text-gray-400 prose prose-sm sm:prose lg:prose-lg" />
+        <div class="w-full mt-3">
+          <nuxt-content :document="page" class="prose-sm sm:prose" />
         </div>
       </div>
     </div>

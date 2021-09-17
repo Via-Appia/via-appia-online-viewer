@@ -12,7 +12,7 @@
             <h2 class="text-3xl md:text-5xl leading-relaxed md:leading-snug mb-2">
               The Timeless Infinity
             </h2>
-            <p class="text-sm md:text-base text-gray-50 mb-4">
+            <p class="text-sm md:text-base mb-4">
               Explore one of the earliest and strategically most important
               Roman roads of the ancient republic.
             </p>
