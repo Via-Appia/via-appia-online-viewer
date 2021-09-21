@@ -19,12 +19,15 @@ $ yarn dev
 $ yarn generate
 ```
 
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
-
-
 ## Planned Features
 
 Archeological pointcloud viewer for use in a museum setting. Based on storylines (narratives) that are defined by an artist or expert, a user should be able to view multiple _storylines_ , all consisting of multiple _pages_.
 
-
-
+## Upload the PointCloud data in cloud storage
+- You need to have installed locally [gsutils](https://cloud.google.com/storage/docs/gsutil_install) 
+- log in you google account to get writing permissions
+- Navigate to the root where the data folder is placed and start the copy of the files to the google cloud storage: 
+```shell
+gsutil -m cp -r ./data gs://via-appia-20540.appspot.com
+```
+Access the cloud storage dashboard [here](https://console.cloud.google.com/storage/browser/via-appia-20540.appspot.com) 

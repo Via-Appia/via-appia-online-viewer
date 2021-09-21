@@ -85,9 +85,11 @@ export default {
 
     // hide menu button in the sidebar
     $('#potree_quick_buttons').hide()
-
     Potree.loadPointCloud(
-      '../pointclouds/DRIVE_1_V3_levels_8/cloud.js',
+      // locally
+      // '../pointclouds/DRIVE_1_V3_levels_8/cloud.js',
+      // Cloud storage
+      'https://storage.googleapis.com/via-appia-20540.appspot.com/cloud.js',
       'Drive Map',
       (e) => {
         const scene = this.$viewer.scene
@@ -157,9 +159,6 @@ export default {
     })
   },
   methods: {
-    hello (image) {
-      console.log('hello.... is it me you\'re looking for?', image)
-    },
     toggleSidebar () {
       $('#potree_sidebar_container').toggle()
     },

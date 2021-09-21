@@ -2,6 +2,10 @@ export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
   ssr: false,
+  // Netlify options
+  generate: {
+    fallback: true
+  },
   // Debug local server from outside
   server: {
     host: '0' // default: localhost
