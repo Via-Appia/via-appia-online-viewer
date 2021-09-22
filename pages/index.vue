@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div class="fixed bg-black opacity-80 top-0 left-0 right-0 bottom-0" />
     <section
       class="absolute w-screen h-screen flex items-center justify-center"
     >
@@ -12,7 +13,7 @@
             <h2 class="text-3xl md:text-5xl leading-relaxed md:leading-snug mb-2">
               The Timeless Infinity
             </h2>
-            <p class="text-sm md:text-base text-gray-50 mb-4">
+            <p class="text-sm md:text-base mb-4">
               Explore one of the earliest and strategically most important
               Roman roads of the ancient republic.
             </p>
@@ -33,7 +34,6 @@
         </div>
       </div>
     </section>
-
     <!--    todo Animation background-->
     <!--    <Background class="h-screen w-screen" />-->
 
