@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div class="fixed bg-black opacity-80 top-0 left-0 right-0 bottom-0" />
     <section
       class="absolute w-screen h-screen flex items-center justify-center"
     >
@@ -33,7 +34,6 @@
         </div>
       </div>
     </section>
-
     <!--    todo Animation background-->
     <!--    <Background class="h-screen w-screen" />-->
 

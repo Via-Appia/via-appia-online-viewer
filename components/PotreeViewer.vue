@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div id="potree_container" ref="potree_container">
+    <div id="potree_container" ref="potree_container" class="z-0 absolute w-screen h-screen">
+      <div id="potree_sidebar_container" />
       <!--  Only show the toolbar when developing locally-->
       <!--  <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" /> -->
-      <div id="potree_sidebar_container" />
       <div class="absolute z-20 btn right-4 bottom-4" @click="toggleSidebar">
         Toggle Panel
       </div>
@@ -13,15 +13,15 @@
 </template>
 
 <script>
-import Vue from 'vue'
+// import Vue from 'vue'
+import { onMounted, ref, reactive } from '@nuxtjs/composition-api'
 
-import {
-  VAOrientedImageLoader
-} from './overrides/VAOrientedImages'
+import { VAOrientedImageLoader } from './overrides/VAOrientedImages'
+import { VAFirstPersonControls } from './overrides/VAFirstPersonControls'
 
-import {
-  VAFirstPersonControls
-} from './overrides/VAFirstPersonControls'
+// Access the potreeView instance from everywhere using composition API
+export const potreeRef = reactive({})
+export const isSidebarOpen = ref(false)
 
 export default {
   name: 'PotreeViewer',
@@ -48,33 +48,57 @@ export default {
       default: () => []
     }
   },
+
+  setup (props, context) {
+    // const containerRef = ref(null)
+    console.log('setup', props)
+    // const potree = ref(null)
+    onMounted(() => {
+      // check if the sidebar is visible
+      isSidebarOpen.value = $('#potree_sidebar_container').is(':visible')
+
+      // Logs: `Headline`
+
+      // console.log('🎹', containerRef)
+    })
+
+    return {
+      // It is important to return the ref,
+      // otherwise it won't work.
+      // potreeRef
+      isSidebarOpen
+    }
+  },
+
   data () {
     return {
       position: { x: 0, y: 0, z: 0 },
       target: { x: 0, y: 0, z: 0 },
       camera: null,
       view: null,
-      viewerScene: null,
       offset: 0,
       activeImage: null
     }
   },
-
   mounted () {
     // hide toolbar if production mode
     if (!this.$nuxt.context.isDev) {
       this.toggleSidebar()
     }
+    // const s = new Potree.Viewer(this.$refs.potree_container)
+    // cosa.viewer = new Potree.Viewer(this.$refs.potree_container)
 
-    Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container)
+    // Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container)
 
-    const { scene } = this.$viewer
+    potreeRef.viewer = new Potree.Viewer(this.$refs.potree_container) // this not, adn I think it is because it is a recursive error object?
+    // const viewer = new Potree.Viewer(this.$refs.potree_container)      //// THIS WORKS
+    const viewer = potreeRef.viewer
+
+    // CLEAN UP THE MESS WITH THE VARIABLES!
+    const scene = viewer.scene
+    // Get active camera position
     this.camera = scene.getActiveCamera()
     this.view = scene.view
-
-    this.viewerScene = this.$viewer.scene
-    // Get active camera position
-    this.activeCamera = this.viewerScene.getActiveCamera()
 
     // Set the position
     this.position = this.camera.position
@@ -82,61 +106,58 @@ export default {
     // Set the Target
     this.target = this.view.getPivot()
 
-    this.$viewer.setFOV(60)
-    this.$viewer.setBackground('skybox')
+    viewer.setFOV(60)
+    viewer.setBackground('skybox')
+    viewer.setEDLEnabled(false)
+    viewer.setPointBudget(1_000_000)
+    viewer.loadSettingsFromURL()
 
-    this.$viewer.setEDLEnabled(false)
-    this.$viewer.setPointBudget(1_000_000)
-    this.$viewer.loadSettingsFromURL()
-
+    // Pointcloud data source
     const POINT_CLOUD_URL = this.$nuxt.context.isDev
-      ? '../pointclouds/DRIVE_1_V3_levels_8/cloud.js'
+      // locally
+      ? 'http://localhost:3000/pointclouds/DRIVE_1_V3_levels_8/cloud.js'
+      // Cloud storage
       : 'https://storage.googleapis.com/via-appia-20540.appspot.com/cloud.js'
 
     // hide menu button in the sidebar
     $('#potree_quick_buttons').hide()
-    Potree.loadPointCloud(
-      // locally
-      // '../pointclouds/DRIVE_1_V3_levels_8/cloud.js',
-      // Cloud storage
 
+    Potree.loadPointCloud(
       POINT_CLOUD_URL,
       'Drive Map',
-      (e) => {
-        const scene = this.$viewer.scene
-        const pointcloud = e.pointcloud
+      ({ pointcloud }) => {
+        pointcloud.material.size = 1
+        pointcloud.material.pointSizeType = Potree.PointSizeType.ADAPTIVE
+        pointcloud.material.shape = Potree.PointShape.SQUARE
 
-        const material = pointcloud.material
-        material.size = 1
-        material.pointSizeType = Potree.PointSizeType.ADAPTIVE
-        material.shape = Potree.PointShape.SQUARE
+        // Load pointcloud data
+        viewer.scene.addPointCloud(pointcloud)
 
-        scene.addPointCloud(pointcloud)
-
-        scene.view.position.set(
+        // Set initial camera view position
+        viewer.scene.view.position.set(
           296264.39688606694,
           4633679.776566018,
           129.77835768357866
         )
-        this.$viewer.scene.view.yaw = 0.3
-        this.$viewer.scene.view.pitch = 0
+        viewer.scene.view.yaw = 0.3
+        viewer.scene.view.pitch = 0
 
-        this.$viewer.fpControls = new VAFirstPersonControls(this.$viewer)
-        this.$viewer.fpControls.addEventListener('start', this.$viewer.disableAnnotations.bind(this.$viewer))
-        this.$viewer.fpControls.addEventListener('end', this.$viewer.enableAnnotations.bind(this.$viewer))
+        viewer.fpControls = new VAFirstPersonControls(viewer)
+        viewer.fpControls.addEventListener('start', viewer.disableAnnotations.bind(viewer))
+        viewer.fpControls.addEventListener('end', viewer.enableAnnotations.bind(viewer))
 
-        this.$viewer.setControls(this.$viewer.fpControls)
-        this.$viewer.setMoveSpeed(3.5)
+        viewer.setControls(viewer.fpControls)
+        viewer.setMoveSpeed(3.5)
 
-        const cameraParamsPath = 'http://localhost:3000/images/images.xml'
-        const imageParamsPath = 'http://localhost:3000/images/pyramid.txt'
+        const cameraParamsPath = '/images/images.xml'
+        const imageParamsPath = '/images/pyramid.txt'
 
         VAOrientedImageLoader.load(
           cameraParamsPath,
           imageParamsPath,
-          this.$viewer
+          viewer
         ).then(([images, controls]) => {
-          this.$viewer.scene.addOrientedImages(images)
+          viewer.scene.addOrientedImages(images)
 
           // const material = this.createMaterial();
           // material.transparent = true;
@@ -145,8 +166,8 @@ export default {
       }
     )
 
-    this.$viewer.loadGUI(() => {
-      this.$viewer.setLanguage('en')
+    viewer.loadGUI(() => {
+      viewer.setLanguage('en')
       $('#menu_tools').next().show()
       $('#menu_clipping').next().show()
 
@@ -162,9 +183,9 @@ export default {
       cameraSection.first().click(() => cameraSectionContent.slideToggle())
       cameraSection.insertBefore($('#menu_tools'))
 
-      this.$viewer.toggleSidebar()
+      viewer.toggleSidebar()
     })
-    this.$viewer.addEventListener('move_speed_changed', () => {
+    viewer.addEventListener('move_speed_changed', () => {
       // Set the position
       this.position = this.camera.position
     })
@@ -172,6 +193,7 @@ export default {
   methods: {
     toggleSidebar () {
       $('#potree_sidebar_container').toggle()
+      isSidebarOpen.value = $('#potree_sidebar_container').is(':visible')
     },
 
     // createMaterial() {
@@ -235,12 +257,6 @@ export default {
 <style>
 #potree_menu img {
   display: inline-block;
-}
-#potree_container {
-  z-index: 0;
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
 }
 
 #potree_sidebar_container {

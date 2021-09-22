@@ -1,12 +1,15 @@
 <template>
-  <div id="cameraSection">
-    <!--    <div class="fixed top-[50px] left-[300px] z-10">-->
-    <!--      <pre class="bg-black bg-opacity-50">-->
-    <!--        {{ activeCamera.rotation }}-->
+  <div v-if="potreeRef.viewer" id="cameraSection">
+    <div v-if="seeDetailsPanel" class="fixed top-[50px] left-[300px] z-10">
+      <pre class="bg-black bg-opacity-50">
+            {{ activeCamera }}
 
-    <!--        {{ $viewer.scene.view }}-->
-    <!--      </pre>-->
-    <!--    </div>-->
+            {{ potreeRef.viewer.scene.view }}
+          </pre>
+    </div>
+    <div class="btn btn-xs mb-2" @click="seeDetailsPanel = !seeDetailsPanel">
+      See stats Panel
+    </div>
     <button
       class="text-xs font-capitalize btn btn-xs btn-outline text-gray-400"
       @cdivck="copyCameraPosition"
@@ -28,7 +31,7 @@
       Copy coordinates
     </button>
     <!-- Camera position-->
-    <div class="font-bold mt-4">
+    <div v-if="activeCamera" class="font-bold mt-4">
       Camera Position
       <div class="mb-2">
         x: <input
@@ -64,7 +67,7 @@
       Camera Rotation (Radians)
       <div class="mb-2">
         Yaw (left-right): <input
-          :value="$viewer.scene.view.yaw"
+          :value="potreeRef.viewer.scene.view.yaw"
           class="input input-xs"
           type="number"
           step=".01"
@@ -73,26 +76,26 @@
       </div>
       <div class="mb-2">
         Pitch (up-down): <input
-          :value="$viewer.scene.view._pitch"
+          :value="potreeRef.viewer.scene.view._pitch"
           class="input input-xs"
           type="number"
           step=".01"
-          :min="$viewer.scene.view.minPitch"
-          :max="$viewer.scene.view.maxPitch"
+          :min="potreeRef.viewer.scene.view.minPitch"
+          :max="potreeRef.viewer.scene.view.maxPitch"
           @input="setCameraRotation({pitch:$event.target.value})"
         >
       </div>
     </div>
 
     <div class="font-bold mt-4">
-      FOV (Field of View): {{ activeCamera.fov }}
+      FOV (Field of View): {{ potreeRef.viewer.scene.getActiveCamera().fov }}
     </div>
     <input
       type="range"
       min="20"
       max="100"
-      :value="activeCamera.fov"
-      @input="$viewer.setFOV($event.target.value)"
+      :value="potreeRef.viewer.scene.getActiveCamera()"
+      @input="potreeRef.viewer.setFOV($event.target.value)"
     >
     <div v-if="activeImage">
       <div class="mt-4 font-medium">
@@ -110,7 +113,7 @@
             </label>
             <div class="flex items-center mt-2">
               <div class="label-text flex-grow w-full">
-                Opacity {{ activeImage.mesh.material.uniforms.uOpacity.value }}
+                Opacity <br>{{ activeImage.mesh.material.uniforms.uOpacity.value }}
               </div>
               <input
                 :value="activeImage.mesh.material.uniforms.uOpacity.value"
@@ -138,32 +141,50 @@
     </div>
   </div>
 </template>
+
 <script>
+import { onMounted } from '@nuxtjs/composition-api'
+import { potreeRef } from '~/components/PotreeViewer'
+
 export default {
-  name: 'CameraSection',
+  setup () {
+    onMounted(() => {
+      potreeRef.viewer.addEventListener('image clicked', (payload) => {
+        this.activeImage = payload.image
+      })
+    })
+
+    return { potreeRef }
+  },
+
   data () {
     return {
+      seeDetailsPanel: false,
       offset: -0.9,
       activeImage: null,
-      activeCamera: this.$viewer.scene.getActiveCamera(),
-      target: this.$viewer.scene.view.getPivot(),
+      activeCamera: null,
+      target: null,
       fov: 60,
       imageFollowsCamera: false
     }
   },
   mounted () {
-    this.$viewer.addEventListener('image clicked', (payload) => {
+    this.activeCamera = potreeRef.viewer.scene.getActiveCamera()
+    this.target = potreeRef.viewer.scene.view.getPivot()
+
+    potreeRef.viewer.addEventListener('image clicked', (payload) => {
       this.activeImage = payload.image
     })
   },
 
   methods: {
     copyCameraPosition () {
+      // TODO be able to copy the camera coordenates directly to clipboard
       event.cdivpboardData.setData('Text', 'hello??')
       // this.activeCamera.position.x,this.activeCamera.position.y,this.activeCamera.position.z
     },
     setCameraPosition (newPosition) {
-      this.$viewer.scene.view.position.set(
+      potreeRef.viewer.scene.view.position.set(
         parseFloat(newPosition.x || this.activeCamera.position.x),
         parseFloat(newPosition.y || this.activeCamera.position.y),
         parseFloat(newPosition.z || this.activeCamera.position.z)
@@ -175,10 +196,10 @@ export default {
     },
     setCameraRotation (newRotation) {
       if (newRotation.yaw) {
-        this.$viewer.scene.view.yaw = parseFloat(newRotation.yaw)
+        potreeRef.viewer.scene.view.yaw = parseFloat(newRotation.yaw)
       }
       if (newRotation.pitch) {
-        this.$viewer.scene.view.pitch = parseFloat(newRotation.pitch)
+        potreeRef.viewer.scene.view.pitch = parseFloat(newRotation.pitch)
       }
 
       if (this.activeImage && this.imageFollowsCamera) {
@@ -195,9 +216,9 @@ export default {
     setImageFollowsCamera (value) {
       this.imageFollowsCamera = value
       if (this.imageFollowsCamera) {
-        this.$viewer.fpControls.registerForUpdate(this)
+        potreeRef.viewer.fpControls.registerForUpdate(this)
       } else {
-        this.$viewer.fpControls.deRegisterForUpdate(this)
+        potreeRef.viewer.fpControls.deRegisterForUpdate(this)
       }
     },
     update () {

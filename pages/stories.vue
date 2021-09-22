@@ -1,20 +1,27 @@
 <template>
   <div class="flex">
-    <potree-viewer />
-
     <div id="header">
       <explore-stories-button />
       <stepsTimelineLinks />
     </div>
     <transition>
-      <NuxtChild id="steps" class="absolute top-20  min-w-[500px] left-[350px] p-3 prose" />
+      <NuxtChild
+        id="steps"
+        class="absolute top-20 min-w-[500px] left-4 p-3 prose"
+        :class="{'left-[350px]':isSidebarOpen}"
+      />
     </transition>
   </div>
 </template>
 
 <script>
+import { isSidebarOpen } from '~/components/PotreeViewer'
 export default {
-  name: 'Examples'
+  setup () {
+    return {
+      isSidebarOpen
+    }
+  }
 }
 </script>
 
