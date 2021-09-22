@@ -46,7 +46,7 @@ export default {
   }) {
     const pages = await $content(params.story)
       .sortBy('slug', 'asc')
-      .only('title', 'description')
+      .only(['title', 'description', 'path'])
       .fetch()
       .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
 

@@ -34,11 +34,7 @@
 
 export default {
   props: {
-    pages: {
-      type: Array,
-      required: false,
-      default: () => []
-    }
+    pages: { type: Array, required: false, default: () => [] }
   }
 }
 
