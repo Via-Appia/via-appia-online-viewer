@@ -4,8 +4,16 @@
       <div id="potree_sidebar_container" />
       <!--  Only show the toolbar when developing locally-->
       <!--  <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" /> -->
-      <div class="absolute z-20 btn right-4 bottom-4" @click="toggleSidebar">
-        Toggle Panel
+      <div class="flex absolute right-4 bottom-4 z-20">
+        <div class="btn " @click="toggleSidebar">
+          Toggle Panel
+        </div>
+        <div class="btn" @click="moveCamera">
+          move camera
+        </div>
+        <div class="btn" @click="removeAnimation">
+          Remove Animation
+        </div>
       </div>
     </div>
     <camera-section v-if="camera" :active-camera="camera" :position="position" :view="view" />
@@ -51,7 +59,7 @@ export default {
 
   setup (props, context) {
     // const containerRef = ref(null)
-    console.log('setup', props)
+    // console.log('setup', props)
     // const potree = ref(null)
     onMounted(() => {
       // check if the sidebar is visible
@@ -62,11 +70,97 @@ export default {
       // console.log('🎹', containerRef)
     })
 
+    /* Tween function used with camera movement - arrow buttons
+*****************************************************/
+    // function tweenFunction (direction, currentAmountObject, newAmountObject) {
+    //   // Setup the animation loop.
+    //   function animate (time) {
+    //     requestAnimationFrame(animate)
+    //     TWEEN.update(time)
+    //   }
+    //   requestAnimationFrame(animate)
+    //
+    //   // declare and initalize tween
+    //   const tween = new TWEEN.Tween(currentAmountObject)
+    //     .to(newAmountObject, 1000)
+    //     .easing(TWEEN.Easing.Quintic.Out)
+    //     .onUpdate(function () {
+    //       if (direction === 'up' || direction === 'down') {
+    //         potreeRef.viewer.scene.view.pitch = currentAmountObject.amount
+    //       } else if (direction === 'left' || direction === 'right') {
+    //         potreeRef.viewer.scene.view.yaw = currentAmountObject.amount
+    //       }
+    //     })
+    //     .start() // Start the tween immediately.
+    // }
+
+    /* Rotate Camera Up
+    *****************************************************/
+    // function rotateUp () {
+    //   // movement direction
+    //   const direction = 'up'
+    //
+    //   // NOTE: we need values as a property in an object for tween to work
+    //   const currentPitchObject = {
+    //     amount: potreeRef.viewer.scene.view.pitch
+    //   }
+    //   const newPitchObject = {
+    //     amount: potreeRef.viewer.scene.view.pitch + 0.25
+    //   }
+    //
+    //   // call tween function
+    //   tweenFunction(direction, currentPitchObject, newPitchObject)
+    // }
+
+    // Methods
+    function moveCamera ({ x = 296264.07, y = 4633679, z = 129 }) {
+      console.log('🎹', x, y, z, potreeRef.viewer.scene)
+      console.log('🎹', potreeRef.viewer.scene.view.getPivot().toArray())
+
+      // fly to:
+    }
+    function removeAnimation () {
+
+      potreeRef.viewer.scene.view.getPivot().toArray())
+
+      // fly to:
+    }
+
+    // animation paths
+    function addAnimationPath () {
+      const animation = new Potree.CameraAnimation(potreeRef.viewer)
+
+      const positions = [
+        [296267.12792342174, 4633681.40622494, 128.3653329922611],
+        [296271.14629413467, 4633685.636950317, 129.3653329922611],
+        [296291.14629413467, 4633685.36950317, 128.3653329922611]
+      ]
+
+      const targets = [
+        [296250.7719238924, 4633714.095726619, 126.43484628061825],
+        [296235.8339610568, 4633681.722820112, 125.17872130141684],
+        [296235.8339610568, 4633681.732820112, 125.17872130141684]
+      ]
+
+      for (let i = 0; i < positions.length; i++) {
+        const cp = animation.createControlPoint()
+
+        cp.position.set(...positions[i])
+        cp.target.set(...targets[i])
+      }
+
+      potreeRef.viewer.scene.addCameraAnimation(animation)
+      // animation.play()
+    }
+
     return {
       // It is important to return the ref,
       // otherwise it won't work.
-      // potreeRef
-      isSidebarOpen
+      // potreeRef,
+      removeAnimation,
+      addAnimationPath,
+      isSidebarOpen,
+      moveCamera
     }
   },
 
@@ -89,15 +183,60 @@ export default {
     // cosa.viewer = new Potree.Viewer(this.$refs.potree_container)
 
     // Vue.prototype.$viewer = new Potree.Viewer(this.$refs.potree_container)
-
     potreeRef.viewer = new Potree.Viewer(this.$refs.potree_container) // this not, adn I think it is because it is a recursive error object?
+    // we need to pass to the global value the viewer, otherwise, the animation won't be able to load
+    window.viewer = potreeRef.viewer
     // const viewer = new Potree.Viewer(this.$refs.potree_container)      //// THIS WORKS
-    const viewer = potreeRef.viewer
 
+    const viewer = potreeRef.viewer
     // CLEAN UP THE MESS WITH THE VARIABLES!
     const scene = viewer.scene
+
+    scene.annotations.add(
+      new Potree.Annotation({
+        position: [296264.396, 4633679.776, 129.778],
+        title: 'About Annotations',
+
+        cameraPosition: [296264.39688606694, 4633679.776566018, 129.77835768357866],
+        cameraTarget: [296254.64710414334, 4633692.914354076, 127.63586441697944],
+        description: `
+<ul>
+  <li>Click on the annotation label to move a predefined view.</li>
+  <li>Click on the icon to execute the specified action.
+  </li>In this case, the action will bring you to another scene and point cloud.</ul>
+`
+      }))
+
+    this.addAnimationPath(viewer)
+
+    //
+    // const animation = new Potree.CameraAnimation(potreeRef.viewer)
+    // const positions = [
+    //   [590291.6145250637, 231565.3152460147, 888.181158774433],
+    //   [590094.2454560432, 231235.32163877538, 870.7535717968211],
+    //   [589675.8154371583, 231058.22066649256, 905.3068746322883],
+    //   [589328.6700949036, 231385.37585641106, 813.9565903445384]
+    // ]
+    //
+    // const targets = [
+    //   [589859.3465488373, 231456.18943956672, 758.2733646218901],
+    //   [589846.4463098792, 231431.89813285187, 755.9090168440739],
+    //   [589824.0843049305, 231444.72309070674, 760.3459659610106],
+    //   [589799.7263767472, 231473.79043369304, 758.8332698380435]
+    // ]
+    //
+    // for (let i = 0; i < positions.length; i++) {
+    //   const cp = animation.createControlPoint()
+    //
+    //   cp.position.set(...positions[i])
+    //   cp.target.set(...targets[i])
+    // }
+    //
+    // viewer.scene.addCameraAnimation(animation)
+
     // Get active camera position
     this.camera = scene.getActiveCamera()
+    console.log('🎹 camera', this.camera)
     this.view = scene.view
 
     // Set the position
@@ -142,12 +281,12 @@ export default {
         viewer.scene.view.yaw = 0.3
         viewer.scene.view.pitch = 0
 
+        // Control camera with the keyboard
         viewer.fpControls = new VAFirstPersonControls(viewer)
         viewer.fpControls.addEventListener('start', viewer.disableAnnotations.bind(viewer))
         viewer.fpControls.addEventListener('end', viewer.enableAnnotations.bind(viewer))
-
         viewer.setControls(viewer.fpControls)
-        viewer.setMoveSpeed(3.5)
+        viewer.setMoveSpeed(5.5)
 
         const cameraParamsPath = '/images/images.xml'
         const imageParamsPath = '/images/pyramid.txt'
@@ -170,6 +309,7 @@ export default {
       viewer.setLanguage('en')
       $('#menu_tools').next().show()
       $('#menu_clipping').next().show()
+      $('#menu_scene').next().show()
 
       // Add custom section for Camera
       const cameraSection = $(`

@@ -1,8 +1,12 @@
 <template>
   <div v-if="potreeRef.viewer" id="cameraSection">
     <div v-if="seeDetailsPanel" class="fixed top-[50px] left-[300px] z-10">
-      <pre class="bg-black bg-opacity-50">
+      <pre class="bg-black bg-opacity-500 scrollable">
             {{ activeCamera }}
+        Position Array:
+        {{ potreeRef.viewer.scene.getActiveCamera().position.toArray() }}
+        target array
+        {{ potreeRef.viewer.scene.view.getPivot().toArray() }}
 
             {{ potreeRef.viewer.scene.view }}
           </pre>
