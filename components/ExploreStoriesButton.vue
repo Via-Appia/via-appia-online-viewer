@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label for="my-modal-2" class="btn modal-button">Explore other stories</label>
+    <label for="my-modal-2" class="button modal-button ">Explore stories</label>
     <input
       id="my-modal-2"
       type="checkbox"

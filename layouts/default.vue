@@ -1,6 +1,6 @@
 <template>
   <div class="bg-black text-white">
-    <potree-viewer />
+    <potree-container />
     <Nuxt />
   </div>
 </template>

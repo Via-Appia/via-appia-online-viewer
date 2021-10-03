@@ -11,8 +11,8 @@
         <div class="btn" @click="moveCamera">
           move camera
         </div>
-        <div class="btn" @click="removeAnimation">
-          Remove Animation
+        <div class="btn" @click="toggleAnimationVisibility">
+          Toogle Animation Paths
         </div>
       </div>
     </div>
@@ -22,13 +22,14 @@
 
 <script>
 // import Vue from 'vue'
-import { onMounted, ref, reactive } from '@nuxtjs/composition-api'
-
+import { onMounted, ref } from '@nuxtjs/composition-api'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import { VAOrientedImageLoader } from './overrides/VAOrientedImages'
 import { VAFirstPersonControls } from './overrides/VAFirstPersonControls'
+import { potreeRef } from '~/scene/VAPotree'
 
 // Access the potreeView instance from everywhere using composition API
-export const potreeRef = reactive({})
+// export const potreeRef = reactive({})
 export const isSidebarOpen = ref(false)
 
 export default {
@@ -117,11 +118,14 @@ export default {
       console.log('🎹', x, y, z, potreeRef.viewer.scene)
       console.log('🎹', potreeRef.viewer.scene.view.getPivot().toArray())
 
-      // fly to:
+      // fly to: the animation
+      potreeRef.viewer.scene.cameraAnimations[0].play()
     }
-    function removeAnimation () {
-
-      potreeRef.viewer.scene.view.getPivot().toArray())
+    function toggleAnimationVisibility () {
+      potreeRef.viewer.scene.view.getPivot().toArray()
+      // TODO this only does it for the first element in the array
+      potreeRef.viewer.scene.cameraAnimations[0].setVisible(!potreeRef.viewer.scene.cameraAnimations[0].visible)
+      console.log('🎹', potreeRef.viewer.scene.cameraAnimations[0])
 
       // fly to:
     }
@@ -133,7 +137,7 @@ export default {
       const positions = [
         [296267.12792342174, 4633681.40622494, 128.3653329922611],
         [296271.14629413467, 4633685.636950317, 129.3653329922611],
-        [296291.14629413467, 4633685.36950317, 128.3653329922611]
+        [296286.3704886272, 4633683.871486212, 132.01175511086956]
       ]
 
       const targets = [
@@ -157,7 +161,7 @@ export default {
       // It is important to return the ref,
       // otherwise it won't work.
       // potreeRef,
-      removeAnimation,
+      toggleAnimationVisibility,
       addAnimationPath,
       isSidebarOpen,
       moveCamera
@@ -167,7 +171,6 @@ export default {
   data () {
     return {
       position: { x: 0, y: 0, z: 0 },
-      target: { x: 0, y: 0, z: 0 },
       camera: null,
       view: null,
       offset: 0,
@@ -209,46 +212,79 @@ export default {
 
     this.addAnimationPath(viewer)
 
-    //
-    // const animation = new Potree.CameraAnimation(potreeRef.viewer)
-    // const positions = [
-    //   [590291.6145250637, 231565.3152460147, 888.181158774433],
-    //   [590094.2454560432, 231235.32163877538, 870.7535717968211],
-    //   [589675.8154371583, 231058.22066649256, 905.3068746322883],
-    //   [589328.6700949036, 231385.37585641106, 813.9565903445384]
-    // ]
-    //
-    // const targets = [
-    //   [589859.3465488373, 231456.18943956672, 758.2733646218901],
-    //   [589846.4463098792, 231431.89813285187, 755.9090168440739],
-    //   [589824.0843049305, 231444.72309070674, 760.3459659610106],
-    //   [589799.7263767472, 231473.79043369304, 758.8332698380435]
-    // ]
-    //
-    // for (let i = 0; i < positions.length; i++) {
-    //   const cp = animation.createControlPoint()
-    //
-    //   cp.position.set(...positions[i])
-    //   cp.target.set(...targets[i])
-    // }
-    //
-    // viewer.scene.addCameraAnimation(animation)
+    // LIGHTS
+    {
+      const directional = new THREE.DirectionalLight(0xFFFFFF, 1.0)
+      directional.position.set(10, 10, 10)
+      directional.lookAt(0, 0, 0)
+
+      const ambient = new THREE.AmbientLight(0x555555)
+
+      viewer.scene.scene.add(directional)
+      viewer.scene.scene.add(ambient)
+    }
+
+    // Load Textured bunny from obj
+    {
+      const manager = new THREE.LoadingManager()
+      manager.onProgress = function (item, loaded, total) {
+        console.log(item, loaded, total)
+      }
+      const textureLoader = new THREE.TextureLoader(manager)
+      const texture = textureLoader.load(`${Potree.resourcePath}/textures/brick_pavement.jpg`)
+      const onProgress = function (xhr) {
+        if (xhr.lengthComputable) {
+          const percentComplete = xhr.loaded / xhr.total * 100
+          console.log(Math.round(percentComplete, 2) + '% downloaded')
+        }
+      }
+      texture.wrapS = THREE.RepeatWrapping
+      texture.wrapT = THREE.RepeatWrapping
+
+      const onError = function (xhr) {}
+      const loader = new OBJLoader(manager)
+      loader.load('/models/stanford_bunny_reduced.obj', function (object) {
+        object.traverse(function (child) {
+          if (child instanceof THREE.Mesh) {
+            child.material.map = texture
+          }
+        })
+
+        object.position.set(296266.35737207683, 4633691.154054946, 127.2844159686045)
+        object.scale.multiplyScalar(10)
+        object.rotation.set(Math.PI / 2, Math.PI, 0)
+
+        viewer.scene.scene.add(object)
+
+        viewer.onGUILoaded(() => {
+          // Add entries to object list in sidebar
+          const tree = $('#jstree_scene')
+          const parentNode = 'other'
+
+          const bunnyID = tree.jstree('create_node', parentNode, {
+            text: 'Bunny Textured',
+            icon: `${Potree.resourcePath}/icons/triangle.svg`,
+            data: object
+          },
+          'last', false, false)
+          tree.jstree(object.visible ? 'check_node' : 'uncheck_node', bunnyID)
+
+          // tree.jstree("open_node", parentNode);
+        })
+      }, onProgress, onError)
+    }
 
     // Get active camera position
     this.camera = scene.getActiveCamera()
-    console.log('🎹 camera', this.camera)
     this.view = scene.view
 
     // Set the position
     this.position = this.camera.position
 
-    // Set the Target
-    this.target = this.view.getPivot()
-
     viewer.setFOV(60)
     viewer.setBackground('skybox')
     viewer.setEDLEnabled(false)
-    viewer.setPointBudget(1_000_000)
+    viewer.setPointBudget(3_000_000)
     viewer.loadSettingsFromURL()
 
     // Pointcloud data source
@@ -298,9 +334,9 @@ export default {
         ).then(([images, controls]) => {
           viewer.scene.addOrientedImages(images)
 
-          // const material = this.createMaterial();
-          // material.transparent = true;
-          // images.images[0].mesh.material = material;
+          // const material = this.createMaterial()
+          // material.transparent = true
+          // images.images[0].mesh.material = material
         })
       }
     )
@@ -313,9 +349,10 @@ export default {
 
       // Add custom section for Camera
       const cameraSection = $(`
-        <h3 id="menu_camera" class="accordion-header ui-widget"><span>Camera Position</span></h3>
+        <h3 id="menu_camera" class="accordion-header ui-widget"><span>Camera</span></h3>
         <div class="accordion-content ui-widget pv-menu-list"></div>
         `)
+
       // get vue component for Camera Section
       const cameraSectionHTML = document.getElementById('cameraSection')
       const cameraSectionContent = cameraSection.last()
