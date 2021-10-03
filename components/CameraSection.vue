@@ -2,17 +2,12 @@
   <div v-if="potreeRef.viewer" id="cameraSection">
     <div v-if="seeDetailsPanel" class="fixed top-[50px] left-[300px] z-10">
       <pre class="bg-black bg-opacity-500 scrollable">
-            {{ activeCamera }}
+        {{ activeCamera }}
         Position Array:
         {{ potreeRef.viewer.scene.getActiveCamera().position.toArray() }}
         target array
         {{ potreeRef.viewer.scene.view.getPivot().toArray() }}
-
-            {{ potreeRef.viewer.scene.view }}
-          </pre>
-    </div>
-    <div class="mb-2 btn btn-xs" @click="seeDetailsPanel = !seeDetailsPanel">
-      See stats Panel
+      </pre>
     </div>
 
     <!-- Camera position-->
@@ -172,12 +167,15 @@
         </div>
       </div>
     </div>
+    <div class="mb-2 btn btn-xs" @click="seeDetailsPanel = !seeDetailsPanel">
+      See stats Panel
+    </div>
   </div>
 </template>
 
 <script>
 import { onMounted } from '@nuxtjs/composition-api'
-import { potreeRef } from '~/scene/VAPotree'
+import { potreeRef } from '~/API/VAPotree'
 
 export default {
   setup () {
