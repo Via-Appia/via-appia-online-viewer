@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { isSidebarOpen } from '~/components/PotreeViewer'
+import { isSidebarOpen } from '~/components/PotreeContainer'
 export default {
   setup () {
     return {

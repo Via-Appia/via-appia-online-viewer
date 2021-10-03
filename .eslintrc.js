@@ -19,6 +19,7 @@ module.exports = {
     $: true,
     window: true,
     THREE: true,
-    Potree: true
+    Potree: true,
+    TWEEN: true
   }
 }

@@ -17,10 +17,7 @@
               Explore one of the earliest and strategically most important
               Roman roads of the ancient republic.
             </p>
-            <nuxt-link
-              to="stories"
-              class="btn btn-primary bg-transparent hover:bg-yellow-300 text-yellow-300 hover:text-black rounded shadow hover:shadow-lg py-2 px-4 border border-yellow-300 hover:border-transparent"
-            >
+            <nuxt-link to="stories" class="button">
               Explore Now
             </nuxt-link>
           </div>
@@ -48,7 +45,3 @@
     </footer>
   </div>
 </template>
-
-<script>
-export default {}
-</script>
