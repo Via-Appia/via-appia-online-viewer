@@ -8,7 +8,7 @@ export default {
   },
   // Debug local server from outside
   server: {
-    host: '0' // default: localhost
+    host: 'localhost' // default: localhost // (host: '0' ...is not working for everyone)
   },
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
