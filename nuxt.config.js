@@ -10,6 +10,7 @@ export default {
   server: {
     host: 'localhost' // default: localhost // (host: '0' ...is not working for everyone)
   },
+  watch: ['api'],
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'via-appia-viewer',
@@ -104,5 +105,11 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    // Listen to changes outside Nuxt default folders
+    hotMiddleware: {
+      client: {
+        // overlay: false // Disable Nuxt Black Screen ESLint
+      }
+    }
   }
 }

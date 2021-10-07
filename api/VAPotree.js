@@ -78,41 +78,20 @@ export function loadInitialPointCloud (isDev) {
   )
 }
 
-// fly to: the animation
-export function animateCamera (animationArrayPositonIndex = 0) {
-  potreeRef.viewer.scene.cameraAnimations[animationArrayPositonIndex].play()
-}
-
 export function toggleAnimationVisibility () {
   potreeRef.viewer.scene.view.getPivot().toArray()
   potreeRef.viewer.scene.cameraAnimations[0].setVisible(!potreeRef.viewer.scene.cameraAnimations[0].visible)
-  console.log('🎹', potreeRef.viewer.scene.cameraAnimations[0])
-
-  // fly to:
 }
 
-export function addAnimationPath () {
+export function addAnimationPath (positions = [], targets = [], duration = 3) {
   const animation = new Potree.CameraAnimation(potreeRef.viewer)
-
-  const positions = [
-    [296267.12792342174, 4633681.40622494, 128.3653329922611],
-    [296271.14629413467, 4633685.636950317, 129.3653329922611],
-    [296286.3704886272, 4633683.871486212, 132.01175511086956]
-  ]
-
-  const targets = [
-    [296250.7719238924, 4633714.095726619, 126.43484628061825],
-    [296235.8339610568, 4633681.722820112, 125.17872130141684],
-    [296235.8339610568, 4633681.732820112, 125.17872130141684]
-  ]
 
   for (let i = 0; i < positions.length; i++) {
     const cp = animation.createControlPoint()
-
     cp.position.set(...positions[i])
     cp.target.set(...targets[i])
   }
-
+  animation.visible = false
+  animation.duration = duration
   potreeRef.viewer.scene.addCameraAnimation(animation)
-  // animation.play()
 }

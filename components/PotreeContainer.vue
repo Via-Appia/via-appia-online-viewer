@@ -8,11 +8,8 @@
         <div class="btn " @click="toggleSidebar">
           Toggle Panel
         </div>
-        <div class="btn" @click="animateCamera(0)">
-          move camera
-        </div>
         <div class="btn" @click="toggleAnimationVisibility">
-          Toogle Animation Paths
+          Toggle Animation Paths
         </div>
       </div>
     </div>
@@ -26,8 +23,8 @@ import { ref } from '@nuxtjs/composition-api'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import { VAOrientedImageLoader } from './overrides/VAOrientedImages'
 import {
-  animateCamera, potreeRef, toggleAnimationVisibility, addAnimationPath,
-  setInitialSceneParameters, loadInitialPointCloud
+  potreeRef, toggleAnimationVisibility,
+  setInitialSceneParameters, loadInitialPointCloud, addAnimationPath
 } from '~/API/VAPotree'
 
 // Access the potreeView instance from everywhere using composition API
@@ -36,18 +33,29 @@ export const isSidebarOpen = ref(false)
 
 export default {
   name: 'PotreeViewer',
-
   setup (props, context) {
     return {
       toggleAnimationVisibility,
-      isSidebarOpen,
-      animateCamera
+      isSidebarOpen
     }
   },
 
   data () {
     return {
+      labels: [],
       camera: null
+    }
+  },
+  async fetch () {
+    this.labels = await this.$content('labels-map').fetch()
+  },
+
+  /**
+   * When entring a new page, add the animations in place
+   */
+  watch: {
+    $route (to, from) {
+      this.getAnimationPaths(to.params)
     }
   },
   mounted () {
@@ -91,7 +99,6 @@ export default {
         description: 'Click on the annotation label to move a predefined view. <br>Click on the icon to execute the specified action.<br>In this case, the action will bring you to another scene and point cloud.'
       })
       scene.annotations.add(annotationName)
-      addAnimationPath()
     }
 
     // LIGHTS
@@ -154,7 +161,34 @@ export default {
       }, onProgress, onError)
     }
   },
+
   methods: {
+    async getAnimationPaths ({ story = '', page = '' }) {
+      console.log('scene', potreeRef.viewer.scene)
+
+      const animation = await this.$content(story, page)
+        .only(['cameraTarget', 'cameraPosition', 'animationSpeed'])
+        .fetch()
+        .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
+      console.log('🎹animation ', story, page, animation)
+
+      const positions = [
+        potreeRef.viewer.scene.getActiveCamera().position.toArray(), // current camera position
+        animation.cameraPosition
+      ]
+      const targets = [
+        potreeRef.viewer.scene.view.getPivot().toArray(), // current target position
+        animation.cameraTarget
+      ]
+
+      // Remove previous animations
+      // TODO this doesn't remove the animation from the previous path
+      potreeRef.viewer.scene.cameraAnimations.length = 0
+      addAnimationPath(positions, targets, animation.animationSpeed)
+
+      potreeRef.viewer.scene.cameraAnimations[0].play()
+    },
+
     toggleSidebar () {
       $('#potree_sidebar_container').toggle()
       isSidebarOpen.value = $('#potree_sidebar_container').is(':visible')
