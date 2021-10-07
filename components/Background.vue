@@ -16,7 +16,6 @@ export default {
     return { x, y }
   },
   mounted () {
-    console.log('🎹', this.x)
     const c = document.getElementById('canvas')
     const ctx = c.getContext('2d')
 
