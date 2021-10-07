@@ -25,7 +25,7 @@ import { VAOrientedImageLoader } from './overrides/VAOrientedImages'
 import {
   potreeRef, toggleAnimationVisibility,
   setInitialSceneParameters, loadInitialPointCloud, addAnimationPath
-} from '~/API/VAPotree'
+} from '~/api/VAPotree'
 
 // Access the potreeView instance from everywhere using composition API
 // export const potreeRef = reactive({})

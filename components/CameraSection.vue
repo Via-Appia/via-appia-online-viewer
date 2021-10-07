@@ -198,7 +198,7 @@ target:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]`
 
 <script>
 import { onMounted } from '@nuxtjs/composition-api'
-import { potreeRef } from '~/API/VAPotree'
+import { potreeRef } from '~/api/VAPotree'
 
 export default {
   setup () {
