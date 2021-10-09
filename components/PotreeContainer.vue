@@ -8,9 +8,6 @@
         <div class="btn " @click="toggleSidebar">
           Toggle Panel
         </div>
-        <div class="btn" @click="toggleAnimationVisibility">
-          Toggle Animation Paths
-        </div>
       </div>
     </div>
     <camera-section v-if="camera" />
@@ -23,7 +20,7 @@ import { ref } from '@nuxtjs/composition-api'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import { VAOrientedImageLoader } from './overrides/VAOrientedImages'
 import {
-  potreeRef, toggleAnimationVisibility,
+  potreeRef,
   setInitialSceneParameters, loadInitialPointCloud, addAnimationPath
 } from '~/api/VAPotree'
 
@@ -35,7 +32,6 @@ export default {
   name: 'PotreeViewer',
   setup (props, context) {
     return {
-      toggleAnimationVisibility,
       isSidebarOpen
     }
   },
@@ -76,6 +72,9 @@ export default {
     const scene = viewer.scene
     this.camera = scene.getActiveCamera()
 
+    // get labels
+    this.getLabels()
+
     // Example Add image to the scene
     {
       const cameraParamsPath = '/images/images.xml'
@@ -87,18 +86,6 @@ export default {
           material.transparent = false
           images.images[0].mesh.material = material
         })
-    }
-
-    // Example annotation
-    {
-      const annotationName = new Potree.Annotation({
-        position: [296249.19705492083, 4633726.448203472, 128.7690558114301],
-        title: 'Piramide',
-        cameraPosition: [296260.6092322839, 4633696.311992192, 130.7733116269969],
-        cameraTarget: [296255.42565172265, 4633711.747814068, 133.44087523067427],
-        description: 'Click on the annotation label to move a predefined view. <br>Click on the icon to execute the specified action.<br>In this case, the action will bring you to another scene and point cloud.'
-      })
-      scene.annotations.add(annotationName)
     }
 
     // LIGHTS
@@ -163,6 +150,15 @@ export default {
   },
 
   methods: {
+    // Get labels from the markdown file and ads the to the scene
+    async getLabels () {
+      const labels = await this.$content('labels-map')
+        .fetch()
+        .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
+
+      labels.labels.map(label => potreeRef.viewer.scene.annotations.add(new Potree.Annotation(label)))
+    },
+
     async getAnimationPaths ({ story = '', page = '' }) {
       console.log('scene', potreeRef.viewer.scene)
 

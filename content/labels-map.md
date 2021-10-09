@@ -2,6 +2,14 @@
 # TODO: WORK IN PROGRESS
 # position: position of the label in the map
 # Title and Description will be visible when hovering the label.
+#
+# - title: string
+#   position: [x,y,x]
+#   cameraPosition: [x,y,x]
+#   cameraTarget: [x,y,x]
+#   description: srting
+##
+
 labels:
   - title: Piramide 
     position: [296249.19705492083, 4633726.448203472, 128.7690558114301]
@@ -10,9 +18,9 @@ labels:
     description: Click on the annotation label to move a predefined view. <br>Click on the icon to execute the specified action.<br>In this case, the action will bring you to another scene and point cloud.
 
   - title: Easter egg
-    position: [296268.1407383111,4633690.61280347,127.88818882132776]
-    cameraPosition:  [296271.13035746786,4633689.3284199,127.87817749653637]
-    target:  [296251.428337908,4633694.5032047015,127.94155368637787]
+    position: [296267.3540227735,4633689.354615031,127.652587177568]
+    cameraPosition:  [296268.0535866889,4633686.065772681,129.3927963214762]
+    cameraTarget:  [296267.33982642664,4633687.710605324,129.18163495696592]
     description: This is an example rabbit in the scene
 
 ---

@@ -17,7 +17,7 @@
         class="text-xs text-gray-400 font-capitalize btn btn-xs btn-outline"
         @click="copyCameraPosition(
           `cameraPosition:  [${potreeRef.viewer.scene.getActiveCamera().position.toArray().toString()}]
-target:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]`
+cameraTarget:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]`
         )"
       >
         <svg
