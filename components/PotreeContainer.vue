@@ -5,7 +5,7 @@
       <!--  Only show the toolbar when developing locally-->
       <!--  <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" /> -->
       <div class="flex absolute right-4 bottom-4 z-20">
-        <div class="btn " @click="toggleSidebar">
+        <div class="btn" @click="toggleSidebar">
           Toggle Panel
         </div>
       </div>
@@ -66,7 +66,7 @@ export default {
     // Load potree viewer inside the DOM
     potreeRef.viewer = new Potree.Viewer(this.$refs.potree_container)
     setInitialSceneParameters()
-    loadInitialPointCloud(this.$nuxt.context.isDev)
+    loadInitialPointCloud(false) // this.$nuxt.context.isDev
 
     const viewer = potreeRef.viewer
     const scene = viewer.scene
