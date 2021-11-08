@@ -146,6 +146,15 @@ export default {
           // tree.jstree("open_node", parentNode);
         })
       }, onProgress, onError)
+
+      // Floor
+      {
+        const geometry = new THREE.PlaneGeometry(100000, 100000)
+        const material = new THREE.MeshBasicMaterial({ color: 0x2E3222, side: THREE.DoubleSide })
+        const plane = new THREE.Mesh(geometry, material)
+        plane.position.set(296266.35737207683, 4633691.154054946, 100)
+        viewer.scene.scene.add(plane)
+      }
     }
   },
 
