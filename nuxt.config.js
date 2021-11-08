@@ -2,6 +2,10 @@ export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
   ssr: false,
+  env: {
+    isLocalPointClouds: process.env.LOCAL_POINTCLUDS || false,
+    pointsBudget: process.env.POINTS_BUDGET || 3000000
+  },
   // Netlify options
   generate: {
     fallback: true
