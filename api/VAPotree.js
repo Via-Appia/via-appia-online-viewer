@@ -16,7 +16,7 @@ export function setInitialSceneParameters () {
   viewer.setFOV(60)
   viewer.setBackground('skybox')
   viewer.setEDLEnabled(false)
-  viewer.setPointBudget(3_000_000)
+  viewer.setPointBudget(process.env.pointsBudget)
   viewer.loadSettingsFromURL()
 
   // Set initial camera view position
@@ -56,9 +56,9 @@ export function setInitialSceneParameters () {
   })
 }
 
-export function loadInitialPointCloud (isDev) {
+export function loadInitialPointCloud () {
   // Pointcloud data source
-  const POINT_CLOUD_URL = isDev
+  const POINT_CLOUD_URL = process.env.isLocalPointClouds
     // locally
     ? 'http://localhost:3000/pointclouds/DRIVE_1_V3_levels_8/cloud.js'
     // Cloud storage
