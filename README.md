@@ -20,6 +20,8 @@ $ yarn dev
 # generate static project
 $ yarn generate
 ```
+ok
+
 
 ## Planned Features
 
