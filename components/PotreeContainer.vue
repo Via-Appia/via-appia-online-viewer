@@ -66,7 +66,7 @@ export default {
     // Load potree viewer inside the DOM
     potreeRef.viewer = new Potree.Viewer(this.$refs.potree_container)
     setInitialSceneParameters()
-    loadInitialPointCloud(false) // this.$nuxt.context.isDev
+    loadInitialPointCloud()
 
     const viewer = potreeRef.viewer
     const scene = viewer.scene
