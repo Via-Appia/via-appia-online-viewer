@@ -34,3 +34,5 @@ gsutil -m cp -r ./data gs://via-appia-20540.appspot.com
 ```
 Access the cloud storage dashboard [here](https://console.cloud.google.com/storage/browser/via-appia-20540.appspot.com) 
 Aanpassing stefan
+
+Aanpassing Jorne
