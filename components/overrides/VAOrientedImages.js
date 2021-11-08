@@ -1,4 +1,5 @@
 import { VAOrientedImageControls } from './VAOrientedImageControls.js'
+import { potreeRef } from '~/api/VAPotree'
 
 // https://support.pix4d.com/hc/en-us/articles/205675256-How-are-yaw-pitch-roll-defined
 // https://support.pix4d.com/hc/en-us/articles/202558969-How-are-omega-phi-kappa-defined
@@ -9,8 +10,8 @@ function createMaterial () {
   const vertexShader = `
   uniform float uNear;
   varying vec2 vUV;
-  varying vec4 vDebug; 
-    
+  varying vec4 vDebug;
+
   void main(){
     vDebug = vec4(0.0, 1.0, 0.0, 1.0);
     vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
@@ -107,7 +108,7 @@ export class VAOrientedImage {
     const alpha = THREE.Math.degToRad(fov / 2)
     const d = -0.5 / Math.tan(alpha)
 
-    console.log('d value is: ' + d)
+    // console.log('d value is: ' + d)
 
     const move = dir.clone().multiplyScalar(d)
     mesh.position.add(move)
@@ -238,14 +239,14 @@ export class VAOrientedImageLoader {
     return imageParams
   }
 
-  static async load (cameraParamsPath, imageParamsPath, viewer) {
+  static async load (cameraParams, imageParams, viewer) {
     // const tStart = performance.now()
 
-    const [cameraParams, imageParams] = await Promise.all([
-      VAOrientedImageLoader.loadCameraParams(cameraParamsPath),
-      VAOrientedImageLoader.loadImageParams(imageParamsPath)
-    ])
-
+    // const [cameraParams, imageParams] = await Promise.all([
+    //   VAOrientedImageLoader.loadCameraParams(cameraParamsPath),
+    //   VAOrientedImageLoader.loadImageParams(imageParamsPath)
+    // ])
+    // console.log('🎹', cameraParams, imageParams)
     const orientedImageControls = new VAOrientedImageControls(viewer)
     const raycaster = new THREE.Raycaster()
 
@@ -257,20 +258,17 @@ export class VAOrientedImageLoader {
     const sceneNode = new THREE.Object3D()
     sceneNode.name = 'oriented_images'
 
-    for (const params of imageParams) {
-      const { x, y, z, omega, phi, kappa } = params
-
-      const orientedImage = new VAOrientedImage(params.id)
-      const position = [x, y, z]
-      const rotation = [omega, phi, kappa]
-      const dimension = [width, height]
-      orientedImage.set(position, rotation, dimension, cameraParams.fov)
-
-      sceneNode.add(orientedImage.mesh)
-      sceneNode.add(orientedImage.line)
-
-      orientedImages.push(orientedImage)
-    }
+    // for (const params of imageParams) {
+    const { x, y, z, omega, phi, kappa } = imageParams
+    const orientedImage = new VAOrientedImage(imageParams.id)
+    const position = [x, y, z]
+    const rotation = [omega, phi, kappa]
+    const dimension = [width, height]
+    orientedImage.set(position, rotation, dimension, cameraParams.fov)
+    sceneNode.add(orientedImage.mesh)
+    sceneNode.add(orientedImage.line)
+    orientedImages.push(orientedImage)
+    // }
 
     let hoveredElement = null
     // const clipVolume = null
@@ -278,8 +276,11 @@ export class VAOrientedImageLoader {
     const onMouseMove = (evt) => {
       if (hoveredElement) {
         hoveredElement.line.material.color.setRGB(0, 1, 0)
+        document.body.style.cursor = 'pointer'
+      } else {
+        document.body.style.cursor = 'default'
       }
-      evt.preventDefault()
+      // evt.preventDefault()
 
       // var array = getMousePosition( container, evt.clientX, evt.clientY );
       const rect = viewer.renderer.domElement.getBoundingClientRect()
@@ -372,17 +373,16 @@ export class VAOrientedImageLoader {
       if (image.texture === null) {
         const target = image
 
-        const tmpImagePath = `${Potree.resourcePath}/images/loading.jpg`
-        new THREE.TextureLoader().load(tmpImagePath, (texture) => {
-          if (target.texture === null) {
-            target.texture = texture
-            target.mesh.material.uniforms.tColor.value = texture
-            mesh.material.needsUpdate = true
-          }
-        })
+        // const tmpImagePath = `${Potree.resourcePath}/images/loading.jpg`
+        // new THREE.TextureLoader().load(tmpImagePath, (texture) => {
+        //   if (target.texture === null) {
+        //     target.texture = texture
+        //     target.mesh.material.uniforms.tColor.value = texture
+        //     mesh.material.needsUpdate = true
+        //   }
+        // })
 
-        const imagePath = `${imageParamsPath}/../${target.id}`
-        new THREE.TextureLoader().load(imagePath, (texture) => {
+        new THREE.TextureLoader().load(imageParams.path, (texture) => {
           target.texture = texture
           target.mesh.material.uniforms.tColor.value = texture
           mesh.material.needsUpdate = true
@@ -403,6 +403,7 @@ export class VAOrientedImageLoader {
         moveToImage(hoveredElement)
       }
     }
+
     viewer.renderer.domElement.addEventListener(
       'mousemove',
       onMouseMove,
@@ -439,8 +440,6 @@ export class VAOrientedImageLoader {
 
     const images = new VAOrientedImages()
     images.node = sceneNode
-    images.cameraParamsPath = cameraParamsPath
-    images.imageParamsPath = imageParamsPath
     images.cameraParams = cameraParams
     images.imageParams = imageParams
     images.images = orientedImages

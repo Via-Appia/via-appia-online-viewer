@@ -4,24 +4,21 @@ cameraPosition:  [296264.39688606694,4633679.776566018,129.77835768357866]
 cameraTarget:  [296252.67637372937,4633691.134097314,132.20448080348208]
 animationSpeed: 2
 
-images:
-  - path: /images/stories/02_Anderson.jpg
+image:
+  cameraParams:
     width: 1920
     height: 1080
     f: 1000
-    position: [296250.4223134683, 4633704.183296826, 129.40816735186613, 90.0,	0.0, 0.0]
-    opacity: 1
-    
-# position: [x, y, z, yaw, pitch, offset]/
-# Label	    X/Easting	     Y/Northing	        Z/Altitude	        Omega	    Phi	        Kappa
-# 02_Anderson.jpg	296250.4223134683 4633704.183296826 129.40816735186613	90.0	0.0	    0.0
-
-#<calibration>
-#    <width>1920</width>
-#    <height>1080</height>
-#    <f>1000</f>
-#    <!-- <f>9522.45919778655</f> -->
-#</calibration>
+    fov: 60
+  imageParams:
+    id: 0101
+    path: /images/02_Mausoleo_Rotondo/01_Anderson_MV_6304_S_Maria_Nova_D_A_ca_1890-2018.jpg
+    x: 296250.4223134683
+    y: 4633704.183296826
+    z: 129.40816735186613
+    omega: 90.0
+    phi: 0.0
+    kappa: 0.0
 ---
 
 

@@ -18,7 +18,6 @@
 // import Vue from 'vue'
 import { ref } from '@nuxtjs/composition-api'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
-import { VAOrientedImageLoader } from './overrides/VAOrientedImages'
 import {
   potreeRef,
   setInitialSceneParameters, loadInitialPointCloud, addAnimationPath
@@ -75,19 +74,6 @@ export default {
     // get labels
     this.getLabels()
 
-    // Example Add image to the scene
-    {
-      const cameraParamsPath = '/images/images.xml'
-      const imageParamsPath = '/images/pyramid.txt'
-      VAOrientedImageLoader.load(cameraParamsPath, imageParamsPath, viewer)
-        .then(([images, controls]) => {
-          viewer.scene.addOrientedImages(images)
-          // const material = this.createMaterial()
-          // material.transparent = false
-          // images.images[0].mesh.material = material
-        })
-    }
-
     // LIGHTS
     {
       const directional = new THREE.DirectionalLight(0xFFFFFF, 1.0)
@@ -97,19 +83,6 @@ export default {
       viewer.scene.scene.add(directional)
       viewer.scene.scene.add(ambient)
     }
-
-    // {
-    //   // eslint-disable-next-line new-cap
-    //   const floorTexture = new THREE.ImageUtils.loadTexture('/images/floor.jpg')
-    //   floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping
-    //   floorTexture.repeat.set(10, 10)
-    //   const floorMaterial = new THREE.MeshBasicMaterial({ map: floorTexture, side: THREE.DoubleSide })
-    //   const floorGeometry = new THREE.PlaneGeometry(30, 30, 0, 0)
-    //   const floor = new THREE.Mesh(floorGeometry, floorMaterial)
-    //   floor.position.y = -0.5
-    //   floor.rotation.x = Math.PI / 2
-    //   viewer.scene.scene.add(floor)
-    // }
 
     // Load Textured bunny from obj
     {
@@ -128,8 +101,7 @@ export default {
       texture.wrapS = THREE.RepeatWrapping
       texture.wrapT = THREE.RepeatWrapping
 
-      const onError = function (xhr) {
-      }
+      const onError = function (xhr) {}
       const loader = new OBJLoader(manager)
       loader.load('/models/stanford_bunny_reduced.obj', (object) => {
         object.traverse((child) => {
@@ -143,6 +115,7 @@ export default {
         object.rotation.set(Math.PI / 2, Math.PI, 0)
 
         viewer.scene.scene.add(object)
+
         viewer.onGUILoaded(() => {
           // Add entries to object list in sidebar
           const tree = $('#jstree_scene')
@@ -177,18 +150,15 @@ export default {
       const labels = await this.$content('labels-map')
         .fetch()
         .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
-
       labels.labels.map(label => potreeRef.viewer.scene.annotations.add(new Potree.Annotation(label)))
     },
 
     async getAnimationPaths ({ story = '', page = '' }) {
-      console.log('scene', potreeRef.viewer.scene)
 
       const animation = await this.$content(story, page)
         .only(['cameraTarget', 'cameraPosition', 'animationSpeed'])
         .fetch()
         .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
-      console.log('🎹animation ', story, page, animation)
 
       const positions = [
         potreeRef.viewer.scene.getActiveCamera().position.toArray(), // current camera position
