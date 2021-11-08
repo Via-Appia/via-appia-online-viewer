@@ -82,9 +82,9 @@ export default {
       VAOrientedImageLoader.load(cameraParamsPath, imageParamsPath, viewer)
         .then(([images, controls]) => {
           viewer.scene.addOrientedImages(images)
-          const material = this.createMaterial()
-          material.transparent = false
-          images.images[0].mesh.material = material
+          // const material = this.createMaterial()
+          // material.transparent = false
+          // images.images[0].mesh.material = material
         })
     }
 
@@ -97,6 +97,19 @@ export default {
       viewer.scene.scene.add(directional)
       viewer.scene.scene.add(ambient)
     }
+
+    // {
+    //   // eslint-disable-next-line new-cap
+    //   const floorTexture = new THREE.ImageUtils.loadTexture('/images/floor.jpg')
+    //   floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping
+    //   floorTexture.repeat.set(10, 10)
+    //   const floorMaterial = new THREE.MeshBasicMaterial({ map: floorTexture, side: THREE.DoubleSide })
+    //   const floorGeometry = new THREE.PlaneGeometry(30, 30, 0, 0)
+    //   const floor = new THREE.Mesh(floorGeometry, floorMaterial)
+    //   floor.position.y = -0.5
+    //   floor.rotation.x = Math.PI / 2
+    //   viewer.scene.scene.add(floor)
+    // }
 
     // Load Textured bunny from obj
     {
@@ -115,10 +128,11 @@ export default {
       texture.wrapS = THREE.RepeatWrapping
       texture.wrapT = THREE.RepeatWrapping
 
-      const onError = function (xhr) {}
+      const onError = function (xhr) {
+      }
       const loader = new OBJLoader(manager)
-      loader.load('/models/stanford_bunny_reduced.obj', function (object) {
-        object.traverse(function (child) {
+      loader.load('/models/stanford_bunny_reduced.obj', (object) => {
+        object.traverse((child) => {
           if (child instanceof THREE.Mesh) {
             child.material.map = texture
           }
@@ -129,7 +143,6 @@ export default {
         object.rotation.set(Math.PI / 2, Math.PI, 0)
 
         viewer.scene.scene.add(object)
-
         viewer.onGUILoaded(() => {
           // Add entries to object list in sidebar
           const tree = $('#jstree_scene')

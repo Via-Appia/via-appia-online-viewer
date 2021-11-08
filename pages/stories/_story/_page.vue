@@ -39,6 +39,10 @@
 </template>
 
 <script>
+
+import { VAOrientedImageLoader } from '~/components/overrides/VAOrientedImages'
+import { potreeRef } from '~/api/VAPotree'
+
 export default {
   async asyncData ({
     $content,
@@ -73,6 +77,26 @@ export default {
     return {
       error: false
     }
+  },
+  mounted () {
+    // TODO REMOVE PREVIOUS IMAGES to keep the scene clean?
+    console.log('🎹', this.page)
+    // Example Add image to the scene
+    // load page images
+    this.page.images?.map((image) => {
+      console.log('🎹', image)
+      const cameraParamsPath = '/images/images.xml'
+      const imageParamsPath = '/images/pyramid.txt'
+      VAOrientedImageLoader.load(cameraParamsPath, imageParamsPath, potreeRef.viewer)
+        .then(([images, controls]) => {
+          potreeRef.viewer.scene.addOrientedImages(images)
+          // add the image to the mess TODO this doesn't work yet
+          const material = this.createMaterial()
+          material.transparent = false
+          images.images[0].mesh.material = material
+        })
+      return image
+    })
   }
 }
 </script>

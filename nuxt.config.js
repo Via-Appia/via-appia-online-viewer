@@ -112,7 +112,7 @@ export default {
     // Listen to changes outside Nuxt default folders
     hotMiddleware: {
       client: {
-        // overlay: false // Disable Nuxt Black Screen ESLint
+        overlay: false // Disable Nuxt Black Screen ESLint
       }
     }
   }
