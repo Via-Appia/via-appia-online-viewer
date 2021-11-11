@@ -39,40 +39,82 @@
 </template>
 
 <script>
+
+import { VAOrientedImageLoader } from '~/components/overrides/VAOrientedImages'
+import { potreeRef } from '~/api/VAPotree'
+
 export default {
-  async asyncData ({
-    $content,
-    params
-  }) {
-    const pages = await $content(params.story)
+  data () {
+    return {
+      error: false,
+      pages: null,
+      page: null,
+      prev: null,
+      next: null
+    }
+  },
+  async fetch () {
+    const params = this.$route.params
+
+    this.pages = await this.$content(params.story)
       .sortBy('slug', 'asc')
       .only(['title', 'description', 'path'])
       .fetch()
       .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
 
-    const page = await $content(params.story, params.page)
+    this.page = await this.$content(params.story, params.page)
       .fetch()
       .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
 
-    const [prev, next] = await $content(params.story)
+    const [prev, next] = await this.$content(params.story)
       .sortBy('slug', 'asc')
       .only(['title', 'slug'])
       .surround(params.page)
       .fetch()
       .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
 
-    return {
-      pages,
-      page,
-      prev,
-      next,
-      params
+    this.prev = prev
+    this.next = next
+  },
+  watch: {
+    $route () {
+      this.$fetch().then(() => {
+        this.loadImage()
+      })
+    // this.getAnimationPaths(to.params)
     }
   },
-  data () {
-    return {
-      error: false
+  mounted () {
+    this.$fetch().then(() => {
+      this.loadImage()
+    })
+  },
+  methods: {
+    loadImage () {
+      // Remove previous image here
+      // TODO
+      console.log('🎹', potreeRef.viewer?.scene.uuid)
+      if (this.page?.image) {
+        VAOrientedImageLoader.load(this.page?.image?.cameraParams, this.page?.image?.imageParams, potreeRef.viewer)
+          .then(([images, controls]) => {
+            // // add the image to the mess TODO this doesn't work yet
+            // const material = THREE.createMaterial()
+            // material.transparent = false
+            // images.images[0].mesh.material = material
+
+            // new THREE.TextureLoader().load(imageParams.path, (texture) => {
+            //   images[0].texture = texture
+            //   images[0].mesh.material.uniforms.tColor.value = texture
+            //   images[0].mesh.material.needsUpdate = true
+            // })
+
+            potreeRef.viewer.scene.addOrientedImages(images)
+          })
+      }
+      // return image
+      // })
     }
   }
+
 }
 </script>

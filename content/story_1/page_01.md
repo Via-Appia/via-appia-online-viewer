@@ -1,16 +1,26 @@
 ---
-title: Mausoleo Rotondo - Page 01
-cameraPosition: [296267.12792342174, 4633681.40622494, 128.3653329922611]
-cameraTarget: [296250.7719238924, 4633714.095726619, 126.43484628061825]
+title: Mausoleo Rotondo - Page 1
+cameraPosition:  [296264.39688606694,4633679.776566018,129.77835768357866]
+cameraTarget:  [296252.67637372937,4633691.134097314,132.20448080348208]
 animationSpeed: 2
+
 image:
-  - path: images/02_Mausoleo_Rotondo/01_Anderson_MV_6304_S_Maria_Nova_D_A_ca_1890-2018.jpg
-  - size: [1024,768]
-  - position: [x, y, z, yaw, pitch, offset]
-  - opacity: 1
+  cameraParams:
+    width: 1920
+    height: 1080
+    f: 1000
+    fov: 60
+  imageParams:
+    id: 0101
+    path: /images/02_Mausoleo_Rotondo/01_Anderson_MV_6304_S_Maria_Nova_D_A_ca_1890-2018.jpg
+    x: 296250.4223134683
+    y: 4633704.183296826
+    z: 129.40816735186613
+    omega: 90.0
+    phi: 0.0
+    kappa: 0.0
 ---
+
 
 The road is named after Appius Claudius Caecus, the Roman censor who began and completed the first section as a military road to the south in 312 BC[4] during the Samnite Wars.
 
-
-<!-- <iframe width="100%" height="315" src="https://www.youtube.com/embed/LkIMjtfAj1s" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->

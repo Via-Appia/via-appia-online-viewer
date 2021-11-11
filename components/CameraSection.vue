@@ -197,16 +197,16 @@ cameraTarget:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]`
 </template>
 
 <script>
-import { onMounted } from '@nuxtjs/composition-api'
+// import { onMounted } from '@nuxtjs/composition-api'
 import { potreeRef } from '~/api/VAPotree'
 
 export default {
   setup () {
-    onMounted(() => {
-      potreeRef.viewer.addEventListener('image clicked', (payload) => {
-        this.activeImage = payload.image
-      })
-    })
+    // onMounted(() => {
+    //   potreeRef.viewer.addEventListener('image clicked', (payload) => {
+    // this.activeImage = payload.image
+    // })
+    // })
 
     return { potreeRef }
   },

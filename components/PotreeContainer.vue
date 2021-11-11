@@ -18,7 +18,6 @@
 // import Vue from 'vue'
 import { ref } from '@nuxtjs/composition-api'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
-import { VAOrientedImageLoader } from './overrides/VAOrientedImages'
 import {
   potreeRef,
   setInitialSceneParameters, loadInitialPointCloud, addAnimationPath
@@ -75,19 +74,6 @@ export default {
     // get labels
     this.getLabels()
 
-    // Example Add image to the scene
-    {
-      const cameraParamsPath = '/images/images.xml'
-      const imageParamsPath = '/images/pyramid.txt'
-      VAOrientedImageLoader.load(cameraParamsPath, imageParamsPath, viewer)
-        .then(([images, controls]) => {
-          viewer.scene.addOrientedImages(images)
-          const material = this.createMaterial()
-          material.transparent = false
-          images.images[0].mesh.material = material
-        })
-    }
-
     // LIGHTS
     {
       const directional = new THREE.DirectionalLight(0xFFFFFF, 1.0)
@@ -117,8 +103,8 @@ export default {
 
       const onError = function (xhr) {}
       const loader = new OBJLoader(manager)
-      loader.load('/models/stanford_bunny_reduced.obj', function (object) {
-        object.traverse(function (child) {
+      loader.load('/models/stanford_bunny_reduced.obj', (object) => {
+        object.traverse((child) => {
           if (child instanceof THREE.Mesh) {
             child.material.map = texture
           }
@@ -146,6 +132,15 @@ export default {
           // tree.jstree("open_node", parentNode);
         })
       }, onProgress, onError)
+
+      // Floor
+      {
+        const geometry = new THREE.PlaneGeometry(100000, 100000)
+        const material = new THREE.MeshBasicMaterial({ color: 0x2E3222, side: THREE.DoubleSide })
+        const plane = new THREE.Mesh(geometry, material)
+        plane.position.set(296266.35737207683, 4633691.154054946, 100)
+        viewer.scene.scene.add(plane)
+      }
     }
   },
 
@@ -155,18 +150,15 @@ export default {
       const labels = await this.$content('labels-map')
         .fetch()
         .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
-
       labels.labels.map(label => potreeRef.viewer.scene.annotations.add(new Potree.Annotation(label)))
     },
 
     async getAnimationPaths ({ story = '', page = '' }) {
-      console.log('scene', potreeRef.viewer.scene)
 
       const animation = await this.$content(story, page)
         .only(['cameraTarget', 'cameraPosition', 'animationSpeed'])
         .fetch()
         .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
-      console.log('🎹animation ', story, page, animation)
 
       const positions = [
         potreeRef.viewer.scene.getActiveCamera().position.toArray(), // current camera position
