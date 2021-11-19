@@ -34,7 +34,7 @@ export class VAFirstPersonControls extends Potree.EventDispatcher {
       BACKWARD: ['S'.charCodeAt(0), 40],
       LEFT: ['A'.charCodeAt(0), 37],
       RIGHT: ['D'.charCodeAt(0), 39],
-      UP: ['R'.charCodeAt(0), 33],
+      UP: ['E'.charCodeAt(0), 33],
       DOWN: ['F'.charCodeAt(0), 34]
     }
 
