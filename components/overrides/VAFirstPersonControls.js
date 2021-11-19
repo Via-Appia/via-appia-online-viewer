@@ -82,12 +82,15 @@ export class VAFirstPersonControls extends Potree.EventDispatcher {
     const scroll = (e) => {
       let speed = this.viewer.getMoveSpeed()
 
+      if (speed >= 30) {
+        speed = 30
+      }
       if (e.delta < 0) {
         speed = speed * 0.9
       } else if (e.delta > 0) {
         speed = speed / 0.9
       }
-
+      // Round to 0.1 decimal
       speed = Math.max(speed, 0.1)
 
       this.viewer.setMoveSpeed(speed)
