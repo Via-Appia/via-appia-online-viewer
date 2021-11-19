@@ -4,7 +4,12 @@
       <div id="potree_sidebar_container" />
       <!--  Only show the toolbar when developing locally-->
       <!--  <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" /> -->
-      <div class="flex absolute right-4 bottom-4 z-20">
+
+      <div
+        class="flex w-full absolute left-4 bottom-4 z-20 items-end pr-10"
+        :class="{'pl-[300px]':isSidebarOpen}"
+      >
+        <img src="/app/keys.svg" alt="Keys Helper" class="select-none pointer-events-none mr-auto h-20">
         <div class="btn" @click="toggleSidebar">
           Toggle Panel
         </div>
@@ -28,11 +33,8 @@ import {
 export const isSidebarOpen = ref(false)
 
 export default {
-  name: 'PotreeViewer',
   setup (props, context) {
-    return {
-      isSidebarOpen
-    }
+    return { isSidebarOpen }
   },
 
   data () {
