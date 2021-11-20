@@ -13,6 +13,8 @@
  *
  */
 
+import { potreeRef } from '~/api/VAPotree'
+
 const { Potree, THREE } = window
 
 export class VAFirstPersonControls extends Potree.EventDispatcher {
@@ -94,6 +96,7 @@ export class VAFirstPersonControls extends Potree.EventDispatcher {
       speed = Math.max(speed, 0.1)
 
       this.viewer.setMoveSpeed(speed)
+      potreeRef.props.moveSpeed = Math.round(speed * 10) / 10
     }
 
     const dblclick = (e) => {
