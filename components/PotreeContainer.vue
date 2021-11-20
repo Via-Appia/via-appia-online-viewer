@@ -2,30 +2,31 @@
   <div>
     <div id="potree_container" ref="potree_container" class="z-0 absolute w-screen h-screen">
       <div id="potree_sidebar_container" />
+
       <!--  Only show the toolbar when developing locally-->
       <!--  <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" /> -->
-
       <div
         class="flex w-full absolute left-4 bottom-4 z-20 items-end pr-10"
         :class="{'pl-[300px]':isSidebarOpen}"
       >
-        <img src="/app/keys.svg" alt="Keys Helper" class="select-none pointer-events-none mr-auto h-20">
+        <img src="/app/keys.svg" alt="Keys Helper" class="select-none pointer-events-none h-20">
+        <div class="mr-auto mb-1">
+          {{ potreeRef.props.moveSpeed }}
+        </div>
         <div class="btn" @click="toggleSidebar">
           Toggle Panel
         </div>
       </div>
     </div>
-    <camera-section v-if="camera" />
+    <camera-side-panel-section v-if="camera" />
   </div>
 </template>
 
 <script>
 // import Vue from 'vue'
 import { ref } from '@nuxtjs/composition-api'
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import {
-  potreeRef,
-  setInitialSceneParameters, loadInitialPointCloud, addAnimationPath
+  potreeRef, addAnimationPath, initViewer
 } from '~/api/VAPotree'
 
 // Access the potreeView instance from everywhere using composition API
@@ -34,7 +35,7 @@ export const isSidebarOpen = ref(false)
 
 export default {
   setup (props, context) {
-    return { isSidebarOpen }
+    return { isSidebarOpen, potreeRef }
   },
 
   data () {
@@ -64,86 +65,13 @@ export default {
       this.toggleSidebar()
     }
 
-    // Load potree viewer inside the DOM
-    potreeRef.viewer = new Potree.Viewer(this.$refs.potree_container)
-    setInitialSceneParameters()
-    loadInitialPointCloud()
-
-    const viewer = potreeRef.viewer
-    const scene = viewer.scene
-    this.camera = scene.getActiveCamera()
+    initViewer(this.$refs.potree_container)
+    // we need to pass to the global value the viewer, otherwise, the animation won't be able to load
+    window.viewer = potreeRef.viewer
+    this.camera = potreeRef.viewer.scene.getActiveCamera()
 
     // get labels
     this.getLabels()
-
-    // LIGHTS
-    {
-      const directional = new THREE.DirectionalLight(0xFFFFFF, 1.0)
-      directional.position.set(10, 10, 10)
-      directional.lookAt(0, 0, 0)
-      const ambient = new THREE.AmbientLight(0x555555)
-      viewer.scene.scene.add(directional)
-      viewer.scene.scene.add(ambient)
-    }
-
-    // Load Textured bunny from obj
-    {
-      const manager = new THREE.LoadingManager()
-      manager.onProgress = function (item, loaded, total) {
-        console.log(item, loaded, total)
-      }
-      const textureLoader = new THREE.TextureLoader(manager)
-      const texture = textureLoader.load(`${Potree.resourcePath}/textures/brick_pavement.jpg`)
-      const onProgress = function (xhr) {
-        if (xhr.lengthComputable) {
-          const percentComplete = xhr.loaded / xhr.total * 100
-          console.log(Math.round(percentComplete, 2) + '% downloaded')
-        }
-      }
-      texture.wrapS = THREE.RepeatWrapping
-      texture.wrapT = THREE.RepeatWrapping
-
-      const onError = function (xhr) {}
-      const loader = new OBJLoader(manager)
-      loader.load('/models/stanford_bunny_reduced.obj', (object) => {
-        object.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.material.map = texture
-          }
-        })
-
-        object.position.set(296266.35737207683, 4633691.154054946, 127.2844159686045)
-        object.scale.multiplyScalar(10)
-        object.rotation.set(Math.PI / 2, Math.PI, 0)
-
-        viewer.scene.scene.add(object)
-
-        viewer.onGUILoaded(() => {
-          // Add entries to object list in sidebar
-          const tree = $('#jstree_scene')
-          const parentNode = 'other'
-
-          const bunnyID = tree.jstree('create_node', parentNode, {
-            text: 'Bunny Textured',
-            icon: `${Potree.resourcePath}/icons/triangle.svg`,
-            data: object
-          },
-          'last', false, false)
-          tree.jstree(object.visible ? 'check_node' : 'uncheck_node', bunnyID)
-
-          // tree.jstree("open_node", parentNode);
-        })
-      }, onProgress, onError)
-
-      // Floor
-      {
-        const geometry = new THREE.PlaneGeometry(100000, 100000)
-        const material = new THREE.MeshBasicMaterial({ color: 0x2E3222, side: THREE.DoubleSide })
-        const plane = new THREE.Mesh(geometry, material)
-        plane.position.set(296266.35737207683, 4633691.154054946, 100)
-        viewer.scene.scene.add(plane)
-      }
-    }
   },
 
   methods: {
@@ -156,9 +84,7 @@ export default {
     },
 
     async getAnimationPaths ({ story = '', page = '' }) {
-
       const animation = await this.$content(story, page)
-        .only(['cameraTarget', 'cameraPosition', 'animationSpeed'])
         .fetch()
         .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
 
@@ -175,7 +101,6 @@ export default {
       // TODO this doesn't remove the animation from the previous path
       potreeRef.viewer.scene.cameraAnimations.length = 0
       addAnimationPath(positions, targets, animation.animationSpeed)
-
       potreeRef.viewer.scene.cameraAnimations[0].play()
     },
 

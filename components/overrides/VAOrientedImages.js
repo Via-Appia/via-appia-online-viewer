@@ -395,6 +395,7 @@ export class VAOrientedImageLoader {
     }
 
     const onMouseClick = (evt) => {
+      console.log('🎹 CLICKEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD')
       if (orientedImageControls.hasSomethingCaptured()) {
         return
       }

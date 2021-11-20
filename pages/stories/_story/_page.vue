@@ -2,6 +2,23 @@
   <div>
     <div class="flex mb-4">
       <div class="flex-grow" />
+      {{ videos }}
+
+      <div class="btn" @click="videos['/videos/counter.mp4'].playbackRate = 0.5">
+        0.5x
+      </div>
+      <div class="btn" @click="videos['/videos/counter.mp4'].playbackRate = 2.0">
+        2x
+      </div>
+
+      <div class="btn" @click="videos['/videos/counter.mp4'].play()">
+        Play
+      </div>
+
+      <div class="btn" @click="videos['/videos/counter.mp4'].pause()">
+        pause
+      </div>
+
       <NuxtLink
         tag="button"
         :disabled="!prev"
@@ -42,8 +59,12 @@
 
 import { VAOrientedImageLoader } from '~/components/overrides/VAOrientedImages'
 import { potreeRef } from '~/api/VAPotree'
+import { loadVideo, videos } from '~/api/videos'
 
 export default {
+  setup () {
+    return { videos }
+  },
   data () {
     return {
       error: false,
@@ -77,9 +98,11 @@ export default {
     this.next = next
   },
   watch: {
+    // When changing pages, refetch the content page and reload the method
     $route () {
       this.$fetch().then(() => {
         this.loadImage()
+        loadVideo()
       })
     // this.getAnimationPaths(to.params)
     }
@@ -87,14 +110,40 @@ export default {
   mounted () {
     this.$fetch().then(() => {
       this.loadImage()
+      loadVideo()
     })
   },
   methods: {
+
     loadImage () {
+      const scene = potreeRef.viewer.scene.scene
       // Remove previous image here
       // TODO
-      console.log('🎹', potreeRef.viewer?.scene.uuid)
+      // console.log('🎹', potreeRef.viewer?.scene.uuid)
       if (this.page?.image) {
+        /**
+         * Video
+         **/
+        // Create a texture loader so we can load our image file
+        const loader = new THREE.TextureLoader()
+        // Load an image file into a custom material
+        const material = new THREE.MeshLambertMaterial({
+          map: loader.load('https://s3.amazonaws.com/duhaime/blog/tsne-webgl/assets/cat.jpg')
+        })
+        // create a plane geometry for the image with a width of 10
+        // and a height that preserves the image's aspect ratio
+        const geometry = new THREE.PlaneGeometry(10, 10 * 0.75)
+        // combine our image geometry and material into a mesh
+        const mesh = new THREE.Mesh(geometry, material)
+        // set the position of the image mesh in the x,y,z dimensions
+        mesh.position.set(296255.77195538126, 4633698.280614582, 139.53239533881214)
+        mesh.rotation.set(90, 0, 0)
+        // add the image to the scene
+        scene.add(mesh)
+
+        /**
+         * Image
+         **/
         VAOrientedImageLoader.load(this.page?.image?.cameraParams, this.page?.image?.imageParams, potreeRef.viewer)
           .then(([images, controls]) => {
             // // add the image to the mess TODO this doesn't work yet
