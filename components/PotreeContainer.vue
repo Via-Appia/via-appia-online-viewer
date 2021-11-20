@@ -123,7 +123,7 @@ export default {
   z-index: 1000;
   left: 0px;
   top: 0px;
-  background: black;
+  background: #00000095;
   color: white;
   /*padding: 0.3em 0.8em;*/
   font-family: "system-ui";
