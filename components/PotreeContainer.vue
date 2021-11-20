@@ -6,14 +6,14 @@
       <!--  Only show the toolbar when developing locally-->
       <!--  <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" /> -->
       <div
-        class="flex w-full absolute left-4 bottom-4 z-20 items-end pr-10"
+        class="flex w-full absolute left-4 bottom-4 z-20 items-end pr-10 pointer-events-none"
         :class="{'pl-[300px]':isSidebarOpen}"
       >
         <img src="/app/keys.svg" alt="Keys Helper" class="select-none pointer-events-none h-20">
         <div class="mr-auto mb-1">
           {{ potreeRef.props.moveSpeed }}
         </div>
-        <div class="btn" @click="toggleSidebar">
+        <div class="btn pointer-events-auto" @click="toggleSidebar">
           Toggle Panel
         </div>
       </div>
