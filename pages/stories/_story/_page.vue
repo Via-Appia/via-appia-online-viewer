@@ -2,8 +2,12 @@
   <div>
     <div class="flex mb-4">
       <div class="flex-grow" />
-      {{ videos }}
-
+      <div
+        class="btn"
+        @click="removeVideo('/videos/counter.mp4')"
+      >
+        delete
+      </div>
       <div class="btn" @click="videos['/videos/counter.mp4'].playbackRate = 0.5">
         0.5x
       </div>
@@ -20,7 +24,6 @@
       </div>
 
       <NuxtLink
-        tag="button"
         :disabled="!prev"
         class="btn"
         :to="{ to: 'stories', params: {story: $route.params.story, page: prev && prev.slug}}"
@@ -29,7 +32,6 @@
       </NuxtLink>
 
       <NuxtLink
-        tag="button"
         :disabled="!next"
         class="btn ml-4"
         :to="{ to: 'stories', params: {story: $route.params.story, page: next && next.slug}}"
@@ -59,11 +61,11 @@
 
 import { VAOrientedImageLoader } from '~/components/overrides/VAOrientedImages'
 import { potreeRef } from '~/api/VAPotree'
-import { loadVideo, videos } from '~/api/videos'
+import { loadVideo, videos, removeVideo } from '~/api/videos'
 
 export default {
   setup () {
-    return { videos }
+    return { videos, potreeRef, removeVideo }
   },
   data () {
     return {

@@ -1,9 +1,6 @@
 import { ref } from '@nuxtjs/composition-api'
 
-import {
-  potreeRef,
-  setInitialSceneParameters, loadInitialPointCloud, addAnimationPath
-} from '~/api/VAPotree'
+import { potreeRef } from '~/api/VAPotree'
 
 export const videos = ref({})
 
@@ -29,27 +26,30 @@ export const loadVideo = (path = '/videos/counter.mp4') => {
     console.log('🎹 seeked', e)
   })
 
-  // video.addEventListener('*', function (e) {
-  //   con)
-  // })
-
-  // document.body.appendChild(video)
-
-  // video.addEventListener('play', () => {
-  //   // this.currentTime = 3
-  // })
   const geometry = new THREE.PlaneGeometry(10, 10 * 0.75)
   const texture = new THREE.VideoTexture(video)
   const material = new THREE.MeshLambertMaterial({ map: texture })
-  const mesh = new THREE.Mesh(geometry, material)
-  // mesh.name.set('hello there')
+  const meshFloatingVideo = new THREE.Mesh(geometry, material)
+  // meshFloatingVideo.name.set('hello there')
 
-  // set the position of the image mesh in the x,y,z dimensions
-  mesh.position.set(296255.77195538126, 4633698.280614582, 131.53239533881214)
-  mesh.rotation.set(90, 0, 0)
+  // set the position of the image meshFloatingVideo in the x,y,z dimensions
+  meshFloatingVideo.position.set(296255.77195538126, 4633698.280614582, 131.53239533881214)
+  meshFloatingVideo.rotation.set(90, 0, 0)
+  meshFloatingVideo.name = path
+  meshFloatingVideo.type = 'VIDEO_TYPE'
 
   // Callback for onclick?
-  mesh.callback = function () { console.log('hello', this.name) }
+  meshFloatingVideo.callback = function () { console.log('hello', this.name) }
   // add the image to the scene
-  scene.add(mesh)
+  scene.add(meshFloatingVideo)
+}
+
+export const removeVideo = (path = '/videos/counter.mp4') => {
+  try {
+    const object = potreeRef.viewer.scene.scene.getObjectByName(path)
+    object.material.dispose()
+    potreeRef.viewer.scene.scene.remove(object)
+  } catch (e) {
+    console.error('🚨 No video selected:', e)
+  }
 }

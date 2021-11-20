@@ -84,8 +84,8 @@ export class VAFirstPersonControls extends Potree.EventDispatcher {
     const scroll = (e) => {
       let speed = this.viewer.getMoveSpeed()
 
-      if (speed >= 30) {
-        speed = 30
+      if (speed >= 40) {
+        speed = 40
       }
       if (e.delta < 0) {
         speed = speed * 0.9

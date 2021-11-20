@@ -42,27 +42,27 @@ export function initViewer (DOMElement) {
     const initialMoveSpeed = 5.5
 
     potreeRef.props.moveSpeed = initialMoveSpeed
-    potreeRef.viewer.setMoveSpeed(initialMoveSpeed)
+    viewer.setMoveSpeed(initialMoveSpeed)
 
-    potreeRef.viewer.setFOV(60)
-    potreeRef.viewer.setBackground('skybox')
-    potreeRef.viewer.setEDLEnabled(false)
-    potreeRef.viewer.setPointBudget(process.env.pointsBudget)
-    potreeRef.viewer.loadSettingsFromURL()
+    viewer.setFOV(60)
+    viewer.setBackground('skybox')
+    viewer.setEDLEnabled(false)
+    viewer.setPointBudget(process.env.pointsBudget)
+    viewer.loadSettingsFromURL()
 
     // Set initial camera view position
-    potreeRef.viewer.scene.view.position.set(296264.39688606694, 4633679.776566018, 129.77835768357866)
-    potreeRef.viewer.scene.view.yaw = 0.3
-    potreeRef.viewer.scene.view.pitch = 0
+    viewer.scene.view.position.set(296264.39688606694, 4633679.776566018, 129.77835768357866)
+    viewer.scene.view.yaw = 0.3
+    viewer.scene.view.pitch = 0
 
     // Potree leave Side Panel
-    potreeRef.viewer.toggleSidebar()
+    viewer.toggleSidebar()
 
     // Control camera with the keyboard
-    potreeRef.viewer.fpControls = new VAFirstPersonControls(potreeRef.viewer)
-    potreeRef.viewer.fpControls.addEventListener('start', potreeRef.viewer.disableAnnotations)
-    potreeRef.viewer.fpControls.addEventListener('end', potreeRef.viewer.enableAnnotations)
-    potreeRef.viewer.setControls(potreeRef.viewer.fpControls)
+    viewer.fpControls = new VAFirstPersonControls(potreeRef.viewer)
+    viewer.fpControls.addEventListener('start', viewer.disableAnnotations)
+    viewer.fpControls.addEventListener('end', viewer.enableAnnotations)
+    viewer.setControls(potreeRef.viewer.fpControls)
 
     addFloor()
     addLights()
@@ -94,8 +94,76 @@ function addFloor () {
   potreeRef.viewer.scene.scene.add(plane)
 }
 
+export function listenSelectObject () {
+  const raycaster = new THREE.Raycaster()
+  const mouse = new THREE.Vector2()
+
+  window.addEventListener('click', (event) => {
+    // calculate mouse position in normalized device coordinates
+    // (-1 to +1) for both components
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
+    // update the picking ray with the camera and mouse position
+    const camera = potreeRef.viewer.scene.getActiveCamera()
+    raycaster.setFromCamera(mouse, camera)
+    const sceneChildren = potreeRef.viewer.scene.scene.children
+    // calculate objects intersecting the picking ray
+    const intersects = raycaster.intersectObjects(sceneChildren)
+
+    for (let i = 0; i < intersects.length; i++) {
+      if (intersects[i].object.type === 'VIDEO_TYPE') {
+        // Toggle color, DEMO
+        const isSelected = intersects[i].object.material.emissive?.getHex() === 0xFF0000
+        intersects[i].object.material.emissive?.setHex(isSelected ? 0x000000 : 0xFF0000)
+        potreeRef.selectedVideo = intersects[i].object.uuid
+        console.log('🎹', potreeRef.selectedVideo)
+      }
+    }
+  })
+}
+
+export function loadInitialPointCloud () {
+  // Pointcloud data source
+  const POINT_CLOUD_URL = process.env.isLocalPointClouds
+    // locally
+    ? 'http://localhost:3000/pointclouds/DRIVE_1_V3_levels_8/cloud.js'
+    // Cloud storage
+    : 'https://storage.googleapis.com/via-appia-20540.appspot.com/cloud.js'
+
+  Potree.loadPointCloud(
+    POINT_CLOUD_URL,
+    'Drive Map',
+    ({ pointcloud }) => {
+      pointcloud.material.size = 1
+      pointcloud.material.pointSizeType = Potree.PointSizeType.ADAPTIVE
+      pointcloud.material.shape = Potree.PointShape.SQUARE
+
+      // Load pointcloud data
+      potreeRef.viewer.scene.addPointCloud(pointcloud)
+    }
+  )
+}
+
+export function toggleAnimationVisibility () {
+  potreeRef.viewer.scene.scene.view.getPivot().toArray()
+  potreeRef.viewer.scene.scene.cameraAnimations[0].setVisible(!potreeRef.viewer.scene.cameraAnimations[0].visible)
+}
+
+export function addAnimationPath (positions = [], targets = [], duration = 3) {
+  const animation = new Potree.CameraAnimation(potreeRef.viewer)
+
+  for (let i = 0; i < positions.length; i++) {
+    const cp = animation.createControlPoint()
+    cp.position.set(...positions[i])
+    cp.target.set(...targets[i])
+  }
+  animation.visible = false
+  animation.duration = duration
+  potreeRef.viewer.scene.addCameraAnimation(animation)
+}
+
 // Load Textured bunny from obj
-function addBunnyExample () {
+/* function addBunnyExample () {
   const manager = new THREE.LoadingManager()
   manager.onProgress = function (item, loaded, total) {
     console.log(item, loaded, total)
@@ -142,92 +210,4 @@ function addBunnyExample () {
       // tree.jstree("open_node", parentNode);
     })
   }, onProgress, onError)
-}
-
-export function listenSelectObject () {
-  let INTERSECTED
-
-  window.addEventListener('click', (evt) => {
-  /*
-  * INTERSECTIONS
-   */
-    const raycaster = new THREE.Raycaster()
-    const rect = viewer.renderer.domElement.getBoundingClientRect()
-    const [x, y] = [evt.clientX, evt.clientY]
-    const array = [
-      (x - rect.left) / rect.width,
-      (y - rect.top) / rect.height
-    ]
-    const onClickPosition = new THREE.Vector2(...array)
-    // const intersects = getIntersects(onClickPosition, scene.children);
-    const camera = viewer.scene.getActiveCamera()
-    const mouse = new THREE.Vector3(
-      +(onClickPosition.x * 2) - 1,
-      -(onClickPosition.y * 2) + 1
-    )
-    // const objects = orientedImages.map(i => i.mesh)
-    raycaster.setFromCamera(mouse, camera)
-    // const pointer = new THREE.Vector2()
-    // const raycaster = new THREE.Raycaster()
-    // console.log('🎹', viewer.scene.scene.children)
-    // const objects = videos.values().map(i => i.mesh)
-    const intersects = raycaster.intersectObjects(viewer.scene.scene.children, false)
-    // if (intersects.length > 0) {
-    if (INTERSECTED !== intersects[0]?.object) {
-      console.log('🎹', intersects[0]?.object?.name)
-
-      if (INTERSECTED) { INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex) }
-      INTERSECTED = intersects[0]?.object
-      INTERSECTED.currentHex = INTERSECTED?.material?.emissive?.getHex()
-      INTERSECTED.material?.emissive?.setHex(0xFF0000)
-      // }
-      // } else {
-      //   if (INTERSECTED) {
-      //     console.log('NO intersects')
-      // INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex)
-      // }
-
-      INTERSECTED = null
-    }
-  }, false)
-}
-
-export function loadInitialPointCloud () {
-  // Pointcloud data source
-  const POINT_CLOUD_URL = process.env.isLocalPointClouds
-    // locally
-    ? 'http://localhost:3000/pointclouds/DRIVE_1_V3_levels_8/cloud.js'
-    // Cloud storage
-    : 'https://storage.googleapis.com/via-appia-20540.appspot.com/cloud.js'
-
-  Potree.loadPointCloud(
-    POINT_CLOUD_URL,
-    'Drive Map',
-    ({ pointcloud }) => {
-      pointcloud.material.size = 1
-      pointcloud.material.pointSizeType = Potree.PointSizeType.ADAPTIVE
-      pointcloud.material.shape = Potree.PointShape.SQUARE
-
-      // Load pointcloud data
-      potreeRef.viewer.scene.addPointCloud(pointcloud)
-    }
-  )
-}
-
-export function toggleAnimationVisibility () {
-  potreeRef.viewer.scene.scene.view.getPivot().toArray()
-  potreeRef.viewer.scene.scene.cameraAnimations[0].setVisible(!potreeRef.viewer.scene.cameraAnimations[0].visible)
-}
-
-export function addAnimationPath (positions = [], targets = [], duration = 3) {
-  const animation = new Potree.CameraAnimation(potreeRef.viewer)
-
-  for (let i = 0; i < positions.length; i++) {
-    const cp = animation.createControlPoint()
-    cp.position.set(...positions[i])
-    cp.target.set(...targets[i])
-  }
-  animation.visible = false
-  animation.duration = duration
-  potreeRef.viewer.scene.addCameraAnimation(animation)
-}
+} */
