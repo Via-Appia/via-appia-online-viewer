@@ -62,6 +62,7 @@
 import { VAOrientedImageLoader } from '~/components/overrides/VAOrientedImages'
 import { potreeRef } from '~/api/VAPotree'
 import { loadVideo, videos, removeVideo } from '~/api/videos'
+import AppSettings from '~/content/app-settings.yaml'
 
 export default {
   setup () {
