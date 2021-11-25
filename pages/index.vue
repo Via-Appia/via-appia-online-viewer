@@ -1,8 +1,11 @@
 <template>
-  <div>
+  <div class="relative">
     <div class="fixed bg-black opacity-80 top-0 left-0 right-0 bottom-0" />
     <section
-      class="absolute w-screen h-screen flex items-center justify-center"
+      v-motion
+      :initial="{ opacity: 0}"
+      :enter="{ opacity: 1}"
+      class="fixed top-0 left-0 right-0 bottom-0  w-screen h-screen flex items-center justify-center"
     >
       <div class="text-white py-20">
         <div class="container mx-auto flex flex-col md:flex-row items-center my-12 md:my-24">

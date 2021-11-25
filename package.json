@@ -40,6 +40,7 @@
     "eslint-plugin-vue": "^7.17.0",
     "jsdom": "^17.0.0",
     "jsdom-global": "^3.0.2",
+    "nuxt-use-motion": "^2.0.0-beta.5",
     "postcss": "^8.3.6",
     "require-extension-hooks": "^0.3.3",
     "require-extension-hooks-babel": "^1.0.0",
