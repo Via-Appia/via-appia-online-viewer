@@ -13,6 +13,10 @@
         <div class="mr-auto mb-1">
           {{ potreeRef.props.moveSpeed }}
         </div>
+        <div class="pointer-events-auto cursor-pointer" @click="resize">
+          {{ windowWidth }} x {{ windowHeight }}
+        </div>
+
         <div class="btn pointer-events-auto" @click="toggleSidebar">
           Toggle Panel
         </div>
@@ -41,7 +45,9 @@ export default {
   data () {
     return {
       labels: [],
-      camera: null
+      camera: null,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight
     }
   },
   async fetch () {
@@ -53,10 +59,14 @@ export default {
    */
   watch: {
     $route (to, from) {
-      this.getAnimationPaths(to.params)
+      // this.getAnimationPaths(to.params)
     }
   },
   mounted () {
+    window.addEventListener('resize', () => {
+      this.windowHeight = window.innerHeight
+      this.windowWidth = window.innerWidth
+    })
     // check if the sidebar is visible
     isSidebarOpen.value = $('#potree_sidebar_container').is(':visible')
 
@@ -75,6 +85,12 @@ export default {
   },
 
   methods: {
+    resize () {
+      window.open(
+        'http://localhost:3000',
+        '',
+        'width=1280, height=721, directories=no,titlebar=no,toolbar=no, location=no, status=no, menubar=no, scrollbars=no, resizable=no')
+    },
     // Get labels from the markdown file and ads the to the scene
     async getLabels () {
       const labels = await this.$content('labels-map')
@@ -100,7 +116,7 @@ export default {
       // Remove previous animations
       // TODO this doesn't remove the animation from the previous path
       potreeRef.viewer.scene.cameraAnimations.length = 0
-      addAnimationPath(positions, targets, animation.animationSpeed)
+      addAnimationPath(positions, targets, animation.animationEntry)
       potreeRef.viewer.scene.cameraAnimations[0].play()
     },
 

@@ -1,11 +1,15 @@
 // Access the potreeView instance from everywhere using composition API
 import { reactive } from '@nuxtjs/composition-api'
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
+import CameraControls from 'camera-controls'
 import { VAFirstPersonControls } from '~/components/overrides/VAFirstPersonControls'
+// CameraControls.install({ THREE })
+// import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
+import { moveToVideo } from '~/api/videos'
 
 export const potreeRef = reactive(
   {
-    viewer: null,
+    viewer: null, // shortcut
+    camera: null,
     props: { moveSpeed: null },
     videos: {}
   })
@@ -17,8 +21,15 @@ export const potreeRef = reactive(
 export function initViewer (DOMElement) {
   // Load potree viewer inside the DOM
   potreeRef.viewer = new Potree.Viewer(DOMElement)
+  potreeRef.camera = potreeRef.viewer.scene.getActiveCamera()
+  // const width = window.innerWidth
+  // const height = window.innerHeight
+  // const camera = new THREE.PerspectiveCamera(60, width / height, 0.01, 100)
+  // potreeRef.cameraControls = new CameraControls(camera, DOMElement)
+  // potreeRef.cameraControls = new CameraControls(potreeRef.camera, DOMElement)
+
   const viewer = potreeRef.viewer
-  loadInitialPointCloud()
+  loadInitialPointCloud() // TODO ///////////////////////////////////////////////////////////////////////////////// DO NOT COMMIT THIS
 
   viewer.loadGUI(() => {
     viewer.setLanguage('en')
@@ -110,14 +121,15 @@ export function listenSelectObject () {
     // calculate objects intersecting the picking ray
     const intersects = raycaster.intersectObjects(sceneChildren)
 
-    for (let i = 0; i < intersects.length; i++) {
-      if (intersects[i].object.type === 'VIDEO_TYPE') {
-        // Toggle color, DEMO
-        const isSelected = intersects[i].object.material.emissive?.getHex() === 0xFF0000
-        intersects[i].object.material.emissive?.setHex(isSelected ? 0x000000 : 0xFF0000)
-        potreeRef.selectedVideo = intersects[i].object.uuid
-        console.log('🎹', potreeRef.selectedVideo)
-      }
+    // for (let i = 0; i < intersects.length; i++) {
+    if (intersects[0].object.type === 'VIDEO_TYPE') {
+      // Toggle color, DEMO
+      const isSelected = intersects[0].object.material.emissive?.getHex() === 0xFF0000
+      intersects[0].object.material.emissive?.setHex(isSelected ? 0x000000 : 0xFF0000)
+      potreeRef.selectedVideo = intersects[0].object.uuid
+      moveToVideo(intersects[0].object)
+      potreeRef.selectedVideo = intersects[0].object
+      // }
     }
   })
 }

@@ -2,24 +2,23 @@
   <div>
     <div class="flex mb-4">
       <div class="flex-grow" />
-      <div
-        class="btn"
-        @click="removeVideo('/videos/counter.mp4')"
-      >
+      <div class="btn  btn-sm" @click="removeVideo(page.mediaPath)">
         delete
       </div>
-      <div class="btn" @click="videos['/videos/counter.mp4'].playbackRate = 0.5">
+      <div class="btn btn-sm" @click="videos[page.mediaPath].playbackRate = 0.5">
         0.5x
       </div>
-      <div class="btn" @click="videos['/videos/counter.mp4'].playbackRate = 2.0">
+      <div class="btn btn-sm" @click="videos[page.mediaPath].playbackRate = 2.0">
         2x
       </div>
-
-      <div class="btn" @click="videos['/videos/counter.mp4'].play()">
-        Play
+      <div class="btn btn-sm" @click="videos[page.mediaPath].playbackRate = 5.0">
+        5x
       </div>
 
-      <div class="btn" @click="videos['/videos/counter.mp4'].pause()">
+      <div class="btn" @click="videos[page.mediaPath].play()">
+        Play
+      </div>
+      <div class="btn" @click="videos[page.mediaPath].pause()">
         pause
       </div>
 
@@ -44,16 +43,14 @@
     <div class="fixed top-48 right-0">
       <steps-timeline-links :pages="pages" />
     </div>
-    <div>
-      <div class="bg-gray-700 bg-opacity-90 rounded p-4">
-        <div class="text-xl font-bold ">
-          {{ page && page.title }}
-        </div>
-        <div class="w-full mt-3">
-          <nuxt-content :document="page" class="prose-sm sm:prose" />
-        </div>
-      </div>
-    </div>
+    <!--      <div class="bg-gray-700 bg-opacity-90 rounded p-4">-->
+    <!--                <div class="text-xl font-bold ">-->
+    <!--                  {{ page && page.title }}-->
+    <!--                </div>-->
+    <!--                <div class="w-full mt-3">-->
+    <!--                  <nuxt-content :document="page" class="prose-sm sm:prose" />-->
+    <!--                </div>-->
+    <!--      </div>-->
   </div>
 </template>
 
@@ -66,7 +63,7 @@ import AppSettings from '~/content/app-settings.yaml'
 
 export default {
   setup () {
-    return { videos, potreeRef, removeVideo }
+    return { videos, potreeRef, removeVideo, THREE }
   },
   data () {
     return {
@@ -80,16 +77,19 @@ export default {
   async fetch () {
     const params = this.$route.params
 
+    // Page details
+    this.page = await this.$content(params.story, params.page)
+      .fetch()
+      .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
+
+    // Get the list of pages of the story
     this.pages = await this.$content(params.story)
       .sortBy('slug', 'asc')
       .only(['title', 'description', 'path'])
       .fetch()
       .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
 
-    this.page = await this.$content(params.story, params.page)
-      .fetch()
-      .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
-
+    // Next and previous pages links
     const [prev, next] = await this.$content(params.story)
       .sortBy('slug', 'asc')
       .only(['title', 'slug'])
@@ -103,20 +103,38 @@ export default {
   watch: {
     // When changing pages, refetch the content page and reload the method
     $route () {
+      // delete previous video on the page
+      if (this.page.mediaPath) {
+        removeVideo(this.page.mediaPath)
+      }
+      console.log('🎹 before leave?', this.page.mediaPath)
       this.$fetch().then(() => {
-        this.loadImage()
-        loadVideo()
+        this.initPagePosition()
       })
     // this.getAnimationPaths(to.params)
     }
   },
   mounted () {
     this.$fetch().then(() => {
-      this.loadImage()
-      loadVideo()
+      this.initPagePosition()
     })
   },
   methods: {
+    initPagePosition () {
+      // Cat image todo delete
+      this.loadImage()
+
+      // goToCameraPosition
+      potreeRef.viewer.scene.view.setView(
+        this.page.cameraPosition,
+        this.page.cameraTarget,
+        this.page.animationEntry || 2000, () => {
+          console.log('🎹 eneded movement')
+        })
+
+      // Load media: video or static image
+      loadVideo(this.page.mediaPath)
+    },
 
     loadImage () {
       const scene = potreeRef.viewer.scene.scene
@@ -159,8 +177,8 @@ export default {
             //   images[0].mesh.material.uniforms.tColor.value = texture
             //   images[0].mesh.material.needsUpdate = true
             // })
-
-            potreeRef.viewer.scene.addOrientedImages(images)
+            // potreeRef.viewer.scene.addOrientedImages([loadVideo()])
+            // potreeRef.viewer.scene.addOrientedImages(images)
           })
       }
       // return image
