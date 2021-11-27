@@ -11,7 +11,9 @@ export const potreeRef = reactive(
     viewer: null, // shortcut
     camera: null,
     props: { moveSpeed: null },
-    videos: {}
+    videos: {},
+    selectedVideo: null,
+    followCamera: false
   })
 
 /*
@@ -106,32 +108,32 @@ function addFloor () {
 }
 
 export function listenSelectObject () {
+  // Do not select any object if there is a media following the camera
+  if (potreeRef.followCamera) {
+    return
+  }
   const raycaster = new THREE.Raycaster()
   const mouse = new THREE.Vector2()
+  // calculate mouse position in normalized device coordinates
+  // (-1 to +1) for both components
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
+  // update the picking ray with the camera and mouse position
+  const camera = potreeRef.viewer.scene.getActiveCamera()
+  raycaster.setFromCamera(mouse, camera)
+  const sceneChildren = potreeRef.viewer.scene.scene.children
+  // calculate objects intersecting the picking ray
+  const intersects = raycaster.intersectObjects(sceneChildren)
 
-  window.addEventListener('click', (event) => {
-    // calculate mouse position in normalized device coordinates
-    // (-1 to +1) for both components
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
-    // update the picking ray with the camera and mouse position
-    const camera = potreeRef.viewer.scene.getActiveCamera()
-    raycaster.setFromCamera(mouse, camera)
-    const sceneChildren = potreeRef.viewer.scene.scene.children
-    // calculate objects intersecting the picking ray
-    const intersects = raycaster.intersectObjects(sceneChildren)
-
-    // for (let i = 0; i < intersects.length; i++) {
-    if (intersects[0].object.type === 'VIDEO_TYPE') {
-      // Toggle color, DEMO
-      const isSelected = intersects[0].object.material.emissive?.getHex() === 0xFF0000
-      intersects[0].object.material.emissive?.setHex(isSelected ? 0x000000 : 0xFF0000)
-      potreeRef.selectedVideo = intersects[0].object.uuid
-      moveToVideo(intersects[0].object)
-      potreeRef.selectedVideo = intersects[0].object
-      // }
-    }
-  })
+  // for (let i = 0; i < intersects.length; i++) {
+  if (intersects[0].object.type === 'VIDEO_TYPE') {
+    // Toggle color, DEMO
+    const isSelected = intersects[0].object.material.emissive?.getHex() === 0xFF0000
+    intersects[0].object.material.emissive?.setHex(isSelected ? 0x000000 : 0xFF0000)
+    moveToVideo(intersects[0].object)
+    potreeRef.selectedVideo = intersects[0].object
+    // }
+  }
 }
 
 export function loadInitialPointCloud () {

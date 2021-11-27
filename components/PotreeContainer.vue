@@ -1,37 +1,48 @@
 <template>
   <div>
-    <div id="potree_container" ref="potree_container" class="z-0 absolute w-screen h-screen">
-      <div id="potree_sidebar_container" />
+    <div id="potree_container" ref="potree_container" class=" absolute w-screen h-screen" />
 
-      <!--  Only show the toolbar when developing locally-->
-      <!--  <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" /> -->
-      <div
-        class="flex w-full absolute left-4 bottom-4 z-20 items-end pr-10 pointer-events-none"
-        :class="{'pl-[300px]':isSidebarOpen}"
-      >
-        <img src="/app/keys.svg" alt="Keys Helper" class="select-none pointer-events-none h-20">
-        <div class="mr-auto mb-1">
-          {{ potreeRef.props.moveSpeed }}
-        </div>
-        <div class="pointer-events-auto cursor-pointer" @click="resize">
-          {{ windowWidth }} x {{ windowHeight }}
-        </div>
+    <!--  Only show the toolbar when developing locally-->
+    <!--  <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" /> -->
+    <div
+      class="flex w-full absolute left-4 bottom-4 z-20 items-end pr-10 pointer-events-none"
+      :class="{'pl-[300px]':isSidebarOpen}"
+    >
+      <img src="/app/keys.svg" alt="Keys Helper" class="select-none pointer-events-none h-20">
+      <div class="mr-auto mb-1">
+        {{ potreeRef.props.moveSpeed }}
+      </div>
+      <div class="pointer-events-auto cursor-pointer" @click="resize">
+        {{ windowWidth }} x {{ windowHeight }}
+      </div>
 
-        <div class="btn pointer-events-auto" @click="toggleSidebar">
-          Toggle Panel
+      <div class="btn pointer-events-auto" @click="toggleSidebar">
+        Toggle Panel
+      </div>
+      <div>
+        <div>camera pos: {{ camera && camera.position }}</div>
+        <div v-if="potreeRef.selectedVideo">
+          distance: {{ camera.position.distanceTo(potreeRef.selectedVideo.position) }}
+        </div>
+        <div
+          v-if="potreeRef.selectedVideo"
+          class="btn btn-sm pointer-events-auto"
+          @click="potreeRef.selectedVideo.lookAt(camera.position)"
+        >
+          rotate
         </div>
       </div>
     </div>
+
     <camera-side-panel-section v-if="camera" />
+    <div id="potree_sidebar_container" />
   </div>
 </template>
 
 <script>
 // import Vue from 'vue'
 import { ref } from '@nuxtjs/composition-api'
-import {
-  potreeRef, addAnimationPath, initViewer
-} from '~/api/VAPotree'
+import { potreeRef, addAnimationPath, initViewer, listenSelectObject } from '~/api/VAPotree'
 
 // Access the potreeView instance from everywhere using composition API
 // export const potreeRef = reactive({})
@@ -76,6 +87,15 @@ export default {
     }
 
     initViewer(this.$refs.potree_container)
+
+    //
+    // Listen for clicks on the viewer
+    //
+
+    this.$refs.potree_container.addEventListener('click', (event) => {
+      console.log('🎹 CLICKESD')
+      listenSelectObject()
+    })
     // we need to pass to the global value the viewer, otherwise, the animation won't be able to load
     window.viewer = potreeRef.viewer
     this.camera = potreeRef.viewer.scene.getActiveCamera()
@@ -136,7 +156,6 @@ export default {
 
 #potree_sidebar_container {
   position: absolute;
-  z-index: 1000;
   left: 0px;
   top: 0px;
   background: #00000095;

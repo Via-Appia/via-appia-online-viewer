@@ -6,7 +6,7 @@ cameraFOV: 80
 
 animationEntry: 2000
 
-mediaPath: /videos/02_Mausoleo_Rotondo/02_Ashby_MV_6316_S. Maria Nova Th. A._ca. 1900-2018.mp4
+mediaPath: /videos/C_01_GB. P-720p.mp4
 mediaPosition: [296266.4831976576,4633696.34973894,130.5426911918025]
 mediaRotation: [90.0, 0.0. 0.0]
 ---

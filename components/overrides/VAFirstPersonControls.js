@@ -106,7 +106,7 @@ export class VAFirstPersonControls extends Potree.EventDispatcher {
     this.addEventListener('drag', drag)
     this.addEventListener('drop', drop)
     this.addEventListener('mousewheel', scroll)
-    this.addEventListener('dblclick', dblclick)
+    // this.addEventListener('dblclick', dblclick)
   }
 
   setScene (scene) {

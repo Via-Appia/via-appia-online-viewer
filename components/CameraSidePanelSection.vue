@@ -10,6 +10,79 @@
       </pre>
     </div>
 
+    <!-- Active media -->
+    <div v-if="potreeRef.selectedVideo">
+      <div>
+        <div class="p-3 card bordered">
+          <div class="form-control">
+            <div>
+              Video Player
+              <br class="mb-3">
+              <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].play()">
+                Play
+              </div>
+              <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].pause()">
+                pause
+              </div>
+              {{ videos[potreeRef.selectedVideo.name].video }}
+              <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].currentTime = videos[potreeRef.selectedVideo.name].duration">
+                end
+              </div>
+              <br>
+              <!--              <div class="btn  btn-xs" @click="removeVideo(potreeRef.selectedVideo.name)">-->
+              <!--                delete-->
+              <!--              </div>-->
+              <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].playbackRate = 0.5">
+                0.5x
+              </div>
+              <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].playbackRate = 2.0">
+                2x
+              </div>
+              <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].playbackRate = 3.0">
+                3x
+              </div>
+              <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].playbackRate = 5.0">
+                5x
+              </div>
+            </div>
+
+            <label class="flex justify-between cursor-pointer mt-3">
+              <span class="label-text">Follow the camera</span>
+              <div>
+                <input type="checkbox" class="toggle toggle-primary" @change="potreeRef.followCamera = $event.target.checked">
+                <span class="toggle-mark" />
+              </div>
+            </label>
+            <div class="flex items-center mt-2">
+              <div class="flex-grow w-full label-text">
+                Opacity <br>{{ potreeRef.selectedVideo.material.opacity }}
+              </div>
+              <input
+                :value="potreeRef.selectedVideo.material.opacity "
+                class="ml-2 input input-xs"
+                step="0.01"
+                type="range"
+                min="0"
+                max="1"
+                @input="potreeRef.selectedVideo.material.opacity = $event.target.value"
+              >
+            </div>
+
+            <!--            <div class="mt-3">-->
+            <!--              <label class="label-text"> Offset </label>-->
+            <!--              <input-->
+            <!--                :value="offset"-->
+            <!--                class="input input-xs"-->
+            <!--                type="number"-->
+            <!--                step="0.02"-->
+            <!--                @input="setActiveImageOffset($event.target.value)"-->
+            <!--              >-->
+            <!--            </div>-->
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Camera position-->
     <div v-if="activeCamera" class="mt-4 font-bold">
       <!-- Copy camera position -->
@@ -148,48 +221,7 @@ cameraTarget:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]`
       :value="potreeRef.viewer.scene.getActiveCamera()"
       @input="potreeRef.viewer.setFOV($event.target.value)"
     >
-    <div v-if="activeImage">
-      <div class="mt-4 font-medium">
-        Active Image
-      </div>
-      <div>
-        <div class="p-3 card bordered">
-          <div class="form-control">
-            <label class="flex justify-between cursor-pointer">
-              <span class="label-text">Follow the camera</span>
-              <div>
-                <input type="checkbox" class="toggle toggle-primary" @change="setImageFollowsCamera($event.target.checked)">
-                <span class="toggle-mark" />
-              </div>
-            </label>
-            <div class="flex items-center mt-2">
-              <div class="flex-grow w-full label-text">
-                Opacity <br>{{ activeImage.mesh.material.uniforms.uOpacity.value }}
-              </div>
-              <input
-                :value="activeImage.mesh.material.uniforms.uOpacity.value"
-                class="ml-2 input input-xs"
-                step="0.01"
-                type="range"
-                min="0"
-                max="1"
-                @input="setActiveImageOpacity($event.target.value)"
-              >
-            </div>
-            <div class="mt-3">
-              <label class="label-text"> Offset </label>
-              <input
-                :value="offset"
-                class="input input-xs"
-                type="number"
-                step="0.02"
-                @input="setActiveImageOffset($event.target.value)"
-              >
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+
     <div class="mb-2 btn btn-xs" @click="seeDetailsPanel = !seeDetailsPanel">
       See stats Panel
     </div>
@@ -197,18 +229,12 @@ cameraTarget:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]`
 </template>
 
 <script>
-// import { onMounted } from '@nuxtjs/composition-api'
 import { potreeRef } from '~/api/VAPotree'
+import { loadVideo, videos, removeVideo } from '~/api/videos'
 
 export default {
   setup () {
-    // onMounted(() => {
-    //   potreeRef.viewer.addEventListener('image clicked', (payload) => {
-    // this.activeImage = payload.image
-    // })
-    // })
-
-    return { potreeRef }
+    return { potreeRef, loadVideo, videos, removeVideo }
   },
 
   data () {

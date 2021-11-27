@@ -2,25 +2,6 @@
   <div>
     <div class="flex mb-4">
       <div class="flex-grow" />
-      <div class="btn  btn-sm" @click="removeVideo(page.mediaPath)">
-        delete
-      </div>
-      <div class="btn btn-sm" @click="videos[page.mediaPath].playbackRate = 0.5">
-        0.5x
-      </div>
-      <div class="btn btn-sm" @click="videos[page.mediaPath].playbackRate = 2.0">
-        2x
-      </div>
-      <div class="btn btn-sm" @click="videos[page.mediaPath].playbackRate = 5.0">
-        5x
-      </div>
-
-      <div class="btn" @click="videos[page.mediaPath].play()">
-        Play
-      </div>
-      <div class="btn" @click="videos[page.mediaPath].pause()">
-        pause
-      </div>
 
       <NuxtLink
         :disabled="!prev"

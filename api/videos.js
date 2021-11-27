@@ -30,7 +30,7 @@ export const loadVideo = (path = '/videos/counter.mp4', width = 16, height = 9) 
   const texture = new THREE.VideoTexture(video)
   const material = new THREE.MeshLambertMaterial({
     map: texture,
-    opacity: 0.8, /// TODO HEEEEEEEEEEEEEEEEEEEERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRrEEEEEEERE THE TRANSPARENCY
+    opacity: 1,
     transparent: true,
     side: THREE.DoubleSide
   })
@@ -124,7 +124,6 @@ export const moveToVideo = (mesh, offset = 3.6) => {
   const normal = new THREE.Vector3(0, 0, -1).applyEuler(newCamRotation)
   const target = new THREE.Vector3().add(newCamPos).add(normal.setLength(1))
 
-  // TODO THIS METHOD DOESNT" WORK, BECAUSE IT SENDS THE CAMERA WAAYY TO FAR
   // Move into direction vector
   const distance = offset
   const dir = new THREE.Vector3() // create once an reuse it
@@ -135,34 +134,4 @@ export const moveToVideo = (mesh, offset = 3.6) => {
   potreeRef.viewer.scene.view.setView(pointNew, target, 700, () => {
     console.log('🎹 eneded movement')
   })
-}
-
-function fitCameraToObject (camera, object, offset) {
-  offset = offset || 1.5
-
-  const boundingBox = new THREE.Box3()
-
-  boundingBox.setFromObject(object)
-
-  const center = boundingBox.getCenter(new THREE.Vector3())
-  const size = boundingBox.getSize(new THREE.Vector3())
-
-  const startDistance = center.distanceTo(camera.position)
-  // here we must check if the screen is horizontal or vertical, because camera.fov is
-  // based on the vertical direction.
-  const endDistance = camera.aspect > 1
-    ? ((size.y / 2) + offset) / Math.abs(Math.tan(camera.fov / 2))
-    : ((size.y / 2) + offset) / Math.abs(Math.tan(camera.fov / 2)) / camera.aspect
-
-  camera.position.set(
-    camera.position.x * endDistance / startDistance,
-    camera.position.y * endDistance / startDistance,
-    camera.position.z * endDistance / startDistance
-  )
-  return camera.position
-  // return new THREE.Vector3(camera.position.x * endDistance / startDistance,
-  //   camera.position.y * endDistance / startDistance,
-  //   camera.position.z * endDistance / startDistance
-  // )
-  // potreeRef.viewer.scene.view.lookAt(center)
 }

@@ -34,8 +34,6 @@
         </div>
       </div>
     </section>
-    <!--    todo Animation background-->
-    <!--    <Background class="h-screen w-screen" />-->
 
     <footer class="fixed bottom-0 text-xs opacity-40">
       Debug:
