@@ -37,10 +37,9 @@
 
 <script>
 
-import { VAOrientedImageLoader } from '~/components/overrides/VAOrientedImages'
 import { potreeRef } from '~/api/VAPotree'
 import { loadVideo, videos, removeVideo } from '~/api/videos'
-import AppSettings from '~/content/app-settings.yaml'
+// import AppSettings from '~/content/app-settings.yaml'
 
 export default {
   setup () {
@@ -114,7 +113,7 @@ export default {
         })
 
       // Load media: video or static image
-      loadVideo(this.page.mediaPath)
+      loadVideo(this.page)
     },
 
     loadImage () {
@@ -142,30 +141,8 @@ export default {
         mesh.rotation.set(90, 0, 0)
         // add the image to the scene
         scene.add(mesh)
-
-        /**
-         * Image
-         **/
-        VAOrientedImageLoader.load(this.page?.image?.cameraParams, this.page?.image?.imageParams, potreeRef.viewer)
-          .then(([images, controls]) => {
-            // // add the image to the mess TODO this doesn't work yet
-            // const material = THREE.createMaterial()
-            // material.transparent = false
-            // images.images[0].mesh.material = material
-
-            // new THREE.TextureLoader().load(imageParams.path, (texture) => {
-            //   images[0].texture = texture
-            //   images[0].mesh.material.uniforms.tColor.value = texture
-            //   images[0].mesh.material.needsUpdate = true
-            // })
-            // potreeRef.viewer.scene.addOrientedImages([loadVideo()])
-            // potreeRef.viewer.scene.addOrientedImages(images)
-          })
       }
-      // return image
-      // })
     }
   }
-
 }
 </script>

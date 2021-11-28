@@ -8,9 +8,7 @@
  * @author alteredq / http://alteredqualia.com/
  * @author WestLangley / http://github.com/WestLangley
  * @author erich666 / http://erichaines.com
- *
- *
- *
+ * @author ctwhome / https://ctwhome.com
  */
 
 import { potreeRef } from '~/api/VAPotree'
@@ -36,7 +34,7 @@ export class VAFirstPersonControls extends Potree.EventDispatcher {
       BACKWARD: ['S'.charCodeAt(0), 40],
       LEFT: ['A'.charCodeAt(0), 37],
       RIGHT: ['D'.charCodeAt(0), 39],
-      UP: ['E'.charCodeAt(0), 33],
+      UP: ['R'.charCodeAt(0), 33],
       DOWN: ['F'.charCodeAt(0), 34]
     }
 
@@ -99,9 +97,9 @@ export class VAFirstPersonControls extends Potree.EventDispatcher {
       potreeRef.props.moveSpeed = Math.round(speed * 10) / 10
     }
 
-    const dblclick = (e) => {
-      this.zoomToLocation(e.mouse)
-    }
+    // const dblclick = (e) => {
+    //   this.zoomToLocation(e.mouse)
+    // }
 
     this.addEventListener('drag', drag)
     this.addEventListener('drop', drop)
@@ -182,8 +180,13 @@ export class VAFirstPersonControls extends Potree.EventDispatcher {
     }
   }
 
+  /**
+   * Contant update of the scene with any movements that involves
+   * @param delta
+   */
   update (delta) {
     const view = this.scene.view
+    const moveVideo = potreeRef.selectedVideo && potreeRef.followCamera
 
     { // cancel move animations on user input
       const changes = [this.yawDelta,
@@ -207,39 +210,27 @@ export class VAFirstPersonControls extends Potree.EventDispatcher {
       const moveUp = this.keys.UP.some(e => ih.pressedKeys[e])
       const moveDown = this.keys.DOWN.some(e => ih.pressedKeys[e])
 
-      if (this.lockElevation) {
-        const dir = view.direction
-        dir.z = 0
-        dir.normalize()
-
-        if (moveForward && moveBackward) {
-          this.translationWorldDelta.set(0, 0, 0)
-        } else if (moveForward) {
-          this.translationWorldDelta.copy(dir.multiplyScalar(this.viewer.getMoveSpeed()))
-        } else if (moveBackward) {
-          this.translationWorldDelta.copy(dir.multiplyScalar(-this.viewer.getMoveSpeed()))
-        }
-      } else if (moveForward && moveBackward) {
-        this.translationDelta.y = 0
-      } else if (moveForward) {
+      /**
+       * Move the scene and if the video is attgached, move it together
+       */
+      if (moveForward) {
         this.translationDelta.y = this.viewer.getMoveSpeed()
-      } else if (moveBackward) {
+      }
+      if (moveBackward) {
         this.translationDelta.y = -this.viewer.getMoveSpeed()
       }
-
-      if (moveLeft && moveRight) {
-        this.translationDelta.x = 0
-      } else if (moveLeft) {
+      if (moveLeft) {
+        console.log('🎹 LEFT')
         this.translationDelta.x = -this.viewer.getMoveSpeed()
-      } else if (moveRight) {
+      }
+      if (moveRight) {
         this.translationDelta.x = this.viewer.getMoveSpeed()
       }
-
-      if (moveUp && moveDown) {
-        this.translationWorldDelta.z = 0
-      } else if (moveUp) {
+      if (moveUp) {
+        console.log('🎹 UP', moveUp)
         this.translationWorldDelta.z = this.viewer.getMoveSpeed()
-      } else if (moveDown) {
+      }
+      if (moveDown) {
         this.translationWorldDelta.z = -this.viewer.getMoveSpeed()
       }
     }
@@ -277,21 +268,17 @@ export class VAFirstPersonControls extends Potree.EventDispatcher {
     this.translationDelta.multiplyScalar(attenuation)
     this.translationWorldDelta.multiplyScalar(attenuation)
 
-    if (this.objectsRegisteredForUpdate.length > 0) {
-      this.objectsRegisteredForUpdate.forEach((element) => {
-        element.update()
-      })
+    /**
+     * Apply same rotation and direction to the mesh than the camera
+     */
+    if (moveVideo) {
+      const camera = this.scene.getActiveCamera()
+      const offset = 3.6
+      const pointNew = view.position.clone().addScaledVector(camera.getWorldDirection(), offset) // your new point
+
+      potreeRef.selectedVideo.position = pointNew
+      potreeRef.selectedVideo.quaternion = camera.quaternion.clone()
+      potreeRef.selectedVideo.rotation = new THREE.Euler().setFromQuaternion(camera.quaternion.clone())
     }
   }
-
-  registerForUpdate (object) {
-    this.objectsRegisteredForUpdate.push(object)
-  }
-
-  deRegisterForUpdate (object) {
-    const index = this.objectsRegisteredForUpdate.indexOf(object)
-    if (index > -1) {
-      this.objectsRegisteredForUpdate.splice(index, 1)
-    }
-  }
-};
+}

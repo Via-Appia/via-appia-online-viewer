@@ -19,19 +19,6 @@
       <div class="btn pointer-events-auto" @click="toggleSidebar">
         Toggle Panel
       </div>
-      <div>
-        <div>camera pos: {{ camera && camera.position }}</div>
-        <div v-if="potreeRef.selectedVideo">
-          distance: {{ camera.position.distanceTo(potreeRef.selectedVideo.position) }}
-        </div>
-        <div
-          v-if="potreeRef.selectedVideo"
-          class="btn btn-sm pointer-events-auto"
-          @click="potreeRef.selectedVideo.lookAt(camera.position)"
-        >
-          rotate
-        </div>
-      </div>
     </div>
 
     <camera-side-panel-section v-if="camera" />
@@ -40,12 +27,9 @@
 </template>
 
 <script>
-// import Vue from 'vue'
 import { ref } from '@nuxtjs/composition-api'
 import { potreeRef, addAnimationPath, initViewer, listenSelectObject } from '~/api/VAPotree'
 
-// Access the potreeView instance from everywhere using composition API
-// export const potreeRef = reactive({})
 export const isSidebarOpen = ref(false)
 
 export default {
@@ -93,7 +77,6 @@ export default {
     //
 
     this.$refs.potree_container.addEventListener('click', (event) => {
-      console.log('🎹 CLICKESD')
       listenSelectObject()
     })
     // we need to pass to the global value the viewer, otherwise, the animation won't be able to load
@@ -101,7 +84,7 @@ export default {
     this.camera = potreeRef.viewer.scene.getActiveCamera()
 
     // get labels
-    this.getLabels()
+    // this.getLabels()      // TODO ADD LABELS?!!!!
   },
 
   methods: {
@@ -169,7 +152,6 @@ export default {
 .potree_toolbar_label {
   text-align: center;
   font-size: smaller;
-  opacity: 0.9;
 }
 
 .potree_toolbar_separator {

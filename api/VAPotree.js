@@ -1,7 +1,7 @@
 // Access the potreeView instance from everywhere using composition API
 import { reactive } from '@nuxtjs/composition-api'
-import CameraControls from 'camera-controls'
-import { VAFirstPersonControls } from '~/components/overrides/VAFirstPersonControls'
+// import CameraControls from 'camera-controls'
+import { VAFirstPersonControls } from '~/api/VAFirstPersonControls'
 // CameraControls.install({ THREE })
 // import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import { moveToVideo } from '~/api/videos'
@@ -116,8 +116,8 @@ export function listenSelectObject () {
   const mouse = new THREE.Vector2()
   // calculate mouse position in normalized device coordinates
   // (-1 to +1) for both components
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
+  mouse.x = (event?.clientX / window.innerWidth) * 2 - 1
+  mouse.y = -(event?.clientY / window.innerHeight) * 2 + 1
   // update the picking ray with the camera and mouse position
   const camera = potreeRef.viewer.scene.getActiveCamera()
   raycaster.setFromCamera(mouse, camera)
@@ -126,10 +126,10 @@ export function listenSelectObject () {
   const intersects = raycaster.intersectObjects(sceneChildren)
 
   // for (let i = 0; i < intersects.length; i++) {
-  if (intersects[0].object.type === 'VIDEO_TYPE') {
+  if (intersects[0]?.object?.type === 'VIDEO_TYPE') {
     // Toggle color, DEMO
-    const isSelected = intersects[0].object.material.emissive?.getHex() === 0xFF0000
-    intersects[0].object.material.emissive?.setHex(isSelected ? 0x000000 : 0xFF0000)
+    // const isSelected = intersects[0].object.material.emissive?.getHex() === 0xFF0000
+    // intersects[0].object.material.emissive?.setHex(isSelected ? 0x000000 : 0xFF0000)
     moveToVideo(intersects[0].object)
     potreeRef.selectedVideo = intersects[0].object
     // }

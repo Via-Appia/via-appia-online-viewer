@@ -15,6 +15,31 @@
       <div>
         <div class="p-3 card bordered">
           <div class="form-control">
+            <!-- Copy Media position -->
+            <button
+              class="text-xs text-gray-400 font-capitalize btn btn-xs btn-outline"
+              @click="copyCameraPosition(
+                `mediaPosition:  [${potreeRef.selectedVideo.position.toArray().toString()}]
+mediaRotation:  [${potreeRef.selectedVideo.quaternion.toArray().toString()}]`
+              )"
+            >
+              <svg
+                class="w-3 mr-1 h-"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-divnecap="round"
+                  stroke-divnejoin="round"
+                  stroke-width="2"
+                  d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
+                />
+              </svg>
+              Copy Media Position
+            </button>
+
             <div>
               Video Player
               <br class="mb-3">
@@ -29,9 +54,6 @@
                 end
               </div>
               <br>
-              <!--              <div class="btn  btn-xs" @click="removeVideo(potreeRef.selectedVideo.name)">-->
-              <!--                delete-->
-              <!--              </div>-->
               <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].playbackRate = 0.5">
                 0.5x
               </div>
@@ -107,28 +129,28 @@ cameraTarget:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]`
             d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
           />
         </svg>
-        Copy Position and Target
+        Copy Camera position
       </button>
-      <button
-        class="text-xs text-gray-400 font-capitalize btn btn-xs btn-outline"
-        @click="copyCameraPosition(potreeRef.viewer.scene.getActiveCamera().position.toArray().toString())"
-      >
-        <svg
-          class="w-3 mr-1 h-"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-divnecap="round"
-            stroke-divnejoin="round"
-            stroke-width="2"
-            d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
-          />
-        </svg>
-        Copy Camera Position
-      </button>
+      <!--      <button-->
+      <!--        class="text-xs text-gray-400 font-capitalize btn btn-xs btn-outline"-->
+      <!--        @click="copyCameraPosition(potreeRef.viewer.scene.getActiveCamera().position.toArray().toString())"-->
+      <!--      >-->
+      <!--        <svg-->
+      <!--          class="w-3 mr-1 h-"-->
+      <!--          fill="none"-->
+      <!--          stroke="currentColor"-->
+      <!--          viewBox="0 0 24 24"-->
+      <!--          xmlns="http://www.w3.org/2000/svg"-->
+      <!--        >-->
+      <!--          <path-->
+      <!--            stroke-divnecap="round"-->
+      <!--            stroke-divnejoin="round"-->
+      <!--            stroke-width="2"-->
+      <!--            d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"-->
+      <!--          />-->
+      <!--        </svg>-->
+      <!--        Copy Camera Position-->
+      <!--      </button>-->
 
       <div class="mt-2 mb-2">
         x: <input
@@ -188,7 +210,6 @@ cameraTarget:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]`
 
     <!-- Camera Rotation-->
     <div class="mt-4 font-bold">
-      Camera Rotation (Radians)
       <div class="mb-2">
         Yaw (left-right): <input
           :value="potreeRef.viewer.scene.view.yaw"
@@ -230,11 +251,11 @@ cameraTarget:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]`
 
 <script>
 import { potreeRef } from '~/api/VAPotree'
-import { loadVideo, videos, removeVideo } from '~/api/videos'
+import { videos, removeVideo } from '~/api/videos'
 
 export default {
   setup () {
-    return { potreeRef, loadVideo, videos, removeVideo }
+    return { potreeRef, videos, removeVideo }
   },
 
   data () {
@@ -251,10 +272,6 @@ export default {
   mounted () {
     this.activeCamera = potreeRef.viewer.scene.getActiveCamera()
     this.target = potreeRef.viewer.scene.view.getPivot()
-
-    potreeRef.viewer.addEventListener('image clicked', (payload) => {
-      this.activeImage = payload.image
-    })
   },
 
   methods: {
@@ -297,19 +314,7 @@ export default {
     setActiveImageOffset (offsetValue = this.offset) {
       this.offset = offsetValue
       this.activeImage.setPosition(this.activeCamera, offsetValue)
-    },
-    setImageFollowsCamera (value) {
-      this.imageFollowsCamera = value
-      if (this.imageFollowsCamera) {
-        potreeRef.viewer.fpControls.registerForUpdate(this)
-      } else {
-        potreeRef.viewer.fpControls.deRegisterForUpdate(this)
-      }
-    },
-    update () {
-      this.activeImage.setPosition(this.activeCamera, this.offset)
     }
-
   }
 }
 </script>
