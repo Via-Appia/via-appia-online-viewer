@@ -4,7 +4,11 @@ import { potreeRef } from '~/api/VAPotree'
 
 export const videos = ref({})
 
-export const loadVideo = ({ mediaPath = '/videos/counter.mp4', mediaPosition, mediaRotation }) => {
+export const loadVideo = ({ mediaPath = '/videos/counter.mp4', mediaPosition, mediaRotation, mediaScale = 1 }) => {
+  !mediaPosition && console.error('No mediaPosition defined')
+  !mediaRotation.length === 0 && console.error('No mediaRotation defined')
+  mediaPath === '' && console.error('No mediaPath defined')
+
   // Define aspect Screen aspect ratio
   const aspectRatio = 9 / 16 // 16:9
 
@@ -44,7 +48,7 @@ export const loadVideo = ({ mediaPath = '/videos/counter.mp4', mediaPosition, me
   // meshFloatingVideo.name.set('hello there')
 
   // set the position of the image meshFloatingVideo in the x,y,z dimensions
-  const scale = 5 * 1.48
+  const scale = 5 * 1.48 * mediaScale
   meshFloatingVideo.scale.set(1 * scale, (aspectRatio) * scale, 1 * scale)
   meshFloatingVideo.name = mediaPath
   meshFloatingVideo.type = 'VIDEO_TYPE'

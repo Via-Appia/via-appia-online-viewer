@@ -141,7 +141,7 @@ export default {
   position: absolute;
   left: 0px;
   top: 0px;
-  background: #00000095;
+  background: rgba(0, 0, 0, .8);
   color: white;
   /*padding: 0.3em 0.8em;*/
   font-family: "system-ui";

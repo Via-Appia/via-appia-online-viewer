@@ -101,10 +101,11 @@ export default {
   },
   methods: {
     initPagePosition () {
-      // Cat image todo delete
-      this.loadImage()
+      // // Cat image todo delete
+      // this.loadImage()
 
       // goToCameraPosition
+      potreeRef.viewer.setFOV(this.page?.cameraFOV || 60)
       potreeRef.viewer.scene.view.setView(
         this.page.cameraPosition,
         this.page.cameraTarget,
