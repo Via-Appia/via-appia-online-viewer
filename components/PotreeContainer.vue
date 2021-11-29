@@ -1,44 +1,48 @@
 <template>
   <div>
-    <div id="potree_container" ref="potree_container" class="z-0 absolute w-screen h-screen">
-      <div id="potree_sidebar_container" />
-      <!--  Only show the toolbar when developing locally-->
-      <!--  <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" /> -->
-      <div class="flex absolute right-4 bottom-4 z-20">
-        <div class="btn" @click="toggleSidebar">
-          Toggle Panel
-        </div>
+    <div id="potree_container" ref="potree_container" class=" absolute w-screen h-screen" />
+
+    <!--  Only show the toolbar when developing locally-->
+    <!--  <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" /> -->
+    <div
+      class="flex w-full absolute left-4 bottom-4 z-20 items-end pr-10 pointer-events-none"
+      :class="{'pl-[300px]':isSidebarOpen}"
+    >
+      <img src="/app/keys.svg" alt="Keys Helper" class="select-none pointer-events-none h-20">
+      <div class="mr-auto mb-1">
+        {{ potreeRef.props.moveSpeed }}
+      </div>
+      <div class="pointer-events-auto cursor-pointer" @click="resize">
+        {{ windowWidth }} x {{ windowHeight }}
+      </div>
+
+      <div class="btn pointer-events-auto" @click="toggleSidebar">
+        Toggle Panel
       </div>
     </div>
-    <camera-section v-if="camera" />
+
+    <camera-side-panel-section v-if="camera" />
+    <div id="potree_sidebar_container" />
   </div>
 </template>
 
 <script>
-// import Vue from 'vue'
 import { ref } from '@nuxtjs/composition-api'
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
-import {
-  potreeRef,
-  setInitialSceneParameters, loadInitialPointCloud, addAnimationPath
-} from '~/api/VAPotree'
+import { potreeRef, addAnimationPath, initViewer, listenSelectObject } from '~/api/VAPotree'
 
-// Access the potreeView instance from everywhere using composition API
-// export const potreeRef = reactive({})
 export const isSidebarOpen = ref(false)
 
 export default {
-  name: 'PotreeViewer',
   setup (props, context) {
-    return {
-      isSidebarOpen
-    }
+    return { isSidebarOpen, potreeRef }
   },
 
   data () {
     return {
       labels: [],
-      camera: null
+      camera: null,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight
     }
   },
   async fetch () {
@@ -50,10 +54,14 @@ export default {
    */
   watch: {
     $route (to, from) {
-      this.getAnimationPaths(to.params)
+      // this.getAnimationPaths(to.params)
     }
   },
   mounted () {
+    window.addEventListener('resize', () => {
+      this.windowHeight = window.innerHeight
+      this.windowWidth = window.innerWidth
+    })
     // check if the sidebar is visible
     isSidebarOpen.value = $('#potree_sidebar_container').is(':visible')
 
@@ -62,89 +70,30 @@ export default {
       this.toggleSidebar()
     }
 
-    // Load potree viewer inside the DOM
-    potreeRef.viewer = new Potree.Viewer(this.$refs.potree_container)
-    setInitialSceneParameters()
-    loadInitialPointCloud()
+    initViewer(this.$refs.potree_container)
 
-    const viewer = potreeRef.viewer
-    const scene = viewer.scene
-    this.camera = scene.getActiveCamera()
+    //
+    // Listen for clicks on the viewer
+    //
+
+    this.$refs.potree_container.addEventListener('click', (event) => {
+      listenSelectObject()
+    })
+    // we need to pass to the global value the viewer, otherwise, the animation won't be able to load
+    window.viewer = potreeRef.viewer
+    this.camera = potreeRef.viewer.scene.getActiveCamera()
 
     // get labels
-    this.getLabels()
-
-    // LIGHTS
-    {
-      const directional = new THREE.DirectionalLight(0xFFFFFF, 1.0)
-      directional.position.set(10, 10, 10)
-      directional.lookAt(0, 0, 0)
-      const ambient = new THREE.AmbientLight(0x555555)
-      viewer.scene.scene.add(directional)
-      viewer.scene.scene.add(ambient)
-    }
-
-    // Load Textured bunny from obj
-    {
-      const manager = new THREE.LoadingManager()
-      manager.onProgress = function (item, loaded, total) {
-        console.log(item, loaded, total)
-      }
-      const textureLoader = new THREE.TextureLoader(manager)
-      const texture = textureLoader.load(`${Potree.resourcePath}/textures/brick_pavement.jpg`)
-      const onProgress = function (xhr) {
-        if (xhr.lengthComputable) {
-          const percentComplete = xhr.loaded / xhr.total * 100
-          console.log(Math.round(percentComplete, 2) + '% downloaded')
-        }
-      }
-      texture.wrapS = THREE.RepeatWrapping
-      texture.wrapT = THREE.RepeatWrapping
-
-      const onError = function (xhr) {}
-      const loader = new OBJLoader(manager)
-      loader.load('/models/stanford_bunny_reduced.obj', (object) => {
-        object.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.material.map = texture
-          }
-        })
-
-        object.position.set(296266.35737207683, 4633691.154054946, 127.2844159686045)
-        object.scale.multiplyScalar(10)
-        object.rotation.set(Math.PI / 2, Math.PI, 0)
-
-        viewer.scene.scene.add(object)
-
-        viewer.onGUILoaded(() => {
-          // Add entries to object list in sidebar
-          const tree = $('#jstree_scene')
-          const parentNode = 'other'
-
-          const bunnyID = tree.jstree('create_node', parentNode, {
-            text: 'Bunny Textured',
-            icon: `${Potree.resourcePath}/icons/triangle.svg`,
-            data: object
-          },
-          'last', false, false)
-          tree.jstree(object.visible ? 'check_node' : 'uncheck_node', bunnyID)
-
-          // tree.jstree("open_node", parentNode);
-        })
-      }, onProgress, onError)
-
-      // Floor
-      {
-        const geometry = new THREE.PlaneGeometry(100000, 100000)
-        const material = new THREE.MeshBasicMaterial({ color: 0x2E3222, side: THREE.DoubleSide })
-        const plane = new THREE.Mesh(geometry, material)
-        plane.position.set(296266.35737207683, 4633691.154054946, 100)
-        viewer.scene.scene.add(plane)
-      }
-    }
+    // this.getLabels()      // TODO ADD LABELS?!!!!
   },
 
   methods: {
+    resize () {
+      window.open(
+        'http://localhost:3000',
+        '',
+        'width=1280, height=721, directories=no,titlebar=no,toolbar=no, location=no, status=no, menubar=no, scrollbars=no, resizable=no')
+    },
     // Get labels from the markdown file and ads the to the scene
     async getLabels () {
       const labels = await this.$content('labels-map')
@@ -154,9 +103,7 @@ export default {
     },
 
     async getAnimationPaths ({ story = '', page = '' }) {
-
       const animation = await this.$content(story, page)
-        .only(['cameraTarget', 'cameraPosition', 'animationSpeed'])
         .fetch()
         .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
 
@@ -172,8 +119,7 @@ export default {
       // Remove previous animations
       // TODO this doesn't remove the animation from the previous path
       potreeRef.viewer.scene.cameraAnimations.length = 0
-      addAnimationPath(positions, targets, animation.animationSpeed)
-
+      addAnimationPath(positions, targets, animation.animationEntry)
       potreeRef.viewer.scene.cameraAnimations[0].play()
     },
 
@@ -193,10 +139,9 @@ export default {
 
 #potree_sidebar_container {
   position: absolute;
-  z-index: 1000;
   left: 0px;
   top: 0px;
-  background: black;
+  background: #00000095;
   color: white;
   /*padding: 0.3em 0.8em;*/
   font-family: "system-ui";
@@ -207,7 +152,6 @@ export default {
 .potree_toolbar_label {
   text-align: center;
   font-size: smaller;
-  opacity: 0.9;
 }
 
 .potree_toolbar_separator {

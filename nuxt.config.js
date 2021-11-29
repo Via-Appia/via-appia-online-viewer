@@ -95,7 +95,8 @@ export default {
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/tailwindcss
     '@nuxtjs/tailwindcss',
-    '@nuxtjs/composition-api/module'
+    '@nuxtjs/composition-api/module',
+    'nuxt-use-motion'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -114,6 +115,12 @@ export default {
       client: {
         overlay: false // Disable Nuxt Black Screen ESLint
       }
+    },
+    extend (config, ctx) {
+      config.module.rules.push({
+        test: /\.ya?ml$/,
+        use: 'js-yaml-loader'
+      })
     }
   }
 }

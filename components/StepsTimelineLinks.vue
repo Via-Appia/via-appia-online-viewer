@@ -9,9 +9,9 @@
           <div class="w-6 h-6 absolute top-1/4 -mt-3 flex justify-center">
             <div class="relative py-3 sm:max-w-xl sm:mx-auto">
               <div class="group cursor-pointer relative inline-block text-center">
-                <nuxt-link tag="div" :to="'/stories' + page.path" class="btn btn-circle text-white">
-                  {{ i + 1 }}
-                </nuxt-link>
+                <router-link :to="'/stories' + page.path" class="btn btn-circle text-white">
+                  <span> {{ i + 1 }}</span>
+                </router-link>
                 <div
                   class=" w-[170px] h-14 flex items-center justify-center bg-gray-800 text-white text-center rounded-lg py-2
                           absolute opacity-0 transition-all
