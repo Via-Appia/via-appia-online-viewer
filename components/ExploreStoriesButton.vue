@@ -30,19 +30,11 @@
     </label>
   </div>
 </template>
-<script>
-export default {
-  name: 'ExploreStories',
-  data () {
-    return {
-      menu: {}
-    }
-  },
-  async mounted () {
-    this.menu = await this.$content('menu-items').fetch()
-  }
-}
+
+<script setup>
+import menu from '~/content/menu-items.yaml'
 </script>
+
 <style scoped>
 .grid-modal{
   display: grid;

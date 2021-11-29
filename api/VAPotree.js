@@ -1,28 +1,37 @@
 // Access the potreeView instance from everywhere using composition API
 import { reactive } from '@nuxtjs/composition-api'
-import { VAFirstPersonControls } from '~/components/overrides/VAFirstPersonControls'
+// import CameraControls from 'camera-controls'
+import { VAFirstPersonControls } from '~/api/VAFirstPersonControls'
+// CameraControls.install({ THREE })
+// import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
+import { moveToVideo } from '~/api/videos'
 
-export const potreeRef = reactive({})
+export const potreeRef = reactive(
+  {
+    viewer: null, // shortcut
+    camera: null,
+    props: { moveSpeed: null },
+    videos: {},
+    selectedVideo: null,
+    followCamera: false
+  })
 
 /*
  Custom methods library for Via Appia
  */
-export function setInitialSceneParameters () {
-  // Todo move from the global scope
-  // we need to pass to the global value the viewer, otherwise, the animation won't be able to load
+
+export function initViewer (DOMElement) {
+  // Load potree viewer inside the DOM
+  potreeRef.viewer = new Potree.Viewer(DOMElement)
+  potreeRef.camera = potreeRef.viewer.scene.getActiveCamera()
+  // const width = window.innerWidth
+  // const height = window.innerHeight
+  // const camera = new THREE.PerspectiveCamera(60, width / height, 0.01, 100)
+  // potreeRef.cameraControls = new CameraControls(camera, DOMElement)
+  // potreeRef.cameraControls = new CameraControls(potreeRef.camera, DOMElement)
+
   const viewer = potreeRef.viewer
-  window.viewer = viewer
-
-  viewer.setFOV(60)
-  viewer.setBackground('skybox')
-  viewer.setEDLEnabled(false)
-  viewer.setPointBudget(process.env.pointsBudget)
-  viewer.loadSettingsFromURL()
-
-  // Set initial camera view position
-  viewer.scene.view.position.set(296264.39688606694, 4633679.776566018, 129.77835768357866)
-  viewer.scene.view.yaw = 0.3
-  viewer.scene.view.pitch = 0
+  loadInitialPointCloud() // TODO ///////////////////////////////////////////////////////////////////////////////// DO NOT COMMIT THIS
 
   viewer.loadGUI(() => {
     viewer.setLanguage('en')
@@ -31,7 +40,6 @@ export function setInitialSceneParameters () {
     $('#menu_scene').next().show()
     // hide menu button in the sidebar
     $('#potree_quick_buttons').hide()
-
     // Add custom section for Camera
     const cameraSection = $(`
         <h3 id="menu_camera" class="accordion-header ui-widget"><span>Camera</span></h3>
@@ -44,16 +52,88 @@ export function setInitialSceneParameters () {
     cameraSectionContent.html(cameraSectionHTML)
     cameraSection.first().click(() => cameraSectionContent.slideToggle())
     cameraSection.insertBefore($('#menu_tools'))
+    const initialMoveSpeed = 5.5
 
+    potreeRef.props.moveSpeed = initialMoveSpeed
+    viewer.setMoveSpeed(initialMoveSpeed)
+
+    viewer.setFOV(60)
+    viewer.setBackground('skybox')
+    viewer.setEDLEnabled(false)
+    viewer.setPointBudget(process.env.pointsBudget)
+    viewer.loadSettingsFromURL()
+
+    // Set initial camera view position
+    viewer.scene.view.position.set(296264.39688606694, 4633679.776566018, 129.77835768357866)
+    viewer.scene.view.yaw = 0.3
+    viewer.scene.view.pitch = 0
+
+    // Potree leave Side Panel
     viewer.toggleSidebar()
 
     // Control camera with the keyboard
-    viewer.fpControls = new VAFirstPersonControls(viewer)
+    viewer.fpControls = new VAFirstPersonControls(potreeRef.viewer)
     viewer.fpControls.addEventListener('start', viewer.disableAnnotations)
     viewer.fpControls.addEventListener('end', viewer.enableAnnotations)
-    viewer.setControls(viewer.fpControls)
-    viewer.setMoveSpeed(5.5)
+    viewer.setControls(potreeRef.viewer.fpControls)
+
+    addFloor()
+    addLights()
+    listenSelectObject()
+    // addBunnyExample()
   })
+}
+
+// LIGHTS
+function addLights () {
+  // Ambient light will make the messes look uniform.
+  const ambient = new THREE.AmbientLight(0xFFFFFF)
+
+  // Other lights create shadows and luminescence for the images
+  //   const directional = new THREE.DirectionalLight(0xFFFFFF, 1.0)
+  //   directional.position.set(10, 10, 10)
+  //   directional.lookAt(0, 0, 0)
+  //   viewer.scene.scene.add(directional)
+
+  potreeRef.viewer.scene.scene.add(ambient)
+}
+
+// Floor
+function addFloor () {
+  const geometry = new THREE.PlaneGeometry(100000, 100000)
+  const material = new THREE.MeshBasicMaterial({ color: 0x2E3222, side: THREE.DoubleSide })
+  const plane = new THREE.Mesh(geometry, material)
+  plane.position.set(296266.35737207683, 4633691.154054946, 100)
+  potreeRef.viewer.scene.scene.add(plane)
+}
+
+export function listenSelectObject () {
+  // Do not select any object if there is a media following the camera
+  if (potreeRef.followCamera) {
+    return
+  }
+  const raycaster = new THREE.Raycaster()
+  const mouse = new THREE.Vector2()
+  // calculate mouse position in normalized device coordinates
+  // (-1 to +1) for both components
+  mouse.x = (event?.clientX / window.innerWidth) * 2 - 1
+  mouse.y = -(event?.clientY / window.innerHeight) * 2 + 1
+  // update the picking ray with the camera and mouse position
+  const camera = potreeRef.viewer.scene.getActiveCamera()
+  raycaster.setFromCamera(mouse, camera)
+  const sceneChildren = potreeRef.viewer.scene.scene.children
+  // calculate objects intersecting the picking ray
+  const intersects = raycaster.intersectObjects(sceneChildren)
+
+  // for (let i = 0; i < intersects.length; i++) {
+  if (intersects[0]?.object?.type === 'VIDEO_TYPE') {
+    // Toggle color, DEMO
+    // const isSelected = intersects[0].object.material.emissive?.getHex() === 0xFF0000
+    // intersects[0].object.material.emissive?.setHex(isSelected ? 0x000000 : 0xFF0000)
+    moveToVideo(intersects[0].object)
+    potreeRef.selectedVideo = intersects[0].object
+    // }
+  }
 }
 
 export function loadInitialPointCloud () {
@@ -79,8 +159,8 @@ export function loadInitialPointCloud () {
 }
 
 export function toggleAnimationVisibility () {
-  potreeRef.viewer.scene.view.getPivot().toArray()
-  potreeRef.viewer.scene.cameraAnimations[0].setVisible(!potreeRef.viewer.scene.cameraAnimations[0].visible)
+  potreeRef.viewer.scene.scene.view.getPivot().toArray()
+  potreeRef.viewer.scene.scene.cameraAnimations[0].setVisible(!potreeRef.viewer.scene.cameraAnimations[0].visible)
 }
 
 export function addAnimationPath (positions = [], targets = [], duration = 3) {
@@ -95,3 +175,53 @@ export function addAnimationPath (positions = [], targets = [], duration = 3) {
   animation.duration = duration
   potreeRef.viewer.scene.addCameraAnimation(animation)
 }
+
+// Load Textured bunny from obj
+/* function addBunnyExample () {
+  const manager = new THREE.LoadingManager()
+  manager.onProgress = function (item, loaded, total) {
+    console.log(item, loaded, total)
+  }
+  const textureLoader = new THREE.TextureLoader(manager)
+  const texture = textureLoader.load(`${Potree.resourcePath}/textures/brick_pavement.jpg`)
+  const onProgress = function (xhr) {
+    if (xhr.lengthComputable) {
+      const percentComplete = xhr.loaded / xhr.total * 100
+      console.log(Math.round(percentComplete, 2) + '% downloaded')
+    }
+  }
+  texture.wrapS = THREE.RepeatWrapping
+  texture.wrapT = THREE.RepeatWrapping
+
+  const onError = function (xhr) {}
+  const loader = new OBJLoader(manager)
+  loader.load('/models/stanford_bunny_reduced.obj', (object) => {
+    object.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.material.map = texture
+      }
+    })
+
+    object.position.set(296266.35737207683, 4633691.154054946, 127.2844159686045)
+    object.scale.multiplyScalar(10)
+    object.rotation.set(Math.PI / 2, Math.PI, 0)
+
+    viewer.scene.scene.add(object)
+
+    viewer.onGUILoaded(() => {
+      // Add entries to object list in sidebar
+      const tree = $('#jstree_scene')
+      const parentNode = 'other'
+
+      const bunnyID = tree.jstree('create_node', parentNode, {
+        text: 'Bunny Textured',
+        icon: `${Potree.resourcePath}/icons/triangle.svg`,
+        data: object
+      },
+      'last', false, false)
+      tree.jstree(object.visible ? 'check_node' : 'uncheck_node', bunnyID)
+
+      // tree.jstree("open_node", parentNode);
+    })
+  }, onProgress, onError)
+} */

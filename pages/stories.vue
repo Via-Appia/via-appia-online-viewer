@@ -14,19 +14,11 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { isSidebarOpen } from '~/components/PotreeContainer'
-export default {
-  setup () {
-    return {
-      isSidebarOpen
-    }
-  }
-}
 </script>
 
 <style scoped>
-
 /* Transitions using the page hook */
 .page-enter-active {
   animation: acrossIn .40s ease-out both;
