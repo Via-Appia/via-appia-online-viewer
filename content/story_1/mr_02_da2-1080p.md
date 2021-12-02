@@ -10,5 +10,5 @@ cameraFOV: 60
 cameraPosition:  []
 cameraTarget:  []
 
-animationEntry: 2000
+animationEntry: 5000
 ---

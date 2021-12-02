@@ -103,6 +103,7 @@ export default {
     initPagePosition () {
       // // Cat image todo delete
       // this.loadImageExample()
+      loadVideo(this.page)
 
       // goToCameraPosition
       potreeRef.viewer.setFOV(this.page?.cameraFOV || 60)
@@ -110,11 +111,14 @@ export default {
         this.page.cameraPosition,
         this.page.cameraTarget,
         this.page.animationEntry || 2000, () => {
-          console.log('🎹 eneded movement')
+
+          // potreeRef.selectedVideo.playbackRate = 7
+          // potreeRef.selectedVideo.play()
         })
 
       // Load media: video or static image
-      loadVideo(this.page)
+      // console.log('🎹 eneded movement', videos[this.page.mediaPath])
+      // videos[this.page.mediaPath].playbackRate = 7
     },
 
     loadImageExample () {

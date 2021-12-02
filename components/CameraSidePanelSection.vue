@@ -15,9 +15,40 @@
     <div v-if="potreeRef.selectedVideo">
       <div class="p-3 card bordered">
         <div class="form-control">
+          <!-- Copy All-->
+          <button
+            class=" font-capitalize btn btn-sm btn-primary"
+            @click="copyCameraPosition(
+              `mediaPosition:  [${potreeRef.selectedVideo.position.toArray().toString()}]
+mediaRotation:  [${potreeRef.selectedVideo.quaternion.toArray().toString()}]
+mediaScale: ${scaleMedia}
+cameraFOV: ${fov}
+
+cameraPosition:  [${potreeRef.viewer.scene.getActiveCamera().position.toArray().toString()}]
+cameraTarget:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]
+`
+            )"
+          >
+            <svg
+              class="w-3 mr-1 h-"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-divnecap="round"
+                stroke-divnejoin="round"
+                stroke-width="2"
+                d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
+              />
+            </svg>
+            Copy all params
+          </button>
+
           <!-- Copy Media position -->
           <button
-            class=" font-capitalize btn btn-sm"
+            class=" font-capitalize btn btn-sm mt-3"
             @click="copyCameraPosition(
               `mediaPosition:  [${potreeRef.selectedVideo.position.toArray().toString()}]
 mediaRotation:  [${potreeRef.selectedVideo.quaternion.toArray().toString()}]

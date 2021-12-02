@@ -4,7 +4,13 @@ import { potreeRef } from '~/api/VAPotree'
 
 export const videos = ref({})
 
-export const loadVideo = ({ mediaPath = '/videos/counter.mp4', mediaPosition, mediaRotation, mediaScale = 1, cameraFOV }) => {
+export const loadVideo = ({
+  mediaPath = '/videos/counter.mp4',
+  mediaPosition,
+  mediaRotation,
+  mediaScale = 1,
+  cameraFOV
+}) => {
   !mediaPosition && console.error('No mediaPosition defined')
   !mediaRotation.length === 0 && console.error('No mediaRotation defined')
   mediaPath === '' && console.error('No mediaPath defined')
@@ -24,6 +30,7 @@ export const loadVideo = ({ mediaPath = '/videos/counter.mp4', mediaPosition, me
   video.id = mediaPath
   video.muted = true
   video.loop = false
+  video.playbackRate = 5
   video.play()
 
   const geometry = new THREE.PlaneGeometry(1, 1)
@@ -69,7 +76,9 @@ export const loadVideo = ({ mediaPath = '/videos/counter.mp4', mediaPosition, me
   meshFloatingVideo.callback = function () { console.log('hello', this.name) }
 
   // add Media to the scene
-  scene.add(meshFloatingVideo)
+  scene.add(meshFloatingVideo, () => {
+    console.log('🎹 FININIFNIFNF')
+  })
 }
 
 export const removeVideo = (mediaPath = '/videos/counter.mp4') => {
