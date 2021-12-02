@@ -10,6 +10,7 @@
       </pre>
     </div>
 
+    FOV (Field of View): {{ fov }}
     <!-- Active media -->
     <div v-if="potreeRef.selectedVideo">
       <div class="p-3 card bordered">
@@ -96,10 +97,10 @@ cameraFOV: ${fov}
             FOV (Field of View): {{ fov }}
           </div>
           <input
+            v-model="fov"
             type="range"
             min="10"
             max="120"
-            :value="potreeRef.viewer.scene.getActiveCamera()"
             @input="changeFOV"
           >
           <div class="mt-4 font-bold">
@@ -293,12 +294,15 @@ export default {
       const scale = 5 * 1.48 * this.scaleMedia
       potreeRef.selectedVideo.scale.set(1 * scale, (aspectRatio) * scale, 1 * scale)
     },
+
     changeFOV (event) {
-      this.fov = event.target.value
-      potreeRef.viewer.setFOV(event.target.value)
+      // this.fov = this.fov
+      potreeRef.viewer.setFOV(this.fov)
       if (potreeRef.selectedVideo && potreeRef.followCamera) {
         const aspectRatio = 9 / 16 // 16:9
-        const scale = 5 * 1.48 * event.target.value / 60
+        // const scale = 5 * 1.48 * this.fov / 60
+        const keep = 6.37 * this.scaleMedia
+        const scale = keep * Math.tan(this.fov / 2.0 * Math.PI / 180.0) * 2.0
         potreeRef.selectedVideo.scale.set(1 * scale, (aspectRatio) * scale, 1 * scale)
       }
     },
