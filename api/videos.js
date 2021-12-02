@@ -4,7 +4,7 @@ import { potreeRef } from '~/api/VAPotree'
 
 export const videos = ref({})
 
-export const loadVideo = ({ mediaPath = '/videos/counter.mp4', mediaPosition, mediaRotation, mediaScale = 1 }) => {
+export const loadVideo = ({ mediaPath = '/videos/counter.mp4', mediaPosition, mediaRotation, mediaScale = 1, cameraFOV }) => {
   !mediaPosition && console.error('No mediaPosition defined')
   !mediaRotation.length === 0 && console.error('No mediaRotation defined')
   mediaPath === '' && console.error('No mediaPath defined')
@@ -16,6 +16,7 @@ export const loadVideo = ({ mediaPath = '/videos/counter.mp4', mediaPosition, me
   /**
      * Video
      */
+  // Create video placeholder
   // assuming you have created a HTML video element with id="video"
   videos.value[mediaPath] = document.createElement('video')
   const video = videos.value[mediaPath]
@@ -24,17 +25,6 @@ export const loadVideo = ({ mediaPath = '/videos/counter.mp4', mediaPosition, me
   video.muted = true
   video.loop = false
   video.play()
-
-  //
-  // TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO VIDEO EVENT LISTENERS
-  //
-  video.addEventListener('ended', () => {
-    console.log('🎹 Ended')
-    video.className = ''
-  })
-  video.addEventListener('seeked', (e) => {
-    console.log('🎹 seeked', e)
-  })
 
   const geometry = new THREE.PlaneGeometry(1, 1)
   const texture = new THREE.VideoTexture(video)
@@ -48,7 +38,12 @@ export const loadVideo = ({ mediaPath = '/videos/counter.mp4', mediaPosition, me
   // meshFloatingVideo.name.set('hello there')
 
   // set the position of the image meshFloatingVideo in the x,y,z dimensions
-  const scale = 5 * 1.48 * mediaScale
+
+  // const keep = 6.37 * this.scaleMedia
+  const keep = 6.37 * mediaScale
+  const scale = keep * Math.tan(cameraFOV / 2.0 * Math.PI / 180.0) * 2.0
+
+  // const scale = 5 * 1.48 * mediaScale
   meshFloatingVideo.scale.set(1 * scale, (aspectRatio) * scale, 1 * scale)
   meshFloatingVideo.name = mediaPath
   meshFloatingVideo.type = 'VIDEO_TYPE'
@@ -58,6 +53,17 @@ export const loadVideo = ({ mediaPath = '/videos/counter.mp4', mediaPosition, me
   const quaternion = { _x: mediaRotation[0], _y: mediaRotation[1], _z: mediaRotation[2], _w: mediaRotation[3] }
   const rads = new THREE.Euler().setFromQuaternion(quaternion)
   meshFloatingVideo.rotation.set(rads._x, rads._y, rads._z)
+
+  //
+  // TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO VIDEO EVENT LISTENERS
+  //
+  video.addEventListener('ended', () => {
+    console.log('🎹 Ended')
+    video.className = ''
+  })
+  video.addEventListener('seeked', (e) => {
+    console.log('🎹 seeked', e)
+  })
 
   // Callback for onclick?
   meshFloatingVideo.callback = function () { console.log('hello', this.name) }

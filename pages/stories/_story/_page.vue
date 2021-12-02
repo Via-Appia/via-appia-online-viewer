@@ -102,7 +102,7 @@ export default {
   methods: {
     initPagePosition () {
       // // Cat image todo delete
-      // this.loadImage()
+      // this.loadImageExample()
 
       // goToCameraPosition
       potreeRef.viewer.setFOV(this.page?.cameraFOV || 60)
@@ -117,7 +117,7 @@ export default {
       loadVideo(this.page)
     },
 
-    loadImage () {
+    loadImageExample () {
       const scene = potreeRef.viewer.scene.scene
       // Remove previous image here
       // TODO
