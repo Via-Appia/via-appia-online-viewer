@@ -21,7 +21,7 @@
     </div>
 
     <!--    page time line -->
-    <div class="fixed top-48 right-0">
+    <div class="fixed top-0 py-20 right-0 overflow-auto h-full ">
       <steps-timeline-links :pages="pages" />
     </div>
     <!--      <div class="bg-gray-700 bg-opacity-90 rounded p-4">-->
