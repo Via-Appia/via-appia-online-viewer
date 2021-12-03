@@ -40,3 +40,9 @@ gsutil -m cp -r ./data gs://via-appia-20540.appspot.com
 Access the cloud storage dashboard [here](https://console.cloud.google.com/storage/browser/via-appia-20540.appspot.com) 
 
 
+# Enable settings locally
+You can change local setting by creating a `.env` file and enabling the settings you want to have:
+```shell
+LOCAL_POINTCLUDS = true
+POINTS_BUDGET = 1000000
+```
