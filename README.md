@@ -21,9 +21,14 @@ $ yarn dev
 $ yarn generate
 ```
 
-## Planned Features
 
 Archeological pointcloud viewer for use in a museum setting. Based on storylines (narratives) that are defined by an artist or expert, a user should be able to view multiple _storylines_ , all consisting of multiple _pages_.
+
+## high resolution pointcloud locally: 
+You need to download and place the pointclouds data into the `/static/pointclouds/highres`. 
+The structure looks like:
+
+![img.png](img.png)
 
 ## Upload the PointCloud data in cloud storage
 - You need to have installed locally [gsutils](https://cloud.google.com/storage/docs/gsutil_install) 
@@ -34,4 +39,4 @@ gsutil -m cp -r ./data gs://via-appia-20540.appspot.com
 ```
 Access the cloud storage dashboard [here](https://console.cloud.google.com/storage/browser/via-appia-20540.appspot.com) 
 
-Aanpassing Jorne
+
