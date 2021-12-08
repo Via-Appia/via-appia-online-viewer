@@ -2,13 +2,13 @@
 title: Casal Rotondo
 
 mediaPath: /videos/cr_17_italynews-1080p.mp4
-mediaPosition:  []
-mediaRotation:  []
+mediaPosition:  [296948.54899371124,4632815.700116255,141.95114097205806]
+mediaRotation:  [0.44116586282317793,-0.5755912987286951,-0.5464735750191229,0.41884838559210674]
 mediaScale: 1
-cameraFOV: 60
+cameraFOV: 30
 
-cameraPosition:  []
-cameraTarget:  []
+cameraPosition:  [296945.0773627095,4632816.634415798,141.7644258078706]
+cameraTarget:  [296951.9268028871,4632814.791066427,142.13281010525276]
 
 animationEntry: 
 ---

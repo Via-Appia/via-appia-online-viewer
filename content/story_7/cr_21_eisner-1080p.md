@@ -2,13 +2,13 @@
 title: Casal Rotondo
 
 mediaPath: /videos/cr_21_eisner-1080p.mp4
-mediaPosition:  []
-mediaRotation:  []
+mediaPosition:  [297022.12896453636,4632813.36423442,139.81255060741316]
+mediaRotation:  [0.7077279743079434,0.22557484956234233,0.2033144892727871,0.6378873882423507]
 mediaScale: 1
-cameraFOV: 60
+cameraFOV: 27
 
-cameraPosition:  []
-cameraTarget:  []
+cameraPosition:  [297024.201,4632810.444,139.43985773912684]
+cameraTarget:  [297023.5192245422,4632811.40486394,139.562487325038]
 
 animationEntry: 
 ---

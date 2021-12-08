@@ -2,13 +2,13 @@
 title: Casal Rotondo
 
 mediaPath: /videos/cr_12_anonblew1900-1080p.mp4
-mediaPosition:  []
-mediaRotation:  []
+mediaPosition:  [296951.6757288243,4632812.281750991,140.66699605290427]
+mediaRotation:  [0.6529803341290381,-0.3252515338186515,-0.3049555599825983,0.6122338029095127]
 mediaScale: 1
-cameraFOV: 60
+cameraFOV: 32
 
-cameraPosition:  []
-cameraTarget:  []
+cameraPosition:  [296948.80825706257,4632810.11750753,140.43535853842755]
+cameraTarget:  [296961.9508359704,4632820.036956726,141.4970304797792]
 
 animationEntry: 
 ---
