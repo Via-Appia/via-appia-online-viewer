@@ -2,13 +2,13 @@
 title: I Mausoleo Rotondo
 
 mediaPath: /videos/mr_14_cinec-1080p.mp4
-mediaPosition:  []
-mediaRotation:  []
+mediaPosition:  [296104.168593022,4633896.786586147,128.83772192321757]
+mediaRotation:  [0.6815823519865026,0.15869795407482004,0.1619886920396174,0.6957155456681328]
 mediaScale: 1
-cameraFOV: 60
+cameraFOV: 36
 
-cameraPosition:  []
-cameraTarget:  []
+cameraPosition:  [296105.7584773475,4633893.557528967,128.91159721241527]
+cameraTarget:  [296104.25815488066,4633896.604685893,128.84188348900108]
 
 animationEntry: 2000
 ---

@@ -2,13 +2,14 @@
 title: I Mausoleo Rotondo
 
 mediaPath: /videos/mr_12_fllia1-1080p.mp4
-mediaPosition:  []
-mediaRotation:  []
+mediaPosition:  [296009.6244093066,4633978.818817967,133.65773093051354]
+mediaRotation:  [-0.7209829183808072,-0.02249212191067306,-0.021595785476203506,-0.6922509356474107]
 mediaScale: 1
-cameraFOV: 60
+cameraFOV: 37
 
-cameraPosition:  []
-cameraTarget:  []
+cameraPosition:  [296009.8486200777,4633975.22878734,133.5114106286699]
+cameraTarget:  [296009.35710654256,4633983.098831388,133.83217313473975]
 
 animationEntry: 2000
 ---
+Niet perfect, net als anderen.
