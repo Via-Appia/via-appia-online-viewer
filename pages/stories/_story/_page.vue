@@ -106,6 +106,7 @@ export default {
       loadVideo(this.page)
 
       // goToCameraPosition
+      potreeRef.fov = this.page?.cameraFOV || 60
       potreeRef.viewer.setFOV(this.page?.cameraFOV || 60)
       potreeRef.viewer.scene.view.setView(
         this.page.cameraPosition,

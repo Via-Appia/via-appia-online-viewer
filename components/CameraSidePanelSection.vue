@@ -10,7 +10,7 @@
       </pre>
     </div>
 
-    FOV (Field of View): {{ fov }}
+    FOV (Field of View): {{ potreeRef.fov }}
     <!-- Active media -->
     <div v-if="potreeRef.selectedVideo">
       <div class="p-3 card bordered">
@@ -22,7 +22,7 @@
               `mediaPosition:  [${potreeRef.selectedVideo.position.toArray().toString()}]
 mediaRotation:  [${potreeRef.selectedVideo.quaternion.toArray().toString()}]
 mediaScale: ${scaleMedia}
-cameraFOV: ${fov}
+cameraFOV: ${potreeRef.fov}
 
 cameraPosition:  [${potreeRef.viewer.scene.getActiveCamera().position.toArray().toString()}]
 cameraTarget:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]
@@ -53,7 +53,7 @@ cameraTarget:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]
               `mediaPosition:  [${potreeRef.selectedVideo.position.toArray().toString()}]
 mediaRotation:  [${potreeRef.selectedVideo.quaternion.toArray().toString()}]
 mediaScale: ${scaleMedia}
-cameraFOV: ${fov}
+cameraFOV: ${fpotreeRef.fov}
 `
             )"
           >
@@ -125,11 +125,12 @@ cameraFOV: ${fov}
           </div>
 
           <div class="mt-4 font-bold">
-            FOV (Field of View): {{ fov }}
+            FOV: <input type="number" step="0.01" class="input input-xs w-20" :value="potreeRef.fov" @input="changeFOV">
           </div>
           <input
-            v-model="fov"
+            :value="potreeRef.fov"
             type="range"
+            step="0.01"
             min="10"
             max="120"
             @input="changeFOV"
@@ -309,7 +310,6 @@ export default {
       activeImage: null,
       activeCamera: null,
       target: null,
-      fov: 60,
       imageFollowsCamera: false,
       scaleMedia: 1
     }
@@ -328,12 +328,14 @@ export default {
 
     changeFOV (event) {
       // this.fov = this.fov
-      potreeRef.viewer.setFOV(this.fov)
+      const fov = event.target.value
+      potreeRef.viewer.setFOV(fov)
+      potreeRef.fov = fov
       if (potreeRef.selectedVideo && potreeRef.followCamera) {
         const aspectRatio = 9 / 16 // 16:9
-        // const scale = 5 * 1.48 * this.fov / 60
+        // const scale = 5 * 1.48 * fov / 60
         const keep = 6.37 * this.scaleMedia
-        const scale = keep * Math.tan(this.fov / 2.0 * Math.PI / 180.0) * 2.0
+        const scale = keep * Math.tan(fov / 2.0 * Math.PI / 180.0) * 2.0
         potreeRef.selectedVideo.scale.set(1 * scale, (aspectRatio) * scale, 1 * scale)
       }
     },
