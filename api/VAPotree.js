@@ -142,7 +142,7 @@ export function loadInitialPointCloud () {
   const POINT_CLOUD_URL = process.env.isLocalPointClouds
     // locally
     // ? 'http://localhost:3000/pointclouds/DRIVE_1_V3_levels_8/cloud.js'
-    ? 'http://localhost:3000/pointclouds/converted/cloud.js'
+    ? 'http://localhost:3000/pointclouds/highres/metadata.json'
     // Cloud storage
     : 'https://storage.googleapis.com/via-appia-20540.appspot.com/cloud.js'
 

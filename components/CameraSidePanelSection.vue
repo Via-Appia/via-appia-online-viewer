@@ -22,7 +22,7 @@
               `mediaPosition:  [${potreeRef.selectedVideo.position.toArray().toString()}]
 mediaRotation:  [${potreeRef.selectedVideo.quaternion.toArray().toString()}]
 mediaScale: ${scaleMedia}
-cameraFOV: ${potreeRef.fov}
+cameraFOV: ${fov}
 
 cameraPosition:  [${potreeRef.viewer.scene.getActiveCamera().position.toArray().toString()}]
 cameraTarget:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]
