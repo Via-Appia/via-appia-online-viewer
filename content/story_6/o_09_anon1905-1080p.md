@@ -7,8 +7,10 @@ mediaRotation:  []
 mediaScale: 1
 cameraFOV: 60
 
-cameraPosition:  []
-cameraTarget:  []
+# Pair of camera points and targets: [final point], ... , [entrance point]
+cameraPath: [
+    [[],[]]
+]
 
 animationEntry: 2000
 ---

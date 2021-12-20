@@ -11,164 +11,14 @@
     </div>
 
     FOV (Field of View): {{ potreeRef.fov }}
-    <!-- Active media -->
-    <div v-if="potreeRef.selectedVideo">
-      <div class="p-3 card bordered">
-        <div class="form-control">
-          <!-- Copy All-->
-          <button
-            class=" font-capitalize btn btn-sm btn-primary"
-            @click="copyCameraPosition(
-              `mediaPosition:  [${potreeRef.selectedVideo.position.toArray().toString()}]
-mediaRotation:  [${potreeRef.selectedVideo.quaternion.toArray().toString()}]
-mediaScale: ${scaleMedia}
-cameraFOV: ${fov}
-
-cameraPosition:  [${potreeRef.viewer.scene.getActiveCamera().position.toArray().toString()}]
-cameraTarget:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]
-`
-            )"
-          >
-            <svg
-              class="w-3 mr-1 h-"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke-divnecap="round"
-                stroke-divnejoin="round"
-                stroke-width="2"
-                d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
-              />
-            </svg>
-            Copy all params
-          </button>
-
-          <!-- Copy Media position -->
-          <button
-            class=" font-capitalize btn btn-sm mt-3"
-            @click="copyCameraPosition(
-              `mediaPosition:  [${potreeRef.selectedVideo.position.toArray().toString()}]
-mediaRotation:  [${potreeRef.selectedVideo.quaternion.toArray().toString()}]
-mediaScale: ${scaleMedia}
-cameraFOV: ${fpotreeRef.fov}
-`
-            )"
-          >
-            <svg
-              class="w-3 mr-1 h-"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke-divnecap="round"
-                stroke-divnejoin="round"
-                stroke-width="2"
-                d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
-              />
-            </svg>
-            Copy Media Position
-          </button>
-
-          <div>
-            Video Player
-            <br class="mb-3">
-            <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].play()">
-              Play
-            </div>
-            <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].pause()">
-              pause
-            </div>
-            {{ videos[potreeRef.selectedVideo.name].video }}
-            <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].currentTime = videos[potreeRef.selectedVideo.name].duration">
-              end
-            </div>
-            <br>
-            <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].playbackRate = 0.5">
-              0.5x
-            </div>
-            <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].playbackRate = 2.0">
-              2x
-            </div>
-            <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].playbackRate = 3.0">
-              3x
-            </div>
-            <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].playbackRate = 5.0">
-              5x
-            </div>
-          </div>
-
-          <label class="flex justify-between cursor-pointer mt-3">
-            <span class="label-text">Follow the camera</span>
-            <div>
-              <input type="checkbox" class="toggle toggle-primary" @change="potreeRef.followCamera = $event.target.checked">
-              <span class="toggle-mark" />
-            </div>
-          </label>
-          <div class="flex items-center mt-2">
-            <div class="flex-grow w-full label-text">
-              Opacity <br>{{ potreeRef.selectedVideo.material.opacity }}
-            </div>
-            <input
-              :value="potreeRef.selectedVideo.material.opacity "
-              class="ml-2 input input-xs"
-              step="0.01"
-              type="range"
-              min="0"
-              max="1"
-              @input="potreeRef.selectedVideo.material.opacity = $event.target.value"
-            >
-          </div>
-
-          <div class="mt-4 font-bold">
-            FOV: <input type="number" step="0.01" class="input input-xs w-20" :value="potreeRef.fov" @input="changeFOV">
-          </div>
-          <input
-            :value="potreeRef.fov"
-            type="range"
-            step="0.01"
-            min="10"
-            max="120"
-            @input="changeFOV"
-          >
-          <div class="mt-4 font-bold">
-            Image Scale: {{ scaleMedia }}
-          </div>
-          <input
-            v-model="scaleMedia"
-            type="range"
-            min="0"
-            max="4"
-            step="0.00001"
-            @input="changeScale"
-          >
-
-          <!--            <div class="mt-3">-->
-          <!--              <label class="label-text"> Offset </label>-->
-          <!--              <input-->
-          <!--                :value="offset"-->
-          <!--                class="input input-xs"-->
-          <!--                type="number"-->
-          <!--                step="0.02"-->
-          <!--                @input="setActiveImageOffset($event.target.value)"-->
-          <!--              >-->
-          <!--            </div>-->
-        </div>
-      </div>
-    </div>
 
     <!-- Camera position-->
     <div v-if="activeCamera" class="mt-4 font-bold">
       <!-- Copy camera position -->
       <button
-        class="font-capitalize btn btn-sm"
+        class="font-capitalize btn btn-sm btn-accent"
         @click="copyCameraPosition(
-          `cameraPosition:  [${potreeRef.viewer.scene.getActiveCamera().position.toArray().toString()}]
-cameraTarget:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]`
+          `[[${potreeRef.viewer.scene.getActiveCamera().position.toArray().toString()}],[${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]]`
         )"
       >
         <svg
@@ -285,6 +135,159 @@ cameraTarget:  [${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]`
           :max="potreeRef.viewer.scene.view.maxPitch"
           @input="setCameraRotation({pitch:$event.target.value})"
         >
+      </div>
+    </div>
+
+    <!-- Active media -->
+    <div v-if="potreeRef.selectedVideo">
+      Floating video
+      <div class="p-3 card bordered">
+        <div class="form-control">
+          <!-- Copy All-->
+          <button
+            class=" font-capitalize btn btn-sm btn-primary"
+            @click="copyCameraPosition(
+              `mediaPosition:  [${potreeRef.selectedVideo.position.toArray().toString()}]
+mediaRotation:  [${potreeRef.selectedVideo.quaternion.toArray().toString()}]
+mediaScale: ${scaleMedia}
+cameraFOV: ${potreeRef.fov}
+
+# Pair of camera points and targets: [final point], ... , [entrance point]
+cameraPath: [
+    [[${potreeRef.viewer.scene.getActiveCamera().position.toArray().toString()}],[${potreeRef.viewer.scene.view.getPivot().toArray().toString()}]]
+]
+`
+            )"
+          >
+            <svg
+              class="w-3 mr-1 h-"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-divnecap="round"
+                stroke-divnejoin="round"
+                stroke-width="2"
+                d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
+              />
+            </svg>
+            Copy all params
+          </button>
+
+          <!-- Copy Media position -->
+          <button
+            class=" font-capitalize btn btn-sm mt-3"
+            @click="copyCameraPosition(
+              `mediaPosition:  [${potreeRef.selectedVideo.position.toArray().toString()}]
+mediaRotation:  [${potreeRef.selectedVideo.quaternion.toArray().toString()}]
+mediaScale: ${scaleMedia}
+cameraFOV: ${potreeRef.fov}
+`
+            )"
+          >
+            <svg
+              class="w-3 mr-1 h-"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-divnecap="round"
+                stroke-divnejoin="round"
+                stroke-width="2"
+                d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
+              />
+            </svg>
+            Copy Media Position
+          </button>
+
+          <div>
+            Video Player
+            <br class="mb-3">
+            <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].play()">
+              Play
+            </div>
+            <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].pause()">
+              pause
+            </div>
+            {{ videos[potreeRef.selectedVideo.name].video }}
+            <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].currentTime = videos[potreeRef.selectedVideo.name].duration">
+              end
+            </div>
+            <br>
+            <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].playbackRate = 0.5">
+              0.5x
+            </div>
+            <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].playbackRate = 2.0">
+              2x
+            </div>
+            <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].playbackRate = 3.0">
+              3x
+            </div>
+            <div class="btn btn-xs" @click="videos[potreeRef.selectedVideo.name].playbackRate = 5.0">
+              5x
+            </div>
+          </div>
+
+          <label class="flex justify-between cursor-pointer mt-3">
+            <span class="label-text">Follow the camera</span>
+            <div>
+              <input type="checkbox" class="toggle toggle-primary" @change="potreeRef.followCamera = $event.target.checked">
+              <span class="toggle-mark" />
+            </div>
+          </label>
+          <div class="flex items-center mt-2">
+            <div class="flex-grow w-full label-text">
+              Opacity <br>{{ potreeRef.selectedVideo.material.opacity }}
+            </div>
+            <input
+              :value="potreeRef.selectedVideo.material.opacity "
+              class="ml-2 input input-xs"
+              step="0.01"
+              type="range"
+              min="0"
+              max="1"
+              @input="potreeRef.selectedVideo.material.opacity = $event.target.value"
+            >
+          </div>
+
+          <div class="mt-4 font-bold">
+            FOV: <input type="number" step="0.01" class="input input-xs w-20" :value="potreeRef.fov" @input="changeFOV">
+          </div>
+          <input
+            :value="potreeRef.fov"
+            type="range"
+            step="0.01"
+            min="10"
+            max="120"
+            @input="changeFOV"
+          >
+          <div class="mt-4 font-bold">
+            Image Scale: {{ scaleMedia }}
+          </div>
+          <input
+            v-model="scaleMedia"
+            type="range"
+            min="0"
+            max="4"
+            step="0.00001"
+            @input="changeScale"
+          >
+
+          <!--            <div class="mt-3">-->
+          <!--              <label class="label-text"> Offset </label>-->
+          <!--              <input-->
+          <!--                :value="offset"-->
+          <!--                class="input input-xs"-->
+          <!--                type="number"-->
+          <!--                step="0.02"-->
+          <!--                @input="setActiveImageOffset($event.target.value)"-->
+          <!--              >-->
+          <!--            </div>-->
+        </div>
       </div>
     </div>
 
