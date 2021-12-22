@@ -1,10 +1,9 @@
 #Global Default values for the application
 #Time is measured in SECONDS
 
-cameraMoveDT: 10   # Camera movement to viewpoint, ease in/out
-fadeInDT: 5        # Video opacity from 0 to 1
-startDT: 3         # Time delay between the end of the fading and the start of the video
-playDT: 30         # Video playback time
-stopDT: 3          # Time delay between end of video and start of the fade out
-fadeOutDT: 5       # Video from 1 to 0 opacity
-
+cameraMoveDT: 10        # Camera movement to viewpoint, ease in/out
+fadeInDT: 5             # Video opacity from 0 to 1
+startDT: 3              # Time delay between the end of the fading and the start of the video
+playDT: 30              # Video playback time
+stopDT: 3               # Time delay between end of video and start of the fade out
+fadeOutDT: 5            # Video from 1 to 0 opacity

@@ -65,7 +65,7 @@ export const loadVideo = ({
   // TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO VIDEO EVENT LISTENERS
   //
   video.addEventListener('ended', () => {
-    console.log('🎹 Ended')
+    console.log('🎹 Video Ended')
     video.className = ''
   })
   video.addEventListener('seeked', (e) => {
@@ -77,7 +77,7 @@ export const loadVideo = ({
 
   // add Media to the scene
   scene.add(meshFloatingVideo, () => {
-    console.log('🎹 FININIFNIFNF')
+    console.log('🎹 Event: Floating video added to the scene')
   })
 }
 

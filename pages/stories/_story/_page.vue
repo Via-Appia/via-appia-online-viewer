@@ -39,7 +39,7 @@
 
 import { potreeRef } from '~/api/VAPotree'
 import { loadVideo, videos, removeVideo } from '~/api/videos'
-// import AppSettings from '~/content/app-settings.yaml'
+import { cameraMoveDT } from '~/content/app-settings.yaml'
 
 export default {
   setup () {
@@ -91,7 +91,7 @@ export default {
       this.$fetch().then(() => {
         this.initPagePosition()
       })
-    // this.getAnimationPaths(to.params)
+      // this.getAnimationPaths(to.params)
     }
   },
   mounted () {
@@ -101,27 +101,83 @@ export default {
   },
   methods: {
     initPagePosition () {
-      // // Cat image todo delete
+      /**
+       * Add media to the scene
+       */
+
+      // Single image example
       // this.loadImageExample()
+
+      // Load page video
       loadVideo(this.page)
 
-      // goToCameraPosition
+      // Set viewer FOV
       potreeRef.fov = this.page?.cameraFOV || 60
       potreeRef.viewer.setFOV(this.page?.cameraFOV || 60)
-      potreeRef.viewer.scene.view.setView(
-        this.page.cameraPath[0][0], // camera position
-        this.page.cameraPath[0][1], // cameraTarget
-        this.page.animationEntry || 2000, () => {
 
-          // potreeRef.selectedVideo.playbackRate = 7
-          // potreeRef.selectedVideo.play()
+      /**
+       * Camera Animation
+       */
+      // if there are not any camera points defined, then don't do anything.
+      if (this.page.cameraPath.length === 0) {
+        return
+      }
+
+      // If there is only one point defined in the scene, then fly to it directly
+      if (this.page.cameraPath.length === 1) {
+        potreeRef.viewer.scene.view.setView(
+          this.page.cameraPath[0][0], // camera position
+          this.page.cameraPath[0][1], // cameraTarget
+          this.page.animationEntry || cameraMoveDT,
+          // callback doesn't exist
+          () => {
+            // potreeRef.selectedVideo.playbackRate = 7
+            // potreeRef.selectedVideo.play()
+          })
+      }
+
+      // If there are a camera path points defined
+      if (this.page.cameraPath.length > 1) {
+        const animation = new Potree.CameraAnimation(potreeRef.viewer)
+
+        // Get the positions and tagets from the markdown file
+        const positions = this.page.cameraPath.map(position => position[0])
+        const targets = this.page.cameraPath.map(target => target[1])
+
+        // Add to the current camera point to the camera path to animate from it
+        positions.push(potreeRef.viewer.scene.getActiveCamera().position.toArray())
+        targets.push(potreeRef.viewer.scene.view.getPivot().toArray())
+
+        // Reverse the array to start the camera animation from the bottom to the beginning
+        const _positions = positions.reverse()
+        const _targets = targets.reverse()
+
+        // Build the camera animation path
+        _positions.forEach((position, i) => {
+          const cp = animation.createControlPoint()
+          cp.position.set(..._positions[i])
+          cp.target.set(..._targets[i])
         })
 
+        animation.visible = false
+        animation.duration = cameraMoveDT
+        animation.play()
+
+        // add animation to potree settings
+        // IT DOES NOT NEED TO ADD THE CAMERA ANIMATION TO THE SCENE!!!!!
+        // potreeRef.viewer.scene.addCameraAnimation(animation)
+        // potreeRef.viewer.scene.removeCameraAnimation(animation)
+      }
+
+      // console.log('🎹  potreeRef.viewer.scene.removeCameraAnimation', potreeRef.viewer.scene.removeCameraAnimation)
       // Load media: video or static image
       // console.log('🎹 eneded movement', videos[this.page.mediaPath])
       // videos[this.page.mediaPath].playbackRate = 7
     },
 
+    /**
+     * Add image example to the scence
+     */
     loadImageExample () {
       const scene = potreeRef.viewer.scene.scene
       // Remove previous image here
