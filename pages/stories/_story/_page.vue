@@ -40,6 +40,7 @@
 import { potreeRef } from '~/api/VAPotree'
 import { loadVideo, videos, removeVideo } from '~/api/videos'
 import { cameraMoveDT } from '~/content/app-settings.yaml'
+import { VACameraAnimation } from '~/api/VACameraAnimation'
 
 export default {
   setup () {
@@ -138,7 +139,7 @@ export default {
 
       // If there are a camera path points defined
       if (this.page.cameraPath.length > 1) {
-        const animation = new Potree.CameraAnimation(potreeRef.viewer)
+        const animation = new VACameraAnimation(potreeRef.viewer)
 
         // Get the positions and tagets from the markdown file
         const positions = this.page.cameraPath.map(position => position[0])
@@ -161,6 +162,7 @@ export default {
 
         animation.visible = false
         animation.duration = cameraMoveDT
+        window.addEventListener('udpate', console.log('🎹 video started'))
         animation.play()
 
         // add animation to potree settings

@@ -22,6 +22,7 @@
     "core-js": "^3.17.2",
     "daisyui": "^1.14.2",
     "nuxt": "^2.15.8",
+    "proj4": "^2.7.5",
     "three": "^0.133.0"
   },
   "devDependencies": {
