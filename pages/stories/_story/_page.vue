@@ -39,7 +39,7 @@
 
 import { potreeRef } from '~/api/VAPotree'
 import { loadVideo, videos, removeVideo } from '~/api/videos'
-import { cameraMoveDT } from '~/content/app-settings.yaml'
+import { cameraMoveDT, playDT, startDT, stopDT, fadeOutDT, waitUntilNextVideo } from '~/content/app-settings.yaml'
 import { VACameraAnimation } from '~/api/VACameraAnimation'
 
 export default {
@@ -101,7 +101,7 @@ export default {
     })
   },
   methods: {
-    initPagePosition () {
+    async initPagePosition () {
       /**
        * Add media to the scene
        */
@@ -115,7 +115,6 @@ export default {
       // Set viewer FOV
       potreeRef.fov = this.page?.cameraFOV || 60
       potreeRef.viewer.setFOV(this.page?.cameraFOV || 60)
-
       /**
        * Camera Animation
        */
@@ -129,12 +128,10 @@ export default {
         potreeRef.viewer.scene.view.setView(
           this.page.cameraPath[0][0], // camera position
           this.page.cameraPath[0][1], // cameraTarget
-          this.page.animationEntry || cameraMoveDT,
-          // callback doesn't exist
-          () => {
-            // potreeRef.selectedVideo.playbackRate = 7
-            // potreeRef.selectedVideo.play()
-          })
+          this.page.animationEntry || cameraMoveDT
+        )
+        // Wait for the animation to finish
+        await new Promise(resolve => setTimeout(resolve, this.page.animationEntry || cameraMoveDT * 1000)) // wait x seconds
       }
 
       // If there are a camera path points defined
@@ -162,19 +159,40 @@ export default {
 
         animation.visible = false
         animation.duration = cameraMoveDT
-        window.addEventListener('udpate', console.log('🎹 video started'))
-        animation.play()
-
-        // add animation to potree settings
-        // IT DOES NOT NEED TO ADD THE CAMERA ANIMATION TO THE SCENE!!!!!
-        // potreeRef.viewer.scene.addCameraAnimation(animation)
-        // potreeRef.viewer.scene.removeCameraAnimation(animation)
+        // Wait for the camera animation transition to finish
+        await animation.play()
       }
 
-      // console.log('🎹  potreeRef.viewer.scene.removeCameraAnimation', potreeRef.viewer.scene.removeCameraAnimation)
-      // Load media: video or static image
-      // console.log('🎹 eneded movement', videos[this.page.mediaPath])
-      // videos[this.page.mediaPath].playbackRate = 7
+      /*
+      * Story secuence
+       */
+      // play the video
+      const video = videos.value[this.page.mediaPath]
+      const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(this.page.mediaPath)
+      videoMesh.material.opacity -= 0.01
+      video.playbackRate = playDT
+      await new Promise(resolve => setTimeout(resolve, startDT * 1000)) // wait x seconds
+      video.play()
+
+      // Wait until the video is finished
+      video.addEventListener('ended', async () => {
+        await new Promise(resolve => setTimeout(resolve, stopDT * 1000)) // wait x seconds
+
+        // TODO ENABLE THE MAP AGAIN!!!, only for the museum application!!!
+
+        new TWEEN.Tween(videoMesh.material).to({ opacity: 0 }, fadeOutDT * 1000).start()
+          .onComplete(async () => {
+            // Code goes here
+            video.removeEventListener('ended', null)
+            await new Promise(resolve => setTimeout(resolve, waitUntilNextVideo * 1000)) // wait x seconds
+
+            // Go to the first page if reached the last one
+            const next = this.next?.slug
+              ? `/stories/${this.$route.params.story}/${this.next.slug}`
+              : '/stories' + this.pages[0].path
+            this.$router.push(next)
+          })
+      })
     },
 
     /**

@@ -11,74 +11,63 @@ export const loadVideo = ({
   mediaScale = 1,
   cameraFOV
 }) => {
-  !mediaPosition && console.error('No mediaPosition defined')
-  !mediaRotation.length === 0 && console.error('No mediaRotation defined')
-  mediaPath === '' && console.error('No mediaPath defined')
+  try {
+    !mediaPosition && console.error('No mediaPosition defined')
+    !mediaRotation.length === 0 && console.error('No mediaRotation defined')
+    mediaPath === '' && console.error('No mediaPath defined')
 
-  // Define aspect Screen aspect ratio
-  const aspectRatio = 9 / 16 // 16:9
+    // Define aspect Screen aspect ratio
+    const aspectRatio = 9 / 16 // 16:9
 
-  const scene = potreeRef.viewer.scene.scene
-  /**
+    const scene = potreeRef.viewer.scene.scene
+    /**
      * Video
      */
-  // Create video placeholder
-  // assuming you have created a HTML video element with id="video"
-  videos.value[mediaPath] = document.createElement('video')
-  const video = videos.value[mediaPath]
-  video.src = mediaPath
-  video.id = mediaPath
-  video.muted = true
-  video.loop = false
-  video.playbackRate = 5
-  video.play()
+    // Create video placeholder
+    // assuming there is created an HTML video element with id="video"
+    videos.value[mediaPath] = document.createElement('video')
+    const video = videos.value[mediaPath]
+    video.src = mediaPath
+    video.id = mediaPath
+    video.muted = true
+    video.loop = false
+    video.autoplay = true
+    video.pause()
 
-  const geometry = new THREE.PlaneGeometry(1, 1)
-  const texture = new THREE.VideoTexture(video)
-  const material = new THREE.MeshLambertMaterial({
-    map: texture,
-    opacity: 1,
-    transparent: true,
-    side: THREE.DoubleSide
-  })
-  const meshFloatingVideo = new THREE.Mesh(geometry, material)
-  // meshFloatingVideo.name.set('hello there')
+    const geometry = new THREE.PlaneGeometry(1, 1)
+    const texture = new THREE.VideoTexture(video)
+    const material = new THREE.MeshLambertMaterial({
+      map: texture,
+      opacity: 1,
+      transparent: true,
+      side: THREE.DoubleSide
+    })
+    const meshFloatingVideo = new THREE.Mesh(geometry, material)
 
-  // set the position of the image meshFloatingVideo in the x,y,z dimensions
+    // set the position of the image meshFloatingVideo in the x,y,z dimensions
+    // const keep = 6.37 * this.scaleMedia
+    const keep = 6.37 * mediaScale
+    const scale = keep * Math.tan(cameraFOV / 2.0 * Math.PI / 180.0) * 2.0
+    meshFloatingVideo.scale.set(1 * scale, (aspectRatio) * scale, 1 * scale)
+    meshFloatingVideo.name = mediaPath
+    meshFloatingVideo.type = 'VIDEO_TYPE'
+    meshFloatingVideo.rotation.set(90, 0, 0)
+    meshFloatingVideo.position.set(mediaPosition[0], mediaPosition[1], mediaPosition[2])
 
-  // const keep = 6.37 * this.scaleMedia
-  const keep = 6.37 * mediaScale
-  const scale = keep * Math.tan(cameraFOV / 2.0 * Math.PI / 180.0) * 2.0
+    const quaternion = {
+      _x: mediaRotation[0],
+      _y: mediaRotation[1],
+      _z: mediaRotation[2],
+      _w: mediaRotation[3]
+    }
+    const rads = new THREE.Euler().setFromQuaternion(quaternion)
+    meshFloatingVideo.rotation.set(rads._x, rads._y, rads._z)
 
-  // const scale = 5 * 1.48 * mediaScale
-  meshFloatingVideo.scale.set(1 * scale, (aspectRatio) * scale, 1 * scale)
-  meshFloatingVideo.name = mediaPath
-  meshFloatingVideo.type = 'VIDEO_TYPE'
-  meshFloatingVideo.rotation.set(90, 0, 0)
-  meshFloatingVideo.position.set(mediaPosition[0], mediaPosition[1], mediaPosition[2])
-
-  const quaternion = { _x: mediaRotation[0], _y: mediaRotation[1], _z: mediaRotation[2], _w: mediaRotation[3] }
-  const rads = new THREE.Euler().setFromQuaternion(quaternion)
-  meshFloatingVideo.rotation.set(rads._x, rads._y, rads._z)
-
-  //
-  // TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO VIDEO EVENT LISTENERS
-  //
-  video.addEventListener('ended', () => {
-    console.log('🎹 Video Ended')
-    video.className = ''
-  })
-  video.addEventListener('seeked', (e) => {
-    console.log('🎹 seeked', e)
-  })
-
-  // Callback for onclick?
-  meshFloatingVideo.callback = function () { console.log('hello', this.name) }
-
-  // add Media to the scene
-  scene.add(meshFloatingVideo, () => {
-    console.log('🎹 Event: Floating video added to the scene')
-  })
+    // Add media to the scene
+    scene.add(meshFloatingVideo)
+  } catch (e) {
+    console.error('Video could not be loaded')
+  }
 }
 
 export const removeVideo = (mediaPath = '/videos/counter.mp4') => {
