@@ -472,31 +472,36 @@ export class VACameraAnimation extends Potree.EventDispatcher {
   }
 
   play () {
-    const tStart = performance.now()
-    const duration = this.duration
+    return new Promise((resolve, reject) => {
+      const tStart = performance.now()
+      const duration = this.duration
 
-    const originalyVisible = this.visible
-    this.setVisible(false)
+      const originalyVisible = this.visible
+      this.setVisible(false)
 
-    const onUpdate = (delta) => {
-      const tNow = performance.now()
-      const elapsed = (tNow - tStart) / 1000
-      const t = elapsed / duration
+      const onUpdate = (delta) => {
+        const tNow = performance.now()
+        const elapsed = (tNow - tStart) / 1000
+        const t = elapsed / duration
 
-      this.set(t)
+        this.set(t)
 
-      const frame = this.at(t)
+        const frame = this.at(t)
 
-      viewer.scene.view.position.copy(frame.position)
-      viewer.scene.view.lookAt(frame.target)
+        viewer.scene.view.position.copy(frame.position)
+        viewer.scene.view.lookAt(frame.target)
 
-      if (t > 1) {
-        this.setVisible(originalyVisible)
+        if (t > 1) {
+          this.setVisible(originalyVisible)
 
-        this.viewer.removeEventListener('update', onUpdate)
+          this.viewer.removeEventListener('update', onUpdate)
+
+          // Video Play Finished
+          resolve()
+        }
       }
-    }
 
-    this.viewer.addEventListener('update', onUpdate)
+      this.viewer.addEventListener('update', onUpdate)
+    })
   }
 }
