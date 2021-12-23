@@ -39,7 +39,7 @@
 
 import { potreeRef } from '~/api/VAPotree'
 import { loadVideo, videos, removeVideo } from '~/api/videos'
-import { cameraMoveDT, playDT, startDT, stopDT, fadeOutDT, waitUntilNextVideo } from '~/content/app-settings.yaml'
+import { cameraMoveDT, playDT, startDT, stopDT, fadeOutDT, waitUntilNextVideo, stopSecuence } from '~/content/app-settings.yaml'
 import { VACameraAnimation } from '~/api/VACameraAnimation'
 
 export default {
@@ -165,17 +165,26 @@ export default {
 
       /*
       * Story secuence
-       */
-      // play the video
+      */
+
+      // Development only, do not end the animation if setting the media coordinates
+      if (stopSecuence) {
+        return
+      }
+
+      // Set video parameters and times
       const video = videos.value[this.page.mediaPath]
       const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(this.page.mediaPath)
       videoMesh.material.opacity -= 0.01
-      video.playbackRate = playDT
+      video.playbackRate = video.duration / playDT // make the video duration as long as the setting
+
       await new Promise(resolve => setTimeout(resolve, startDT * 1000)) // wait x seconds
+      // Play the video
       video.play()
 
       // Wait until the video is finished
       video.addEventListener('ended', async () => {
+        video.pause()
         await new Promise(resolve => setTimeout(resolve, stopDT * 1000)) // wait x seconds
 
         // TODO ENABLE THE MAP AGAIN!!!, only for the museum application!!!
@@ -200,9 +209,6 @@ export default {
      */
     loadImageExample () {
       const scene = potreeRef.viewer.scene.scene
-      // Remove previous image here
-      // TODO
-      // console.log('🎹', potreeRef.viewer?.scene.uuid)
       if (this.page?.image) {
         /**
          * Video
