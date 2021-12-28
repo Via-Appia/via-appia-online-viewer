@@ -1,9 +1,6 @@
 // Access the potreeView instance from everywhere using composition API
 import { reactive } from '@nuxtjs/composition-api'
-// import CameraControls from 'camera-controls'
 import { VAFirstPersonControls } from '~/api/VAFirstPersonControls'
-// CameraControls.install({ THREE })
-// import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import { moveToVideo } from '~/api/videos'
 
 export const potreeRef = reactive(

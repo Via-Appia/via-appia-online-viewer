@@ -37,14 +37,31 @@
 
 <script>
 
+import { promiseTimeout } from '@vueuse/core'
 import { potreeRef } from '~/api/VAPotree'
-import { loadVideo, videos, removeVideo } from '~/api/videos'
-import { cameraMoveDT, playDT, startDT, stopDT, fadeOutDT, waitUntilNextVideo, stopSecuence } from '~/content/app-settings.yaml'
+import { loadVideo, removeVideo, videos } from '~/api/videos'
+import {
+  cameraMoveDT,
+  fadeOutDT,
+  playDT,
+  radiousEDL,
+  startDT,
+  stopDT,
+  stopSecuence,
+  strengthEDL,
+  waitUntilNextVideo
+} from '~/content/app-settings.yaml'
 import { VACameraAnimation } from '~/api/VACameraAnimation'
+import { promisifyVideo, tweenToPromisify } from '~/api/tweenUtils'
 
 export default {
   setup () {
-    return { videos, potreeRef, removeVideo, THREE }
+    return {
+      videos,
+      potreeRef,
+      removeVideo,
+      THREE
+    }
   },
   data () {
     return {
@@ -102,6 +119,12 @@ export default {
   },
   methods: {
     async initPagePosition () {
+      // Set Eye-Dome-Lighting
+      potreeRef.viewer.useEDL = true
+      potreeRef.viewer.edlStrength = strengthEDL
+      potreeRef.viewer.radius = radiousEDL
+      potreeRef.viewer.edlOpacity = 1
+
       /**
        * Add media to the scene
        */
@@ -115,6 +138,7 @@ export default {
       // Set viewer FOV
       potreeRef.fov = this.page?.cameraFOV || 60
       potreeRef.viewer.setFOV(this.page?.cameraFOV || 60)
+
       /**
        * Camera Animation
        */
@@ -131,7 +155,7 @@ export default {
           this.page.animationEntry || cameraMoveDT
         )
         // Wait for the animation to finish
-        await new Promise(resolve => setTimeout(resolve, this.page.animationEntry || cameraMoveDT * 1000)) // wait x seconds
+        await promiseTimeout(this.page.animationEntry || cameraMoveDT * 1000) // wait x seconds
       }
 
       // If there are a camera path points defined
@@ -164,7 +188,7 @@ export default {
       }
 
       /*
-      * Story secuence
+      * Story sequence
       */
 
       // Development only, do not end the animation if setting the media coordinates
@@ -178,34 +202,38 @@ export default {
       videoMesh.material.opacity -= 0.01
       video.playbackRate = video.duration / playDT // make the video duration as long as the setting
 
-      await new Promise(resolve => setTimeout(resolve, startDT * 1000)) // wait x seconds
-      // Play the video
-      video.play()
+      // 1. Hide the PointCloud to see the video in between.
+      await tweenToPromisify(potreeRef.viewer, { edlOpacity: 0 }, startDT * 1000)
 
-      // Wait until the video is finished
-      video.addEventListener('ended', async () => {
-        video.pause()
-        await new Promise(resolve => setTimeout(resolve, stopDT * 1000)) // wait x seconds
+      // 2. Wait to start playing the video.
+      await promiseTimeout(startDT * 1000)
 
-        // TODO ENABLE THE MAP AGAIN!!!, only for the museum application!!!
+      // 3. Play the video and wait until the video is finished.
+      await promisifyVideo(video)
 
-        new TWEEN.Tween(videoMesh.material).to({ opacity: 0 }, fadeOutDT * 1000).start()
-          .onComplete(async () => {
-            // Code goes here
-            video.removeEventListener('ended', null)
-            await new Promise(resolve => setTimeout(resolve, waitUntilNextVideo * 1000)) // wait x seconds
+      // 4. Set back the Pointcloud opacity to 1.
+      await tweenToPromisify(potreeRef.viewer, { edlOpacity: 1 }, stopDT * 1000)
+      potreeRef.viewer.useEDL = false
 
-            // Go to the first page if reached the last one
-            const next = this.next?.slug
-              ? `/stories/${this.$route.params.story}/${this.next.slug}`
-              : '/stories' + this.pages[0].path
-            this.$router.push(next)
-          })
-      })
+      // 5. Time delay between end of video and start of the fade out.
+      await promiseTimeout(stopDT * 1000)
+
+      // 6. Wait for the video to fade out
+      await tweenToPromisify(videoMesh.material, { opacity: 0 }, fadeOutDT * 1000)
+
+      // 7. Wait until move to the next viewpoint.
+      await promiseTimeout(waitUntilNextVideo * 1000)
+
+      // Go to the first page if reached the last one
+      const next = this.next?.slug
+        ? `/stories/${this.$route.params.story}/${this.next.slug}`
+        : '/stories' + this.pages[0].path
+      this.$router.push(next)
+      // })
     },
 
     /**
-     * Add image example to the scence
+     * Add image example to the scene
      */
     loadImageExample () {
       const scene = potreeRef.viewer.scene.scene
