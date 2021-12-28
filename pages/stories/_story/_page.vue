@@ -3,25 +3,26 @@
     <div class="flex mb-4">
       <div class="flex-grow" />
 
-      <NuxtLink
-        :disabled="!prev"
-        class="btn"
-        :to="{ to: 'stories', params: {story: $route.params.story, page: prev && prev.slug}}"
-      >
-        Back
-      </NuxtLink>
-
-      <NuxtLink
-        :disabled="!next"
-        class="btn ml-4"
-        :to="{ to: 'stories', params: {story: $route.params.story, page: next && next.slug}}"
-      >
-        Next
-      </NuxtLink>
+      <div v-if="!$config.isMuseumApp" class="flex">
+        <NuxtLink
+          :disabled="!prev"
+          class="btn"
+          :to="{ to: 'stories', params: {story: $route.params.story, page: prev && prev.slug}}"
+        >
+          Back
+        </NuxtLink>
+        <NuxtLink
+          :disabled="!next"
+          class="btn ml-4"
+          :to="{ to: 'stories', params: {story: $route.params.story, page: next && next.slug}}"
+        >
+          Next
+        </NuxtLink>
+      </div>
     </div>
 
     <!--    page time line -->
-    <div class="fixed top-20 pb-40 right-0 overflow-auto h-full ">
+    <div v-if="!$config.isMuseumApp" class="fixed top-20 pb-40 right-0 overflow-auto h-full ">
       <steps-timeline-links :pages="pages" />
     </div>
     <!--      <div class="bg-gray-700 bg-opacity-90 rounded p-4">-->
@@ -211,12 +212,12 @@ export default {
       // 3. Play the video and wait until the video is finished.
       await promisifyVideo(video)
 
-      // 4. Set back the Pointcloud opacity to 1.
+      // 4. Time delay between end of video and start of the fade out.
+      await promiseTimeout(stopDT * 1000)
+
+      // 5. Set back the Pointcloud opacity to 1.
       await tweenToPromisify(potreeRef.viewer, { edlOpacity: 1 }, stopDT * 1000)
       potreeRef.viewer.useEDL = false
-
-      // 5. Time delay between end of video and start of the fade out.
-      await promiseTimeout(stopDT * 1000)
 
       // 6. Wait for the video to fade out
       await tweenToPromisify(videoMesh.material, { opacity: 0 }, fadeOutDT * 1000)

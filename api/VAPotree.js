@@ -29,7 +29,7 @@ export function initViewer (DOMElement) {
   // potreeRef.cameraControls = new CameraControls(potreeRef.camera, DOMElement)
 
   const viewer = potreeRef.viewer
-  loadInitialPointCloud() // TODO ///////////////////////////////////////////////////////////////////////////////// DO NOT COMMIT THIS
+  loadInitialPointCloud()
 
   viewer.loadGUI(() => {
     viewer.setLanguage('en')

@@ -1,6 +1,6 @@
 <template>
   <div class="flex">
-    <div id="header">
+    <div v-if="!$config.isMuseumApp" class="absolute top-[20px] right-[40%]">
       <explore-stories-button />
       <stepsTimelineLinks />
     </div>
@@ -44,16 +44,4 @@ import { isSidebarOpen } from '~/components/PotreeContainer'
     transform: translate3d(100%, 0, 0);
   }
 }
-
-#header{
-  position: absolute;
-  top: 20px;
-  right: 20px;
-}
-#steps{
-  position: absolute;
-  top: 20px;
-  right: 40%;
-}
-
 </style>
