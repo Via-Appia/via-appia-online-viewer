@@ -109,8 +109,8 @@ export default {
       potreeRef.fov = this.page?.cameraFOV || 60
       potreeRef.viewer.setFOV(this.page?.cameraFOV || 60)
       potreeRef.viewer.scene.view.setView(
-        this.page.cameraPosition,
-        this.page.cameraTarget,
+        this.page.cameraPath[0][0], // camera position
+        this.page.cameraPath[0][1], // cameraTarget
         this.page.animationEntry || 2000, () => {
 
           // potreeRef.selectedVideo.playbackRate = 7

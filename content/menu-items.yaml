@@ -5,17 +5,17 @@ items:
 
   - title: I
     tooltip: I Mausoleo Rotondo
-    route: /stories/story_1/
+    route: /stories/story_1/mr_01_da1-1080p
     image: /images/menu/Mausoleo Rotondo.jpg
 
   - title: II
     tooltip: II Laterizio I+II
-    route: /stories/story_2/
+    route: /stories/story_2/l_01_gbp-1080p
     image: /images/menu/laterizio.jpg
 
   - title: III
     tooltip: III Tumulo dei Curiazi
-    route: /stories/story_3/
+    route: /stories/story_3/c_01_gbp-1080p
     image: /images/menu/Tumulo dei Curiazi.jpg
 
   - title: IV
@@ -25,15 +25,17 @@ items:
 
   - title: V
     tooltip: V Piramide
-    route: /stories/story_5/
+    route: /stories/story_5/p_01_gbp-1080p
     image: /images/menu/piramide.jpg
 
   - title: VI
     tooltip: VI Tumuli degli Orazi
-    route: /stories/story_6/
+    route: /stories/story_6/o_01_jhp-1080p
     image: /images/menu/Tumuli degli Orazi.jpg
 
   - title: VII
     tooltip: VII Casal Rotondo
-    route: /stories/story_7/
+    route: /stories/story_7/cr_01_gbp-1080p
     image: /images/menu/Casal Rotondo.jpg
+
+

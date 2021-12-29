@@ -9,6 +9,10 @@ cameraFOV: 35
 
 cameraPosition:  [296222.869,4633727.471,128.92188860628895]
 cameraTarget:  [296223.5619805521,4633727.382509758,128.95629043274812]
+# Pair of camera points and targets: [final point], ... , [entrance point]
+cameraPath: [
+    [[],[]]
+]
 
 animationEntry: 
 ---
