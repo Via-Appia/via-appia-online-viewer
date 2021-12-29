@@ -3,25 +3,26 @@
     <div class="flex mb-4">
       <div class="flex-grow" />
 
-      <NuxtLink
-        :disabled="!prev"
-        class="btn"
-        :to="{ to: 'stories', params: {story: $route.params.story, page: prev && prev.slug}}"
-      >
-        Back
-      </NuxtLink>
-
-      <NuxtLink
-        :disabled="!next"
-        class="btn ml-4"
-        :to="{ to: 'stories', params: {story: $route.params.story, page: next && next.slug}}"
-      >
-        Next
-      </NuxtLink>
+      <div v-if="!$config.isMuseumApp" class="flex">
+        <NuxtLink
+          :disabled="!prev"
+          class="btn"
+          :to="{ to: 'stories', params: {story: $route.params.story, page: prev && prev.slug}}"
+        >
+          Back
+        </NuxtLink>
+        <NuxtLink
+          :disabled="!next"
+          class="btn ml-4"
+          :to="{ to: 'stories', params: {story: $route.params.story, page: next && next.slug}}"
+        >
+          Next
+        </NuxtLink>
+      </div>
     </div>
 
     <!--    page time line -->
-    <div class="fixed top-0 py-20 right-0 overflow-auto h-full ">
+    <div v-if="!$config.isMuseumApp" class="fixed top-20 pb-40 right-0 overflow-auto h-full ">
       <steps-timeline-links :pages="pages" />
     </div>
     <!--      <div class="bg-gray-700 bg-opacity-90 rounded p-4">-->
@@ -37,13 +38,31 @@
 
 <script>
 
+import { promiseTimeout } from '@vueuse/core'
 import { potreeRef } from '~/api/VAPotree'
-import { loadVideo, videos, removeVideo } from '~/api/videos'
-// import AppSettings from '~/content/app-settings.yaml'
+import { loadVideo, removeVideo, videos } from '~/api/videos'
+import {
+  cameraMoveDT,
+  fadeOutDT,
+  playDT,
+  radiousEDL,
+  startDT,
+  stopDT,
+  stopSecuence,
+  strengthEDL,
+  waitUntilNextVideo
+} from '~/content/app-settings.yaml'
+import { VACameraAnimation } from '~/api/VACameraAnimation'
+import { promisifyVideo, tweenToPromisify } from '~/api/tweenUtils'
 
 export default {
   setup () {
-    return { videos, potreeRef, removeVideo, THREE }
+    return {
+      videos,
+      potreeRef,
+      removeVideo,
+      THREE
+    }
   },
   data () {
     return {
@@ -91,7 +110,7 @@ export default {
       this.$fetch().then(() => {
         this.initPagePosition()
       })
-    // this.getAnimationPaths(to.params)
+      // this.getAnimationPaths(to.params)
     }
   },
   mounted () {
@@ -100,33 +119,125 @@ export default {
     })
   },
   methods: {
-    initPagePosition () {
-      // // Cat image todo delete
+    async initPagePosition () {
+      // Set Eye-Dome-Lighting
+      potreeRef.viewer.useEDL = true
+      potreeRef.viewer.edlStrength = strengthEDL
+      potreeRef.viewer.radius = radiousEDL
+      potreeRef.viewer.edlOpacity = 1
+
+      /**
+       * Add media to the scene
+       */
+
+      // Single image example
       // this.loadImageExample()
+
+      // Load page video
       loadVideo(this.page)
 
-      // goToCameraPosition
+      // Set viewer FOV
       potreeRef.fov = this.page?.cameraFOV || 60
       potreeRef.viewer.setFOV(this.page?.cameraFOV || 60)
-      potreeRef.viewer.scene.view.setView(
-        this.page.cameraPath[0][0], // camera position
-        this.page.cameraPath[0][1], // cameraTarget
-        this.page.animationEntry || 2000, () => {
 
-          // potreeRef.selectedVideo.playbackRate = 7
-          // potreeRef.selectedVideo.play()
+      /**
+       * Camera Animation
+       */
+      // if there are not any camera points defined, then don't do anything.
+      if (this.page.cameraPath.length === 0) {
+        return
+      }
+
+      // If there is only one point defined in the scene, then fly to it directly
+      if (this.page.cameraPath.length === 1) {
+        potreeRef.viewer.scene.view.setView(
+          this.page.cameraPath[0][0], // camera position
+          this.page.cameraPath[0][1], // cameraTarget
+          this.page.animationEntry || cameraMoveDT
+        )
+        // Wait for the animation to finish
+        await promiseTimeout(this.page.animationEntry || cameraMoveDT * 1000) // wait x seconds
+      }
+
+      // If there are a camera path points defined
+      if (this.page.cameraPath.length > 1) {
+        const animation = new VACameraAnimation(potreeRef.viewer)
+
+        // Get the positions and tagets from the markdown file
+        const positions = this.page.cameraPath.map(position => position[0])
+        const targets = this.page.cameraPath.map(target => target[1])
+
+        // Add to the current camera point to the camera path to animate from it
+        positions.push(potreeRef.viewer.scene.getActiveCamera().position.toArray())
+        targets.push(potreeRef.viewer.scene.view.getPivot().toArray())
+
+        // Reverse the array to start the camera animation from the bottom to the beginning
+        const _positions = positions.reverse()
+        const _targets = targets.reverse()
+
+        // Build the camera animation path
+        _positions.forEach((position, i) => {
+          const cp = animation.createControlPoint()
+          cp.position.set(..._positions[i])
+          cp.target.set(..._targets[i])
         })
 
-      // Load media: video or static image
-      // console.log('🎹 eneded movement', videos[this.page.mediaPath])
-      // videos[this.page.mediaPath].playbackRate = 7
+        animation.visible = false
+        animation.duration = cameraMoveDT
+        // Wait for the camera animation transition to finish
+        await animation.play()
+      }
+
+      /*
+      * Story sequence
+      */
+
+      // Development only, do not end the animation if setting the media coordinates
+      if (stopSecuence) {
+        return
+      }
+
+      // Set video parameters and times
+      const video = videos.value[this.page.mediaPath]
+      const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(this.page.mediaPath)
+      videoMesh.material.opacity -= 0.01
+      video.playbackRate = video.duration / playDT // make the video duration as long as the setting
+
+      // 1. Hide the PointCloud to see the video in between.
+      await tweenToPromisify(potreeRef.viewer, { edlOpacity: 0 }, startDT * 1000)
+
+      // 2. Wait to start playing the video.
+      await promiseTimeout(startDT * 1000)
+
+      // 3. Play the video and wait until the video is finished.
+      await promisifyVideo(video)
+
+      // 4. Time delay between end of video and start of the fade out.
+      await promiseTimeout(stopDT * 1000)
+
+      // 5. Set back the Pointcloud opacity to 1.
+      await tweenToPromisify(potreeRef.viewer, { edlOpacity: 1 }, stopDT * 1000)
+      potreeRef.viewer.useEDL = false
+
+      // 6. Wait for the video to fade out
+      await tweenToPromisify(videoMesh.material, { opacity: 0 }, fadeOutDT * 1000)
+
+      // 7. Wait until move to the next viewpoint.
+      await promiseTimeout(waitUntilNextVideo * 1000)
+
+      // Go to the first page if reached the last one
+      const next = this.next?.slug
+        ? `/stories/${this.$route.params.story}/${this.next.slug}`
+        : '/stories' + this.pages[0].path
+      this.$router.push(next)
+      // })
     },
 
+    /**
+     * Add image example to the scene
+     */
     loadImageExample () {
       const scene = potreeRef.viewer.scene.scene
-      // Remove previous image here
-      // TODO
-      // console.log('🎹', potreeRef.viewer?.scene.uuid)
       if (this.page?.image) {
         /**
          * Video
