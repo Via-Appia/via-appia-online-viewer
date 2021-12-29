@@ -15,7 +15,8 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
-    'no-console': 'off'
+    'no-console': 'off',
+    'brace-style': ['warn', 'stroustrup']
   },
   globals: {
     $: true,

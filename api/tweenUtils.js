@@ -1,3 +1,5 @@
+import { potreeRef } from '~/api/VAPotree'
+
 /**
  * Promise Tween animation
  * @param obj // obj = potreeRef.viewer
@@ -5,8 +7,11 @@
  * @returns {Promise<unknown>}
  */
 export const tweenToPromisify = (obj = {}, prop = {}, timeMilliSeconds = 1000) => new Promise((resolve, reject) => {
-  new TWEEN.Tween(obj).to(prop, timeMilliSeconds).start()
+  potreeRef.animation = new TWEEN.Tween(obj).to(prop, timeMilliSeconds)
+
+  potreeRef.animation.start()
     .onComplete(() => {
+      potreeRef.animation = null
       resolve()
     })
 })

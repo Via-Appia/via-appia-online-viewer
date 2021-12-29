@@ -105,26 +105,26 @@ export default {
       labels.labels.map(label => potreeRef.viewer.scene.annotations.add(new Potree.Annotation(label)))
     },
 
-    async getAnimationPaths ({ story = '', page = '' }) {
-      const animation = await this.$content(story, page)
-        .fetch()
-        .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
-
-      const positions = [
-        potreeRef.viewer.scene.getActiveCamera().position.toArray(), // current camera position
-        animation.cameraPosition
-      ]
-      const targets = [
-        potreeRef.viewer.scene.view.getPivot().toArray(), // current target position
-        animation.cameraTarget
-      ]
-
-      // Remove previous animations
-      // TODO this doesn't remove the animation from the previous path
-      potreeRef.viewer.scene.cameraAnimations.length = 0
-      addAnimationPath(positions, targets, animation.animationEntry)
-      potreeRef.viewer.scene.cameraAnimations[0].play()
-    },
+    // async getAnimationPaths ({ story = '', page = '' }) {
+    //   const animation = await this.$content(story, page)
+    //     .fetch()
+    //     .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
+    //
+    //   const positions = [
+    //     potreeRef.viewer.scene.getActiveCamera().position.toArray(), // current camera position
+    //     animation.cameraPosition
+    //   ]
+    //   const targets = [
+    //     potreeRef.viewer.scene.view.getPivot().toArray(), // current target position
+    //     animation.cameraTarget
+    //   ]
+    //
+    //   // Remove previous animations
+    //   // TODO this doesn't remove the animation from the previous path
+    //   potreeRef.viewer.scene.cameraAnimations.length = 0
+    //   addAnimationPath(positions, targets, animation.animationEntry)
+    //   potreeRef.viewer.scene.cameraAnimations[0].play()
+    // },
 
     toggleSidebar () {
       $('#potree_sidebar_container').toggle()
