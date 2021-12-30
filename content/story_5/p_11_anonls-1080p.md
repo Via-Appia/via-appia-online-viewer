@@ -2,11 +2,13 @@
 title: V Piramide
 
 mediaPath: /videos/p_11_anonls-1080p.mp4
-mediaPosition:  []
-mediaRotation:  []
+mediaPosition:  [296226.4356814254,4633727.015552151,129.09895036517995]
+mediaRotation:  [0.4786144806511472,-0.5436175952525063,-0.5175067201453011,0.45562581538732844]
 mediaScale: 1
-cameraFOV: 60
+cameraFOV: 35
 
+cameraPosition:  [296222.869,4633727.471,128.92188860628895]
+cameraTarget:  [296223.5619805521,4633727.382509758,128.95629043274812]
 # Pair of camera points and targets: [final point], ... , [entrance point]
 cameraPath: [
     [[],[]]
