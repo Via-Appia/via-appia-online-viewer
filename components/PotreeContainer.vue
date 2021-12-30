@@ -101,7 +101,9 @@ export default {
     async getLabels () {
       const labels = await this.$content('labels-map')
         .fetch()
-        .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
+        .catch((err) => {
+          console.error({ statusCode: 404, message: 'Page not found', error: err })
+        })
       labels.labels.map(label => potreeRef.viewer.scene.annotations.add(new Potree.Annotation(label)))
     },
 

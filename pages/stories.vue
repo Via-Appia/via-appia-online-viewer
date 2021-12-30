@@ -1,12 +1,17 @@
 <template>
   <div class="flex">
-    <div v-if="!$config.isMuseumApp" class="absolute top-[20px] right-[40%]">
+    <!--    <div v-if="!$config.isMuseumApp" class="absolute top-[20px] right-[40%]">-->
+    <!--    </div>-->
+    <div v-if="!$config.isMuseumApp" class="fixed top-2  right-2 ">
       <explore-stories-button />
-      <stepsTimelineLinks />
+    </div>
+    <div v-if="!$config.isMuseumApp" class="fixed top-20 pb-40 right-0 overflow-auto h-full ">
+      <steps-timeline-links :pages="pages" />
     </div>
     <transition>
       <NuxtChild
         id="steps"
+        :pages="pages"
         class="absolute top-20 min-w-[500px] left-4 p-3 prose"
         :class="{'left-[350px]':isSidebarOpen}"
       />
@@ -14,8 +19,36 @@
   </div>
 </template>
 
-<script setup>
+<script >
 import { isSidebarOpen } from '~/components/PotreeContainer'
+export default {
+  setup () {
+    return { isSidebarOpen }
+  },
+
+  data () {
+    return {
+      pages: null
+    }
+  },
+
+  async fetch () {
+    // Get the list of pages of the story
+    this.pages = await this.$content(this.$route.params.story)
+      .sortBy('slug', 'asc')
+    // .only(['title', 'description', 'path'])
+      .fetch()
+      .catch((err) => {
+        console.error({ statusCode: 404, message: 'Page not found', error: err })
+      })
+  },
+  watch: {
+    // When changing pages, refetch the content page and reload the method
+    $route () {
+      this.$fetch()
+    }
+  }
+}
 </script>
 
 <style scoped>

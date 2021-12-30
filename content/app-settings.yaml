@@ -14,7 +14,7 @@ radiousEDL: 1.0
 strengthEDL: 0          # 0.1 ...
 
 # Developmnet:
-stopSecuence: false     # (true/false) stops the sequence to continue to the next video
+stopSecuence: true     # (true/false) stops the sequence to continue to the next video and helpt to reference the images
 
 # Production settings are inside the .env file.
 # They are needed at building time.

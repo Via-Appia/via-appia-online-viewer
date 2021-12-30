@@ -22,9 +22,10 @@
     </div>
 
     <!--    page time line -->
-    <div v-if="!$config.isMuseumApp" class="fixed top-20 pb-40 right-0 overflow-auto h-full ">
-      <steps-timeline-links :pages="pages" />
-    </div>
+    <!--    <div v-if="!$config.isMuseumApp" class="fixed top-20 pb-40 right-0 overflow-auto h-full ">-->
+    <!--      {{ workflowsEnded }}-->
+    <!--      <steps-timeline-links :pages="pages" />-->
+    <!--    </div>-->
     <!--      <div class="bg-gray-700 bg-opacity-90 rounded p-4">-->
     <!--                <div class="text-xl font-bold ">-->
     <!--                  {{ page && page.title }}-->
@@ -52,10 +53,17 @@ import {
   strengthEDL,
   waitUntilNextVideo
 } from '~/content/app-settings.yaml'
+
 import { VACameraAnimation } from '~/api/VACameraAnimation'
 import { promisifyVideo, tweenToPromisify } from '~/api/tweenUtils'
 
 export default {
+  props: {
+    pages: {
+      type: Array,
+      default: () => []
+    }
+  },
   setup () {
     return {
       videos,
@@ -67,10 +75,11 @@ export default {
   data () {
     return {
       error: false,
-      pages: null,
+      // pages: null,
       page: null,
       prev: null,
-      next: null
+      next: null,
+      workflowsEnded: false
     }
   },
   async fetch () {
@@ -79,14 +88,18 @@ export default {
     // Page details
     this.page = await this.$content(params.story, params.page)
       .fetch()
-      .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
+      .catch((err) => {
+        console.error({ statusCode: 404, message: 'Page not found', error: err })
+      })
 
     // Get the list of pages of the story
-    this.pages = await this.$content(params.story)
-      .sortBy('slug', 'asc')
-      .only(['title', 'description', 'path'])
-      .fetch()
-      .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
+    // this.pages = await this.$content(params.story)
+    //   .sortBy('slug', 'asc')
+    //   .only(['title', 'description', 'path'])
+    //   .fetch()
+    //   .catch((err) => {
+    //     console.error({ statusCode: 404, message: 'Page not found', error: err })
+    //   })
 
     // Next and previous pages links
     const [prev, next] = await this.$content(params.story)
@@ -94,33 +107,68 @@ export default {
       .only(['title', 'slug'])
       .surround(params.page)
       .fetch()
-      .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
+      .catch((err) => {
+        console.error({ statusCode: 404, message: 'Page not found', error: err })
+      })
 
     this.prev = prev
     this.next = next
   },
   watch: {
     // When changing pages, refetch the content page and reload the method
-    $route () {
+    async $route () {
+      this.workflowsEnded = true
+      const videoPath = this.page.mediaPath
       // delete previous video on the page
-      if (this.page.mediaPath) {
-        removeVideo(this.page.mediaPath)
+      console.log('🎹 before leave?', videoPath)
+      // if there is a video: make it transparent
+      /* if (!this.workflowsEnded) {
+        const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(videoPath)
+
+        // 5. Set back the Pointcloud opacity to 1.
+        if (potreeRef.viewer.useEDL) {
+          await tweenToPromisify(potreeRef.viewer, { edlOpacity: 1 }, 2000)
+          potreeRef.viewer.useEDL = false
+        }
+
+        tweenToPromisify(videoMesh?.material, { opacity: 0 }, 2000)// fadeOutDT * 1000)
+
+        // If there is any tween animation going on
+        if (potreeRef.animation) {
+          potreeRef.viewer.useEDL = false
+          // stop any animation in the background
+          potreeRef.animation.stop()
+
+          // when the background is back to 1, then pocceed with the workflow
+          await tweenToPromisify(potreeRef.viewer, { edlOpacity: 1 }, 2000)
+
+        // Refresh the page
+        // await this.$fetch(); this.initPagePosition()
+        }
+        // else {
+        removeVideo(videoPath)
+        await this.$fetch(); this.initPagePosition()
+        // }
+        this.workflowsEnded = true
       }
-      console.log('🎹 before leave?', this.page.mediaPath)
-      this.$fetch().then(() => {
-        this.initPagePosition()
-      })
-      // this.getAnimationPaths(to.params)
+      */
+
+      // else {
+      if (videoPath) {
+        removeVideo(videoPath)
+      }
+      this.workflowsEnded = true
+      await this.$fetch(); this.initPagePosition()
+      // }
     }
   },
-  mounted () {
-    this.$fetch().then(() => {
-      this.initPagePosition()
-    })
+  async mounted () {
+    console.log('🎹 this', this.pages)
+    await this.$fetch(); this.initPagePosition()
   },
   methods: {
     async initPagePosition () {
-      // Set Eye-Dome-Lighting
+      // Set Eye-Dome-Lighting, needed to make the pointcloud transparent.
       potreeRef.viewer.useEDL = true
       potreeRef.viewer.edlStrength = strengthEDL
       potreeRef.viewer.radius = radiousEDL
@@ -140,9 +188,90 @@ export default {
       potreeRef.fov = this.page?.cameraFOV || 60
       potreeRef.viewer.setFOV(this.page?.cameraFOV || 60)
 
-      /**
-       * Camera Animation
-       */
+      await this.goToCameraPosition()
+      console.log('🎹 camera animario?')
+      /*
+      * Story sequence
+      */
+      // Development only, do not end the animation if setting the media coordinates
+      if (stopSecuence) {
+        potreeRef.viewer.useEDL = false
+        return
+      }
+
+      // Set video parameters and times
+      const video = videos.value[this.page.mediaPath]
+      const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(this.page.mediaPath)
+      videoMesh.material.opacity -= 0.01
+      video.playbackRate = video.duration / playDT // make the video duration as long as the setting
+
+      // 1. Hide the PointCloud to see the video in between.
+      console.log('🎹 1. Hide the PointCloud to see the video in between.')
+      if (this.workflowsEnded) {
+        return
+      }
+      await tweenToPromisify(potreeRef.viewer, { edlOpacity: 0 }, startDT * 1000)
+
+      // 2. Wait to start playing the video.
+      console.log('🎹 2. Wait to start playing the video.')
+      if (this.workflowsEnded) {
+        return
+      }
+      await promiseTimeout(startDT * 1000)
+
+      // 3. Play the video and wait until the video is finished.
+      console.log('🎹 3. Play the video and wait until the video is finished.')
+      if (this.workflowsEnded) {
+        return
+      }
+      await promisifyVideo(video)
+
+      // 4. Time delay between end of video and start of the fade out.
+      console.log('🎹 4. Time delay between end of video and start of the fade out.')
+      if (this.workflowsEnded) {
+        return
+      }
+      await promiseTimeout(stopDT * 1000)
+
+      // 5. Set back the Pointcloud opacity to 1.
+      console.log('🎹 5. Set back the Pointcloud opacity to 1.')
+      if (this.workflowsEnded) {
+        return
+      }
+      await tweenToPromisify(potreeRef.viewer, { edlOpacity: 1 }, 2000)
+      potreeRef.viewer.useEDL = false
+
+      // 6. Wait for the video to fade out
+      console.log('🎹 6. Wait for the video to fade out')
+      if (this.workflowsEnded) {
+        return
+      }
+      await tweenToPromisify(videoMesh.material, { opacity: 0 }, fadeOutDT * 1000)
+
+      // 7. Wait until move to the next viewpoint.
+      console.log('🎹 7. Wait until move to the next viewpoint.')
+      if (this.workflowsEnded) {
+        return
+      }
+      await promiseTimeout(waitUntilNextVideo * 1000)
+
+      if (this.workflowsEnded) {
+        return
+      }
+      this.workflowsEnded = true
+
+      // Go to the first page if reached the last one
+      const next = this.next?.slug
+        ? `/stories/${this.$route.params.story}/${this.next.slug}`
+        : '/stories' + this.pages[0].path
+      this.$router.push(next)
+      // })
+    },
+
+    /**
+     * Camera Animation
+     */
+    async goToCameraPosition () {
       // if there are not any camera points defined, then don't do anything.
       if (this.page.cameraPath.length === 0) {
         return
@@ -187,50 +316,6 @@ export default {
         // Wait for the camera animation transition to finish
         await animation.play()
       }
-
-      /*
-      * Story sequence
-      */
-
-      // Development only, do not end the animation if setting the media coordinates
-      if (stopSecuence) {
-        return
-      }
-
-      // Set video parameters and times
-      const video = videos.value[this.page.mediaPath]
-      const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(this.page.mediaPath)
-      videoMesh.material.opacity -= 0.01
-      video.playbackRate = video.duration / playDT // make the video duration as long as the setting
-
-      // 1. Hide the PointCloud to see the video in between.
-      await tweenToPromisify(potreeRef.viewer, { edlOpacity: 0 }, startDT * 1000)
-
-      // 2. Wait to start playing the video.
-      await promiseTimeout(startDT * 1000)
-
-      // 3. Play the video and wait until the video is finished.
-      await promisifyVideo(video)
-
-      // 4. Time delay between end of video and start of the fade out.
-      await promiseTimeout(stopDT * 1000)
-
-      // 5. Set back the Pointcloud opacity to 1.
-      await tweenToPromisify(potreeRef.viewer, { edlOpacity: 1 }, stopDT * 1000)
-      potreeRef.viewer.useEDL = false
-
-      // 6. Wait for the video to fade out
-      await tweenToPromisify(videoMesh.material, { opacity: 0 }, fadeOutDT * 1000)
-
-      // 7. Wait until move to the next viewpoint.
-      await promiseTimeout(waitUntilNextVideo * 1000)
-
-      // Go to the first page if reached the last one
-      const next = this.next?.slug
-        ? `/stories/${this.$route.params.story}/${this.next.slug}`
-        : '/stories' + this.pages[0].path
-      this.$router.push(next)
-      // })
     },
 
     /**
