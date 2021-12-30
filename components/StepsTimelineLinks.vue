@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div v-if="pages" class="container">
+    <div v-if="pages && pages[0].cameraPath" class="container">
       <div v-for="(page,i) in pages" :key="i" class="flex flex-col md:grid mx-auto text-blue-50">
         <div class="mr-10 md:mx-auto relative h-20">
           <div class="h-full w-6 flex items-center justify-center">
