@@ -2,8 +2,7 @@
   <div>
     <div class="flex mb-4">
       <div class="flex-grow" />
-
-      <div v-if="!$config.isMuseumApp" class="flex">
+      <div v-if="!$config.isMuseumApp" class="fixed top-2 right-[180px] flex">
         <NuxtLink
           :disabled="!prev"
           class="btn"
@@ -58,12 +57,6 @@ import { VACameraAnimation } from '~/api/VACameraAnimation'
 import { promisifyVideo, tweenToPromisify } from '~/api/tweenUtils'
 
 export default {
-  props: {
-    pages: {
-      type: Array,
-      default: () => []
-    }
-  },
   setup () {
     return {
       videos,
@@ -75,7 +68,7 @@ export default {
   data () {
     return {
       error: false,
-      // pages: null,
+      pages: null,
       page: null,
       prev: null,
       next: null,
@@ -93,13 +86,13 @@ export default {
       })
 
     // Get the list of pages of the story
-    // this.pages = await this.$content(params.story)
-    //   .sortBy('slug', 'asc')
-    //   .only(['title', 'description', 'path'])
-    //   .fetch()
-    //   .catch((err) => {
-    //     console.error({ statusCode: 404, message: 'Page not found', error: err })
-    //   })
+    this.pages = await this.$content(params.story)
+      .sortBy('slug', 'asc')
+      .only(['title', 'description', 'path'])
+      .fetch()
+      .catch((err) => {
+        console.error({ statusCode: 404, message: 'Page not found', error: err })
+      })
 
     // Next and previous pages links
     const [prev, next] = await this.$content(params.story)
@@ -118,7 +111,7 @@ export default {
     // When changing pages, refetch the content page and reload the method
     async $route () {
       this.workflowsEnded = true
-      const videoPath = this.page.mediaPath
+      const videoPath = this.page?.mediaPath
       // delete previous video on the page
       console.log('🎹 before leave?', videoPath)
       // if there is a video: make it transparent
@@ -163,7 +156,6 @@ export default {
     }
   },
   async mounted () {
-    console.log('🎹 this', this.pages)
     await this.$fetch(); this.initPagePosition()
   },
   methods: {
@@ -189,7 +181,6 @@ export default {
       potreeRef.viewer.setFOV(this.page?.cameraFOV || 60)
 
       await this.goToCameraPosition()
-      console.log('🎹 camera animario?')
       /*
       * Story sequence
       */
