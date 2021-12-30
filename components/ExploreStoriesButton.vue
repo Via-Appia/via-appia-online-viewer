@@ -33,10 +33,8 @@
 </template>
 
 <script setup>
-import { defineProps, onMounted, ref, useRoute, computed } from '@nuxtjs/composition-api'
+import { defineProps, onMounted, ref } from '@nuxtjs/composition-api'
 import menu from '~/content/menu-items.yaml'
-const route = useRoute()
-const story = computed(() => route.value.params.story)
 
 const modal = ref()
 const props = defineProps({
@@ -45,7 +43,7 @@ const props = defineProps({
 
 onMounted(() => {
   // Open the explore stories modal if it is the main stories page
-  if (props.open && !story.value) {
+  if (props.open) {
     modal.value.checked = true
   }
 })

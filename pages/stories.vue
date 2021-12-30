@@ -3,7 +3,7 @@
     <!--    <div v-if="!$config.isMuseumApp" class="absolute top-[20px] right-[40%]">-->
     <!--    </div>-->
     <div v-if="!$config.isMuseumApp" class="fixed top-2  right-2 ">
-      <explore-stories-button :open="true" />
+      <explore-stories-button :open="!story" />
     </div>
     <div v-if="!$config.isMuseumApp" class="fixed top-20 pb-40 right-0 overflow-auto h-full ">
       <steps-timeline-links :pages="pages" />
@@ -20,10 +20,14 @@
 </template>
 
 <script >
+import { useRoute, computed } from '@nuxtjs/composition-api'
+
 import { isSidebarOpen } from '~/components/PotreeContainer'
 export default {
   setup () {
-    return { isSidebarOpen }
+    const route = useRoute()
+    const story = computed(() => route.value.params.story)
+    return { isSidebarOpen, story }
   },
 
   data () {
