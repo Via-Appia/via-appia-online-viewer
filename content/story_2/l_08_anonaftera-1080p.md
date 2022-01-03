@@ -2,15 +2,15 @@
 title: II Lataritio
 
 mediaPath: /videos/l_08_anonaftera-1080p.mp4
-mediaPosition:  []
-mediaRotation:  []
+mediaPosition:  [295973.9765602476,4634060.4704073565,128.35202862906414]
+mediaRotation:  [0.2881756230199118,-0.6611364258884115,-0.635012864665879,0.27678890579179055]
 mediaScale: 1
-cameraFOV: 60
+cameraFOV: 32
 
 # Pair of camera points and targets: [final point], ... , [entrance point]
 cameraPath: [
-    [[],[]]
+    [[295971.34142896585,4634062.918884863,128.20697337302033],[295983.2070010268,4634051.893784711,128.86013384563455]]
 ]
 
+
 animationEntry: 2000
----
