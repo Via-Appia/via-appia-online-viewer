@@ -57,14 +57,20 @@ To make things easier you can use windows. it is possible to compile the PotreeC
 
 ### What you need:
 
-*   Your LAS file, (in our case has been a 17GB size file).
+*   Your LAS files, (in our case has been a 17GB size files).
+*   Lastools
+    *   Download here https://rapidlasso.com/lastools/     
 *   PotreeConverter
     *   Download here [PotreeConverter\_1.7\_windows\_x64.zip](https://github.com/potree/PotreeConverter/releases/tag/1.7)
 *   Potree Desktop (optional, use it to test your converted files)
     *   Web: [https://github.com/potree/PotreeDesktop/releases/tag/1.8](https://github.com/potree/PotreeDesktop/releases/tag/1.8)
     *   File: [**PotreeDesktop\_1.8\_windows\_x64.zip**](https://github.com/potree/PotreeDesktop/releases/download/1.8/PotreeDesktop_1.8_windows_x64.zip)
 
-Only PotreeConverter 1.7 is able to compress the LAS files. It will result in many small files. PotreeConvert 2 only uses one file, but it doesn't compress, so the resulting point cloud will be as big as the original LAS.
+First we need to merge the various .las files into one file. To do so we use lastools browse to the bin folder and run 
+
+`las2las -i C:\\...\\001.las C:\\...\\002.las C:\\...\\003.las ... -merged -o C:\\...\\merged.las`   
+
+Only PotreeConverter 1.7 is able to compress the merged LAS file. It will result in many small files. PotreeConvert 2 only uses one file, but it doesn't compress, so the resulting point cloud will be as big as the original LAS.
 
 Navigate to the folder where PotreeConverter is, and run the command (replace the \<names>):
 
