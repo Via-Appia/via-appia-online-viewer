@@ -2,14 +2,14 @@
 title: III Curiatii
 
 mediaPath: /videos/c_09_anonearly1900-1080p.mp4
-mediaPosition:  []
-mediaRotation:  []
+mediaPosition:  [296089.3683794771,4633905.102576009,130.96776925540894]
+mediaRotation:  [-0.31246392186229144,0.6900580493537798,0.5947025641098184,-0.2692861791806252]
 mediaScale: 1
-cameraFOV: 60
+cameraFOV: 37.79
 
 # Pair of camera points and targets: [final point], ... , [entrance point]
 cameraPath: [
-    [[],[]]
+    [[296086.6925269016,4633907.4514829535,130.4363097950157],[296093.21029167436,4633901.730082948,131.7308234691821]]
 ]
 
 animationEntry: 2000
