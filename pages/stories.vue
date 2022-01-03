@@ -2,16 +2,16 @@
   <div class="flex">
     <!--    <div v-if="!$config.isMuseumApp" class="absolute top-[20px] right-[40%]">-->
     <!--    </div>-->
-    <div v-if="!$config.isMuseumApp" class="fixed top-2  right-2 ">
-      <explore-stories-button />
+    <div v-if="!$config.isMuseumApp" class="fixed top-2 right-2 ">
+      <explore-stories-button :open="!story" />
     </div>
     <div v-if="!$config.isMuseumApp" class="fixed top-20 pb-40 right-0 overflow-auto h-full ">
-      <steps-timeline-links :pages="pages" />
+      <steps-timeline-links v-if="story" :pages="pages" class="" />
     </div>
     <transition>
+      <!--        :pages="pages"-->
       <NuxtChild
         id="steps"
-        :pages="pages"
         class="absolute top-20 min-w-[500px] left-4 p-3 prose"
         :class="{'left-[350px]':isSidebarOpen}"
       />
@@ -20,10 +20,14 @@
 </template>
 
 <script >
+import { useRoute, computed } from '@nuxtjs/composition-api'
 import { isSidebarOpen } from '~/components/PotreeContainer'
+
 export default {
   setup () {
-    return { isSidebarOpen }
+    const route = useRoute()
+    const story = computed(() => route.value.params.story)
+    return { isSidebarOpen, story }
   },
 
   data () {
@@ -36,7 +40,7 @@ export default {
     // Get the list of pages of the story
     this.pages = await this.$content(this.$route.params.story)
       .sortBy('slug', 'asc')
-    // .only(['title', 'description', 'path'])
+      .only(['title', 'description', 'path'])
       .fetch()
       .catch((err) => {
         console.error({ statusCode: 404, message: 'Page not found', error: err })

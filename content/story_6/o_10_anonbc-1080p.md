@@ -4,8 +4,8 @@ title: VII Horatio
 mediaPath: /videos/o_10_anonbc-1080p.mp4
 mediaPosition:  [296315.86224985344,4633628.70328375,129.6823531752794]
 mediaRotation:  [0.6562879868903723,0.29063670872921493,0.2819409036612436,0.6366519525181032]
-mediaScale: 32.95
-cameraFOV: undefined
+mediaScale: 1
+cameraFOV: 32.95
 
 # Pair of camera points and targets: [final point], ... , [entrance point]
 cameraPath: [
