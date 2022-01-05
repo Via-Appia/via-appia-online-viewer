@@ -99,7 +99,7 @@ function addLights () {
 // Floor
 function addFloor () {
   const geometry = new THREE.PlaneGeometry(100000, 100000)
-  const material = new THREE.MeshBasicMaterial({ color: 0x2E3222, side: THREE.DoubleSide })
+  const material = new THREE.MeshBasicMaterial({ color: 0x24271A, side: THREE.DoubleSide })
   const plane = new THREE.Mesh(geometry, material)
   plane.position.set(296266.35737207683, 4633691.154054946, 100)
   potreeRef.viewer.scene.scene.add(plane)
