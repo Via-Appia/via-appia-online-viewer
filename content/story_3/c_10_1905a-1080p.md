@@ -17,5 +17,6 @@ cameraPath: [
 ]
 
 
-animationEntry: 2000
+# ViewPoints overrides in seconds
+animationEntry:
 ---

@@ -135,7 +135,7 @@ export default {
       potreeRef.fov = this.page?.cameraFOV || 60
       potreeRef.viewer.setFOV(this.page?.cameraFOV || 60)
 
-      await this.goToCameraPosition()
+      await this.goToCameraPosition(this.page.animationEntry)
       /*
       * Story sequence
       */
@@ -215,7 +215,7 @@ export default {
     /**
      * Camera Animation
      */
-    async goToCameraPosition () {
+    async goToCameraPosition (animationEntry) {
       // if there are not any camera points defined, then don't do anything.
       if (this.page.cameraPath.length === 0) {
         return
@@ -229,7 +229,7 @@ export default {
           this.page.animationEntry || cameraMoveDT
         )
         // Wait for the animation to finish
-        await promiseTimeout(this.page.animationEntry || cameraMoveDT * 1000) // wait x seconds
+        await promiseTimeout((animationEntry || cameraMoveDT) * 1000) // wait x seconds
       }
 
       // If there are a camera path points defined
@@ -256,7 +256,7 @@ export default {
         })
 
         animation.visible = false
-        animation.duration = cameraMoveDT
+        animation.duration = animationEntry || cameraMoveDT
         // Wait for the camera animation transition to finish
         await animation.play()
       }

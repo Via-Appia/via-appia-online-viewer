@@ -12,7 +12,8 @@ cameraPath: [
     [[296256.1664233425,4633687.419062067,137.17081296469874],[296256.24591366603,4633703.088457677,132.00228101407063]]
 ]
 
-animationEntry: 2000
+# ViewPoints overrides in seconds
+animationEntry:
 ---
 
 ### Example Page 2
