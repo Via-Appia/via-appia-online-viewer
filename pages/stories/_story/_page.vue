@@ -3,9 +3,15 @@
     <div class="flex mb-4">
       <div class="flex-grow" />
       <div v-if="!$config.isMuseumApp" class="fixed top-2 right-[180px] flex">
+        <nuxt-link v-if="allPages && allPages[monumentPage] &&allPages[monumentPage].slug" :to="`/stories/${$route.params.story}/${allPages[monumentPage].slug}`" class="btn btn-outline ">
+          Monument
+        </nuxt-link>
+        <nuxt-link v-if="allPages && allPages[reconstructionPage] && allPages[reconstructionPage].slug" :to="`/stories/${$route.params.story}/${allPages[reconstructionPage].slug}`" class="btn btn-outline ml-4">
+          Reconstruction
+        </nuxt-link>
         <NuxtLink
           :disabled="!prev"
-          class="btn"
+          class="btn ml-4"
           :to="{ to: 'stories', params: {story: $route.params.story, page: prev && prev.slug}}"
         >
           Back
@@ -49,6 +55,9 @@ export default {
   data () {
     return {
       error: false,
+      reconstructionPage: null,
+      monumentPage: null,
+      allPages: null,
       pages: null,
       page: null,
       prev: null,
@@ -66,26 +75,24 @@ export default {
       })
 
     // Get the list of pages of the story
-    this.pages = await this.$content(params.story)
+    this.allPages = await this.$content(params.story)
       .sortBy('slug', 'asc')
-      .only(['title', 'description', 'path'])
+      .only(['title', 'description', 'path', 'exclude', 'slug'])
       .fetch()
       .catch((err) => {
         console.error({ statusCode: 404, message: 'Page not found', error: err })
       })
 
+    this.reconstructionPage = this.allPages.findIndex(page => page?.slug === 'reconstruction')
+    this.monumentPage = this.allPages.findIndex(page => page?.slug === 'monument')
+
+    this.pages = this.allPages.filter(page => !page.exclude)
+
+    // remove the do
     // Next and previous pages links
-    const [prev, next] = await this.$content(params.story)
-      .sortBy('slug', 'asc')
-      .only(['title', 'slug'])
-      .surround(params.page)
-      .fetch()
-      .catch((err) => {
-        console.error({ statusCode: 404, message: 'Page not found', error: err })
-      })
-
-    this.prev = prev
-    this.next = next
+    const currentIndex = this.pages.findIndex(page => page?.path === this.page?.path)
+    this.prev = (currentIndex - 1) < 0 ? this.pages[this.pages.length - 1] : this.pages[currentIndex - 1]
+    this.next = (currentIndex + 1) === this.pages.length ? this.pages[0] : this.pages[currentIndex + 1]
   },
   watch: {
     // When changing pages, refetch the content page and reload the method
@@ -116,7 +123,6 @@ export default {
   },
   methods: {
     async initPagePosition () {
-      console.log('🎹 this route', this.$route.params.page)
       const pageId = this.$route.params.page
 
       // Set Eye-Dome-Lighting, needed to make the pointcloud transparent.
@@ -129,8 +135,9 @@ export default {
        * Add media to the scene
        */
       // this.loadImageExample() // Single image example
-      loadVideo(this.page) // Load page video
-
+      if (this.page.mediaPath) {
+        loadVideo(this.page) // Load page video
+      }
       // Set viewer FOV
       potreeRef.fov = this.page?.cameraFOV || 60
       potreeRef.viewer.setFOV(this.page?.cameraFOV || 60)
@@ -140,7 +147,7 @@ export default {
       * Story sequence
       */
       // Development only, do not end the animation if setting the media coordinates
-      if (stopSecuence) {
+      if (stopSecuence || !this.page.mediaPath) {
         potreeRef.viewer.useEDL = false
         return
       }
@@ -205,10 +212,7 @@ export default {
       // }
 
       // Go to the first page if reached the last one
-      const next = this.next?.slug
-        ? `/stories/${this.$route.params.story}/${this.next.slug}`
-        : '/stories' + this.pages[0].path
-      this.$router.push(next)
+      this.$router.push(`/stories/${this.$route.params.story}/${this.next.slug}`)
       // })
     },
 

@@ -30,11 +30,10 @@ export default {
     pages: { type: Array, required: false, default: () => [] }
   }
 }
-
 </script>
+
 <style scoped>
 .btn.nuxt-link-active{
-  background: #1b3e4c;
-  color: white
+  @apply bg-yellow-500 text-white
 }
 </style>

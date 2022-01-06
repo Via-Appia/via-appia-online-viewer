@@ -40,11 +40,12 @@ export default {
     // Get the list of pages of the story
     this.pages = await this.$content(this.$route.params.story)
       .sortBy('slug', 'asc')
-      .only(['title', 'description', 'path'])
+      .only(['title', 'description', 'path', 'exclude'])
       .fetch()
       .catch((err) => {
         console.error({ statusCode: 404, message: 'Page not found', error: err })
       })
+    this.pages = this.pages.filter(viewpoint => !viewpoint.exclude)
   },
   watch: {
     // When changing pages, refetch the content page and reload the method
