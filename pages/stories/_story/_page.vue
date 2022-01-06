@@ -139,10 +139,11 @@ export default {
         loadVideo(this.page) // Load page video
       }
       // Set viewer FOV
-      potreeRef.fov = this.page?.cameraFOV || 60
-      potreeRef.viewer.setFOV(this.page?.cameraFOV || 60)
+      const fov = this.page?.cameraFOV || 60
+      potreeRef.fov = fov
+      potreeRef.viewer.setFOV(fov)
 
-      await this.goToCameraPosition(this.page.animationEntry)
+      await this.goToCameraPosition(this.page.cameraPath)
       /*
       * Story sequence
       */
@@ -219,51 +220,40 @@ export default {
     /**
      * Camera Animation
      */
-    async goToCameraPosition (animationEntry) {
+    async goToCameraPosition () {
+
       // if there are not any camera points defined, then don't do anything.
       if (this.page.cameraPath.length === 0) {
         return
       }
-
+      //
       // If there is only one point defined in the scene, then fly to it directly
-      if (this.page.cameraPath.length === 1) {
-        potreeRef.viewer.scene.view.setView(
-          this.page.cameraPath[0][0], // camera position
-          this.page.cameraPath[0][1], // cameraTarget
-          this.page.animationEntry || cameraMoveDT
-        )
-        // Wait for the animation to finish
-        await promiseTimeout((animationEntry || cameraMoveDT) * 1000) // wait x seconds
-      }
+      //
+      const animation = new VACameraAnimation(potreeRef.viewer)
 
-      // If there are a camera path points defined
-      if (this.page.cameraPath.length > 1) {
-        const animation = new VACameraAnimation(potreeRef.viewer)
+      // Get the positions and tagets from the markdown file
+      const positions = this.page.cameraPath.map(position => position[0])
+      const targets = this.page.cameraPath.map(target => target[1])
 
-        // Get the positions and tagets from the markdown file
-        const positions = this.page.cameraPath.map(position => position[0])
-        const targets = this.page.cameraPath.map(target => target[1])
+      // Add to the current camera point to the camera path to animate from it
+      positions.push(potreeRef.viewer.scene.getActiveCamera().position.toArray())
+      targets.push(potreeRef.viewer.scene.view.getPivot().toArray())
 
-        // Add to the current camera point to the camera path to animate from it
-        positions.push(potreeRef.viewer.scene.getActiveCamera().position.toArray())
-        targets.push(potreeRef.viewer.scene.view.getPivot().toArray())
+      // Reverse the array to start the camera animation from the bottom to the beginning
+      const _positions = positions.reverse()
+      const _targets = targets.reverse()
+      // Build the camera animation path
+      _positions.forEach((position, i) => {
+        const cp = animation.createControlPoint()
+        cp.position.set(..._positions[i])
+        cp.target.set(..._targets[i])
+      })
 
-        // Reverse the array to start the camera animation from the bottom to the beginning
-        const _positions = positions.reverse()
-        const _targets = targets.reverse()
-
-        // Build the camera animation path
-        _positions.forEach((position, i) => {
-          const cp = animation.createControlPoint()
-          cp.position.set(..._positions[i])
-          cp.target.set(..._targets[i])
-        })
-
-        animation.visible = false
-        animation.duration = animationEntry || cameraMoveDT
-        // Wait for the camera animation transition to finish
-        await animation.play()
-      }
+      animation.visible = false
+      animation.duration = this.page.animationEntry || cameraMoveDT
+      // Wait for the camera animation transition to finish
+      await animation.play()
+      // }
     },
 
     /**
