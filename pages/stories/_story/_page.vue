@@ -151,14 +151,28 @@ export default {
       potreeRef.fov = fov
       potreeRef.viewer.setFOV(fov)
 
-      await this.goToCameraPosition(this.page.cameraPath)
+      // calculate complete flow duration
+      const completeDurationInSecs =
+        this.page.animationEntry || cameraMoveDT + // camera movement animation
+        startDT * 1000 + // wait for the pointcloud to dissapear
+        startDT * 1000 + // wait until the video starts
+        playDT + // duration of the video
+        stopDT * 1000 // wait for the video to fadeout
+      // waitUntilNextVideo * 1000 // wait until move to the next video in slide mode
+
+      // Send the time duration inside the WebSocket
       socket.send(JSON.stringify({
         type: 'message',
-        message: 'camera animation finished'
+        message: 'Animation duration',
+        duration: completeDurationInSecs
       }))
+      console.log('🔥 completeDurationInSecs', completeDurationInSecs)
+
       /*
       * Story sequence
       */
+      await this.goToCameraPosition(this.page.cameraPath)
+
       // Development only, do not end the animation if setting the media coordinates
       if (stopSecuence || !this.page.mediaPath) {
         potreeRef.viewer.useEDL = false
@@ -221,12 +235,14 @@ export default {
       }
       await promiseTimeout(waitUntilNextVideo * 1000)
 
-      //   return
-      // }
+      // Send workflow is finished the WebSocket
+      socket.send(JSON.stringify({
+        type: 'message',
+        message: 'Viewpoint finished'
+      }))
 
       // Go to the first page if reached the last one
       this.$router.push(`/stories/${this.$route.params.story}/${this.next.slug}`)
-      // })
     },
 
     /**
