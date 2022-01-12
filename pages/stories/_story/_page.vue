@@ -166,7 +166,7 @@ export default {
         message: 'Animation duration',
         duration: completeDurationInSecs
       }))
-      console.log('🔥 completeDurationInSecs', completeDurationInSecs)
+      // console.log('🔥 completeDurationInSecs', completeDurationInSecs)
 
       /*
       * Story sequence
