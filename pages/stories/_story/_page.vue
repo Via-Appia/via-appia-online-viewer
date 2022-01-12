@@ -1,29 +1,27 @@
 <template>
-  <div>
-    <div class="flex mb-4">
-      <div class="flex-grow" />
-      <div v-if="!$config.isMuseumApp" class="fixed top-2 right-[180px] flex">
-        <nuxt-link v-if="allPages && allPages[monumentPage] &&allPages[monumentPage].slug" :to="`/stories/${$route.params.story}/${allPages[monumentPage].slug}`" class="btn btn-outline ">
-          Monument
-        </nuxt-link>
-        <nuxt-link v-if="allPages && allPages[reconstructionPage] && allPages[reconstructionPage].slug" :to="`/stories/${$route.params.story}/${allPages[reconstructionPage].slug}`" class="btn btn-outline ml-4">
-          Reconstruction
-        </nuxt-link>
-        <NuxtLink
-          :disabled="!prev"
-          class="btn ml-4"
-          :to="{ to: 'stories', params: {story: $route.params.story, page: prev && prev.slug}}"
-        >
-          Back
-        </NuxtLink>
-        <NuxtLink
-          :disabled="!next"
-          class="btn ml-4"
-          :to="{ to: 'stories', params: {story: $route.params.story, page: next && next.slug}}"
-        >
-          Next
-        </NuxtLink>
-      </div>
+  <div class="flex mb-4">
+    <div class="flex-grow" />
+    <div v-if="!$config.isMuseumApp" class="fixed top-2 right-[180px] flex">
+      <nuxt-link v-if="allPages && allPages[monumentPage] &&allPages[monumentPage].slug" :to="`/stories/${$route.params.story}/${allPages[monumentPage].slug}`" class="btn btn-outline ">
+        Monument
+      </nuxt-link>
+      <nuxt-link v-if="allPages && allPages[reconstructionPage] && allPages[reconstructionPage].slug" :to="`/stories/${$route.params.story}/${allPages[reconstructionPage].slug}`" class="btn btn-outline ml-4">
+        Reconstruction
+      </nuxt-link>
+      <NuxtLink
+        :disabled="!prev"
+        class="btn ml-4"
+        :to="{ to: 'stories', params: {story: $route.params.story, page: prev && prev.slug}}"
+      >
+        Back
+      </NuxtLink>
+      <NuxtLink
+        :disabled="!next"
+        class="btn ml-4"
+        :to="{ to: 'stories', params: {story: $route.params.story, page: next && next.slug}}"
+      >
+        Next
+      </NuxtLink>
     </div>
   </div>
 </template>
@@ -47,6 +45,8 @@ import {
 
 import { VACameraAnimation } from '~/api/VACameraAnimation'
 import { promisifyVideo, tweenToPromisify } from '~/api/tweenUtils'
+
+import { socket } from '~/api/websocket'
 
 export default {
   setup () {
@@ -120,6 +120,14 @@ export default {
   },
   async mounted () {
     await this.$fetch(); this.initPagePosition()
+
+    socket.onmessage = ({ data }) => {
+      const message = JSON.parse(data)
+      if (message.type === 'path') {
+        console.log('🔥 messge from the server', message.page)
+        this.$router.push(`/stories/${message.page}`)
+      }
+    }
   },
   methods: {
     async initPagePosition () {
@@ -144,6 +152,10 @@ export default {
       potreeRef.viewer.setFOV(fov)
 
       await this.goToCameraPosition(this.page.cameraPath)
+      socket.send(JSON.stringify({
+        type: 'message',
+        message: 'camera animation finished'
+      }))
       /*
       * Story sequence
       */
@@ -221,7 +233,6 @@ export default {
      * Camera Animation
      */
     async goToCameraPosition () {
-
       // if there are not any camera points defined, then don't do anything.
       if (this.page.cameraPath.length === 0) {
         return

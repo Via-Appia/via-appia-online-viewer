@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!-- the main language of the page declared -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- a viewport declaration which does not disable zooming -->
+  <meta name="viewport" content="width=device-width">
+  <title>Title</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style type="text/tailwindcss">
+    .btn{
+      @apply cursor-pointer bg-gray-100 p-3 hover:bg-gray-200 active:bg-gray-300 transition
+    }
+  </style>
+</head>
+<body class="p-3">
+
+<div class="text-2xl mb-3">Websocket example, navigate to stories.</div>
+<button class="btn"
+        onclick="toStory('story_6/01_o_01_jhp-1080p')"
+>
+  go to story 1
+</button>
+<button class="btn"
+        onclick="toStory('story_6/02_o_02_tha-1080p')"
+>
+  go to story 2
+</button>
+
+
+<script>
+  const socket = new WebSocket('ws://localhost:8080')
+
+  function toStory (page) {
+    console.log('🎹 go to story', page)
+    socket.send(JSON.stringify({
+      type: 'path',
+      page
+    }))
+  }
+
+</script>
+</body>
+</html>
