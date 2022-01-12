@@ -1,9 +1,6 @@
 // Access the potreeView instance from everywhere using composition API
 import { reactive } from '@nuxtjs/composition-api'
-// import CameraControls from 'camera-controls'
 import { VAFirstPersonControls } from '~/api/VAFirstPersonControls'
-// CameraControls.install({ THREE })
-// import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import { moveToVideo } from '~/api/videos'
 
 export const potreeRef = reactive(
@@ -13,7 +10,8 @@ export const potreeRef = reactive(
     props: { moveSpeed: null },
     videos: {},
     selectedVideo: null,
-    followCamera: false
+    followCamera: false,
+    fov: 60
   })
 
 /*
@@ -31,7 +29,7 @@ export function initViewer (DOMElement) {
   // potreeRef.cameraControls = new CameraControls(potreeRef.camera, DOMElement)
 
   const viewer = potreeRef.viewer
-  loadInitialPointCloud() // TODO ///////////////////////////////////////////////////////////////////////////////// DO NOT COMMIT THIS
+  loadInitialPointCloud()
 
   viewer.loadGUI(() => {
     viewer.setLanguage('en')
@@ -101,7 +99,7 @@ function addLights () {
 // Floor
 function addFloor () {
   const geometry = new THREE.PlaneGeometry(100000, 100000)
-  const material = new THREE.MeshBasicMaterial({ color: 0x2E3222, side: THREE.DoubleSide })
+  const material = new THREE.MeshBasicMaterial({ color: 0x24271A, side: THREE.DoubleSide })
   const plane = new THREE.Mesh(geometry, material)
   plane.position.set(296266.35737207683, 4633691.154054946, 100)
   potreeRef.viewer.scene.scene.add(plane)
@@ -120,7 +118,9 @@ function initOpacityKeys () {
     const keys = { 1: 0.1, 2: 0.2, 3: 0.3, 4: 0.4, 5: 0.5, 6: 0.6, 7: 0.7, 8: 0.8, 9: 0.9, 0: 0.0 }
     const input = keys[event.key] && event.altKey ? keys[event.key] : null
 
-    if (!input) { return }
+    if (!input) {
+      return
+    }
 
     const opacity = input === history ? 1 : input
     setOpacity(potreeRef.selectedVideo, opacity)
@@ -164,8 +164,8 @@ export function loadInitialPointCloud () {
   // Pointcloud data source
   const POINT_CLOUD_URL = process.env.isLocalPointClouds
     // locally
-    ? 'http://localhost:3000/pointclouds/DRIVE_1_V3_levels_8/cloud.js'
-    // ? 'http://localhost:3000/pointclouds/highres/metadata.json'
+    // ? 'http://localhost:3000/pointclouds/DRIVE_1_V3_levels_8/cloud.js'
+    ? 'http://localhost:3000/pointclouds/highres/metadata.json'
     // Cloud storage
     : 'https://storage.googleapis.com/via-appia-20540.appspot.com/cloud.js'
 

@@ -5,6 +5,7 @@
     <!--  Only show the toolbar when developing locally-->
     <!--  <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" /> -->
     <div
+      v-if="!$config.isMuseumApp"
       class="flex w-full absolute left-4 bottom-4 z-20 items-end pr-10 pointer-events-none"
       :class="{'pl-[300px]':isSidebarOpen}"
     >
@@ -12,7 +13,10 @@
       <div class="mr-auto mb-1">
         {{ potreeRef.props.moveSpeed }}
       </div>
-      <div class="pointer-events-auto cursor-pointer" @click="resize">
+
+      <memory-usage-demo />
+
+      <div class="pointer-events-auto cursor-pointer ml-4" @click="resize">
         {{ windowWidth }} x {{ windowHeight }}
       </div>
 
@@ -21,7 +25,7 @@
       </div>
     </div>
 
-    <camera-side-panel-section v-if="camera" />
+    <camera-side-panel-section v-if="!$config.isMuseumApp && camera" />
     <div id="potree_sidebar_container" />
   </div>
 </template>
@@ -66,7 +70,7 @@ export default {
     isSidebarOpen.value = $('#potree_sidebar_container').is(':visible')
 
     // hide toolbar if production mode
-    if (!this.$nuxt.context.isDev) {
+    if (!this.$nuxt.context.isDev || this.$config.isMuseumApp) {
       this.toggleSidebar()
     }
 
@@ -75,7 +79,6 @@ export default {
     //
     // Listen for clicks on the viewer
     //
-
     this.$refs.potree_container.addEventListener('click', (event) => {
       listenSelectObject()
     })
@@ -84,7 +87,7 @@ export default {
     this.camera = potreeRef.viewer.scene.getActiveCamera()
 
     // get labels
-    // this.getLabels()      // TODO ADD LABELS?!!!!
+    // this.getLabels()
   },
 
   methods: {
@@ -98,30 +101,32 @@ export default {
     async getLabels () {
       const labels = await this.$content('labels-map')
         .fetch()
-        .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
+        .catch((err) => {
+          console.error({ statusCode: 404, message: 'Page not found', error: err })
+        })
       labels.labels.map(label => potreeRef.viewer.scene.annotations.add(new Potree.Annotation(label)))
     },
 
-    async getAnimationPaths ({ story = '', page = '' }) {
-      const animation = await this.$content(story, page)
-        .fetch()
-        .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
-
-      const positions = [
-        potreeRef.viewer.scene.getActiveCamera().position.toArray(), // current camera position
-        animation.cameraPosition
-      ]
-      const targets = [
-        potreeRef.viewer.scene.view.getPivot().toArray(), // current target position
-        animation.cameraTarget
-      ]
-
-      // Remove previous animations
-      // TODO this doesn't remove the animation from the previous path
-      potreeRef.viewer.scene.cameraAnimations.length = 0
-      addAnimationPath(positions, targets, animation.animationEntry)
-      potreeRef.viewer.scene.cameraAnimations[0].play()
-    },
+    // async getAnimationPaths ({ story = '', page = '' }) {
+    //   const animation = await this.$content(story, page)
+    //     .fetch()
+    //     .catch((err) => { console.error({ statusCode: 404, message: 'Page not found', error: err }) })
+    //
+    //   const positions = [
+    //     potreeRef.viewer.scene.getActiveCamera().position.toArray(), // current camera position
+    //     animation.cameraPosition
+    //   ]
+    //   const targets = [
+    //     potreeRef.viewer.scene.view.getPivot().toArray(), // current target position
+    //     animation.cameraTarget
+    //   ]
+    //
+    //   // Remove previous animations
+    //   // TODO this doesn't remove the animation from the previous path
+    //   potreeRef.viewer.scene.cameraAnimations.length = 0
+    //   addAnimationPath(positions, targets, animation.animationEntry)
+    //   potreeRef.viewer.scene.cameraAnimations[0].play()
+    // },
 
     toggleSidebar () {
       $('#potree_sidebar_container').toggle()

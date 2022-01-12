@@ -7,10 +7,15 @@ mediaRotation:  [0.7553503339326622,-0.11030146712819848,-0.09333931923736666,0.
 mediaScale: 2.45735
 cameraFOV: 110
 
-cameraPosition:  [296256.1664233425,4633687.419062067,137.17081296469874]
-cameraTarget:  [296256.24591366603,4633703.088457677,132.00228101407063]
+# Pair of camera points and targets: [final point], ... , [entrance point]
+cameraPath: [
+    [[296256.1664233425,4633687.419062067,137.17081296469874],[296256.24591366603,4633703.088457677,132.00228101407063]]
+]
 
-animationEntry: 2000
+# ViewPoints overrides in seconds
+animationEntry:
 ---
 
 ## Example Page 1
+Content here
+

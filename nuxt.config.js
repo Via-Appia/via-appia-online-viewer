@@ -2,6 +2,10 @@ export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
   ssr: false,
+  publicRuntimeConfig: {
+    isMuseumApp: process.env.IS_MUSEUM_APP || false,
+    slideshow: process.env.SLIDESHOW || false
+  },
   env: {
     isLocalPointClouds: process.env.LOCAL_POINTCLUDS || false,
     pointsBudget: process.env.POINTS_BUDGET || 3000000

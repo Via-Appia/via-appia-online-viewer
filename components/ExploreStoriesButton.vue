@@ -3,6 +3,7 @@
     <label for="my-modal-2" class="button modal-button ">Explore stories</label>
     <input
       id="my-modal-2"
+      ref="modal"
       type="checkbox"
       class="modal-toggle"
     >
@@ -32,7 +33,21 @@
 </template>
 
 <script setup>
+import { defineProps, onMounted, ref } from '@nuxtjs/composition-api'
 import menu from '~/content/menu-items.yaml'
+
+const modal = ref()
+const props = defineProps({
+  open: { type: Boolean, default: false }
+})
+
+onMounted(() => {
+  // Open the explore stories modal if it is the main stories page
+  if (props.open) {
+    modal.value.checked = true
+  }
+})
+
 </script>
 
 <style scoped>

@@ -220,14 +220,12 @@ export class VAFirstPersonControls extends Potree.EventDispatcher {
         this.translationDelta.y = -this.viewer.getMoveSpeed()
       }
       if (moveLeft) {
-        console.log('🎹 LEFT')
         this.translationDelta.x = -this.viewer.getMoveSpeed()
       }
       if (moveRight) {
         this.translationDelta.x = this.viewer.getMoveSpeed()
       }
       if (moveUp) {
-        console.log('🎹 UP', moveUp)
         this.translationWorldDelta.z = this.viewer.getMoveSpeed()
       }
       if (moveDown) {

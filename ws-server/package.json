@@ -1,0 +1,10 @@
+{
+  "name": "ws-server",
+  "version": "1.0.0",
+  "description": "WS Server for the via appia museum application",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.4.0"
+  }
+}
