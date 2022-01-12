@@ -90,4 +90,4 @@ sw.*
 # Vim swap files
 *.swp
 /static/pointclouds/DRIVE_1_V3_levels_8/
-/static/pointclouds/converted/
+/static/pointclouds
