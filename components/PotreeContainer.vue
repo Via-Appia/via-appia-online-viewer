@@ -66,9 +66,7 @@ export default {
     isSidebarOpen.value = $('#potree_sidebar_container').is(':visible')
 
     // hide toolbar if production mode
-    if (!this.$nuxt.context.isDev || this.$config.isMuseumApp) {
-      this.toggleSidebar()
-    }
+    this.toggleSidebar()
 
     initViewer(this.$refs.potree_container)
 
