@@ -32,7 +32,10 @@
 <script >
 import { useRoute, computed } from '@nuxtjs/composition-api'
 import { isSidebarOpen } from '~/components/PotreeContainer'
+import { potreeRef } from '~/api/VAPotree'
+import { socket } from '~/api/websocket'
 
+import { resetViewTimeInMinutes } from '~/content/app-settings.yaml'
 export default {
   setup () {
     const route = useRoute()
@@ -62,6 +65,21 @@ export default {
     $route () {
       this.$fetch()
     }
+  },
+  mounted () {
+    const router = this.$router
+    setInterval(() => {
+      potreeRef.idleTimer++
+      if (potreeRef.idleTimer >= resetViewTimeInMinutes * 60 * 1000) {
+        // console.log('🎹 RESET view')
+        // Tell the tablet to reset
+        socket.send(JSON.stringify({
+          type: 'message',
+          message: 'idle time reached - reset view'
+        }))
+        router.push(`/stories/${this.$route.params.story}/monument`)
+      }
+    }, 1000)
   },
   methods: {
     toggleSidebar () {
