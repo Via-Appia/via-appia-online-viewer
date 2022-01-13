@@ -2,7 +2,7 @@
   <div class="flex mb-4">
     <div class="flex-grow" />
     <div v-if="!$config.isMuseumApp" class="fixed top-2 right-[180px] flex">
-      <nuxt-link v-if="allPages && allPages[monumentPage] &&allPages[monumentPage].slug" :to="`/stories/${$route.params.story}/${allPages[monumentPage].slug}`" class="btn btn-outline ">
+      <nuxt-link v-if="$nuxt.context.isDev && allPages && allPages[monumentPage] &&allPages[monumentPage].slug" :to="`/stories/${$route.params.story}/${allPages[monumentPage].slug}`" class="btn btn-outline ">
         Monument
       </nuxt-link>
       <nuxt-link v-if="allPages && allPages[reconstructionPage] && allPages[reconstructionPage].slug" :to="`/stories/${$route.params.story}/${allPages[reconstructionPage].slug}`" class="btn btn-outline ml-4">

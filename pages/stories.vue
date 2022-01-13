@@ -2,7 +2,7 @@
   <div class="flex">
     <div
       v-if="!$config.isMuseumApp"
-      class="btn btn-sm pointer-events-auto fixed top-3 left-3"
+      class="btn btn-sm pointer-events-auto fixed top-3 left-3 p-0 w-[40px]"
       :class="{'left-[310px]':isSidebarOpen}"
       @click="toggleSidebar"
     >

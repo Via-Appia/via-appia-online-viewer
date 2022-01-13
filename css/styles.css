@@ -15,7 +15,10 @@ body{
 
 /* Custom Styles */
 .button{
-  @apply btn bg-opacity-50 hover:bg-yellow-300 text-yellow-300 hover:text-black rounded shadow hover:shadow-lg py-2 px-4 border border-yellow-300 hover:border-transparent
+  @apply  btn bg-opacity-50 text-yellow-300 border-yellow-300
+          hover:bg-yellow-300 hover:text-black py-2 px-4 border  hover:border-transparent
+          rounded shadow hover:shadow-lg
+          capitalize
 }
 
 .nuxt-content-editor{
