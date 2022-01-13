@@ -14,14 +14,10 @@
         {{ potreeRef.props.moveSpeed }}
       </div>
 
-      <memory-usage-demo />
+      <memory-usage-demo v-if="$nuxt.context.isDev" />
 
       <div class="pointer-events-auto cursor-pointer ml-4" @click="resize">
         {{ windowWidth }} x {{ windowHeight }}
-      </div>
-
-      <div class="btn pointer-events-auto" @click="toggleSidebar">
-        Toggle Panel
       </div>
     </div>
 

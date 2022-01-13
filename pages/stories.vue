@@ -1,5 +1,15 @@
 <template>
   <div class="flex">
+    <div
+      v-if="!$config.isMuseumApp"
+      class="btn btn-sm pointer-events-auto fixed top-3 left-3"
+      :class="{'left-[310px]':isSidebarOpen}"
+      @click="toggleSidebar"
+    >
+      <svg width="20" height="20" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 6H20V8H0V6ZM0 0H20V2H0V0ZM0 12H20V14H0V12Z" fill="currentColor" />
+      </svg>
+    </div>
     <!--    <div v-if="!$config.isMuseumApp" class="absolute top-[20px] right-[40%]">-->
     <!--    </div>-->
     <div v-if="!$config.isMuseumApp" class="fixed top-2 right-2 ">
@@ -51,6 +61,12 @@ export default {
     // When changing pages, refetch the content page and reload the method
     $route () {
       this.$fetch()
+    }
+  },
+  methods: {
+    toggleSidebar () {
+      $('#potree_sidebar_container').toggle()
+      isSidebarOpen.value = $('#potree_sidebar_container').is(':visible')
     }
   }
 }
