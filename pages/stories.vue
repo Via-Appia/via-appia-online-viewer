@@ -1,5 +1,15 @@
 <template>
   <div class="flex">
+    <div
+      v-if="!$config.isMuseumApp"
+      class="btn btn-sm pointer-events-auto fixed top-3 left-3 p-0 w-[40px]"
+      :class="{'left-[310px]':isSidebarOpen}"
+      @click="toggleSidebar"
+    >
+      <svg width="20" height="20" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 6H20V8H0V6ZM0 0H20V2H0V0ZM0 12H20V14H0V12Z" fill="currentColor" />
+      </svg>
+    </div>
     <!--    <div v-if="!$config.isMuseumApp" class="absolute top-[20px] right-[40%]">-->
     <!--    </div>-->
     <div v-if="!$config.isMuseumApp" class="fixed top-2 right-2 ">
@@ -22,7 +32,10 @@
 <script >
 import { useRoute, computed } from '@nuxtjs/composition-api'
 import { isSidebarOpen } from '~/components/PotreeContainer'
+import { potreeRef } from '~/api/VAPotree'
+import { socket } from '~/api/websocket'
 
+import { resetViewTimeInMinutes } from '~/content/app-settings.yaml'
 export default {
   setup () {
     const route = useRoute()
@@ -51,6 +64,27 @@ export default {
     // When changing pages, refetch the content page and reload the method
     $route () {
       this.$fetch()
+    }
+  },
+  mounted () {
+    const router = this.$router
+    setInterval(() => {
+      potreeRef.idleTimer++
+      if (potreeRef.idleTimer >= resetViewTimeInMinutes * 60 * 1000) {
+        // console.log('🎹 RESET view')
+        // Tell the tablet to reset
+        socket.send(JSON.stringify({
+          type: 'message',
+          message: 'idle time reached - reset view'
+        }))
+        router.push(`/stories/${this.$route.params.story}/monument`)
+      }
+    }, 1000)
+  },
+  methods: {
+    toggleSidebar () {
+      $('#potree_sidebar_container').toggle()
+      isSidebarOpen.value = $('#potree_sidebar_container').is(':visible')
     }
   }
 }

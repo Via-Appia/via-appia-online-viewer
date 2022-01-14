@@ -11,7 +11,8 @@ export const potreeRef = reactive(
     videos: {},
     selectedVideo: null,
     followCamera: false,
-    fov: 60
+    fov: 60,
+    idleTimer: 0
   })
 
 /*

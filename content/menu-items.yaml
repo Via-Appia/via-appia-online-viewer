@@ -3,39 +3,33 @@ items:
   #  tooltip: Home
   #  route: /stories
 
-  - title: I
-    tooltip: I Mausoleo Rotondo
-    route: /stories/story_1/mr_01_da1-1080p
-    image: /images/menu/Mausoleo Rotondo.jpg
+  - title: Sepolcri in Laterizio
+    image: /images/menu/Slice 1.jpg
+    route: /stories/l/01_l_01_gbp-1080p
 
-  - title: II
-    tooltip: II Laterizio I+II
-    route: /stories/story_2/l_01_gbp-1080p
-    image: /images/menu/laterizio.jpg
+  - title: Tomba a Piramide
+    image: /images/menu/Slice 2.jpg
+    route: /stories/p/01_p_01_gbp-1080p
 
-  - title: III
-    tooltip: III Tumulo dei Curiazi
-    route: /stories/story_3/c_01_gbp-1080p
-    image: /images/menu/Tumulo dei Curiazi.jpg
+  - title: Mausoleo di Casal Rotondo
+    image: /images/menu/Slice 3.jpg
+    route: /stories/cr/01_cr_01_gbp-1080p
 
-  - title: IV
-    tooltip: IV Casale Sta Maria Nova
-    route: /stories/story_4/
-    image: /images/menu/Casale Sta Maria Nova.jpg
+  - title: Mausoleo Rotondo
+    image: /images/menu/Slice 4.jpg
+    route: /stories/mr/01_mr_01_da1-1080p
 
-  - title: V
-    tooltip: V Piramide
-    route: /stories/story_5/p_01_gbp-1080p
-    image: /images/menu/piramide.jpg
+  - title: Tumulo dei Curiazi
+    image: /images/menu/Slice 5.jpg
+    route: /stories/c/01_c_01_gbp-1080p
 
-  - title: VI
-    tooltip: VI Tumuli degli Orazi
-    route: /stories/story_6/o_01_jhp-1080p
-    image: /images/menu/Tumuli degli Orazi.jpg
+  - title: Tumuli degli Orazi
+    image: /images/menu/Slice 6.jpg
+    route: /stories/o/01_o_01_jhp-1080p
 
-  - title: VII
-    tooltip: VII Casal Rotondo
-    route: /stories/story_7/cr_01_gbp-1080p
-    image: /images/menu/Casal Rotondo.jpg
-
-
+#1 ma rotondo
+#2 laterizio
+#3 III Tumulo dei Curiazi
+#4 IV Casale Sta Maria Nova
+#5 V Piramide
+#6 VI Tumuli degli Orazi

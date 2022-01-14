@@ -11,17 +11,16 @@
         <div class="container mx-auto flex flex-col md:flex-row items-center my-12 md:my-24">
           <div class="flex flex-col w-1/3 justify-center items-start p-8">
             <h1 class="text-3xl md:text-5xl py-2 text-yellow-300 tracking-loose">
-              Via Appia 3D
+              REVISITED Via Appia
             </h1>
-            <h2 class="text-3xl md:text-5xl leading-relaxed md:leading-snug mb-2">
-              The Timeless Infinity
-            </h2>
+            <p class="text-sm md:text-base my-4">
+              Travel in time and space along the most important ancient Roman road.
+            </p>
             <p class="text-sm md:text-base mb-4">
-              Explore one of the earliest and strategically most important
-              Roman roads of the ancient republic.
+              Six monuments and more than a hundred viewpoints show how the Via Appia Antica was seen by artists and photographers over time.
             </p>
             <nuxt-link to="stories" class="button">
-              Explore Now
+              START exploring
             </nuxt-link>
           </div>
           <div class="p-8 mt-12 mb-6  ml-0 justify-center">

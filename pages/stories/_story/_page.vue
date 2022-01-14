@@ -2,10 +2,24 @@
   <div class="flex mb-4">
     <div class="flex-grow" />
     <div v-if="!$config.isMuseumApp" class="fixed top-2 right-[180px] flex">
-      <nuxt-link v-if="allPages && allPages[monumentPage] &&allPages[monumentPage].slug" :to="`/stories/${$route.params.story}/${allPages[monumentPage].slug}`" class="btn btn-outline ">
+      <div v-if="$nuxt.context.isDev">
+        idle: {{ potreeRef.idleTimer }} < {{ resetViewTimeInMinutes }}
+      </div>
+
+      <nuxt-link v-if="$nuxt.context.isDev && allPages && allPages[monumentPage] &&allPages[monumentPage].slug" :to="`/stories/${$route.params.story}/${allPages[monumentPage].slug}`" class="btn btn-outline ">
         Monument
       </nuxt-link>
-      <nuxt-link v-if="allPages && allPages[reconstructionPage] && allPages[reconstructionPage].slug" :to="`/stories/${$route.params.story}/${allPages[reconstructionPage].slug}`" class="btn btn-outline ml-4">
+
+      <nuxt-link
+        v-if="
+          allPages
+            &&
+            allPages[reconstructionPage]
+            &&
+            allPages[reconstructionPage].slug"
+        :to="`/stories/${$route.params.story}/${allPages[reconstructionPage].slug}`"
+        class="btn btn-outline ml-4"
+      >
         Reconstruction
       </nuxt-link>
       <NuxtLink
@@ -24,6 +38,7 @@
       </NuxtLink>
     </div>
   </div>
+  </div>
 </template>
 
 <script>
@@ -40,7 +55,8 @@ import {
   stopDT,
   stopSecuence,
   strengthEDL,
-  waitUntilNextVideo
+  waitUntilNextVideo,
+  resetViewTimeInMinutes
 } from '~/content/app-settings.yaml'
 
 import { VACameraAnimation } from '~/api/VACameraAnimation'
@@ -50,7 +66,7 @@ import { socket } from '~/api/websocket'
 
 export default {
   setup () {
-    return { videos, potreeRef, removeVideo, THREE }
+    return { videos, potreeRef, removeVideo, resetViewTimeInMinutes, THREE }
   },
   data () {
     return {
@@ -131,6 +147,9 @@ export default {
   },
   methods: {
     async initPagePosition () {
+      // Reset time of for the museum app
+      potreeRef.idleTimer = 0
+
       const pageId = this.$route.params.page
 
       // Set Eye-Dome-Lighting, needed to make the pointcloud transparent.
@@ -151,14 +170,28 @@ export default {
       potreeRef.fov = fov
       potreeRef.viewer.setFOV(fov)
 
-      await this.goToCameraPosition(this.page.cameraPath)
+      // calculate complete flow duration
+      const completeDurationInSecs =
+        this.page.animationEntry || cameraMoveDT + // camera movement animation
+        startDT * 1000 + // wait for the pointcloud to dissapear
+        startDT * 1000 + // wait until the video starts
+        playDT + // duration of the video
+        stopDT * 1000 // wait for the video to fadeout
+      // waitUntilNextVideo * 1000 // wait until move to the next video in slide mode
+
+      // Send the time duration inside the WebSocket
       socket.send(JSON.stringify({
         type: 'message',
-        message: 'camera animation finished'
+        message: 'Animation duration',
+        duration: completeDurationInSecs
       }))
+      // console.log('🔥 completeDurationInSecs', completeDurationInSecs)
+
       /*
       * Story sequence
       */
+      await this.goToCameraPosition(this.page.cameraPath)
+
       // Development only, do not end the animation if setting the media coordinates
       if (stopSecuence || !this.page.mediaPath) {
         potreeRef.viewer.useEDL = false
@@ -221,12 +254,19 @@ export default {
       }
       await promiseTimeout(waitUntilNextVideo * 1000)
 
-      //   return
-      // }
+      // Send workflow is finished the WebSocket
+      socket.send(JSON.stringify({
+        type: 'message',
+        message: 'Viewpoint finished'
+      }))
+
+      // If museum app, return
+      if (this.$config.isMuseumApp) {
+        return
+      }
 
       // Go to the first page if reached the last one
       this.$router.push(`/stories/${this.$route.params.story}/${this.next.slug}`)
-      // })
     },
 
     /**

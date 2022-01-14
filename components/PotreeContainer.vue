@@ -10,18 +10,14 @@
       :class="{'pl-[300px]':isSidebarOpen}"
     >
       <img src="/app/keys.svg" alt="Keys Helper" class="select-none pointer-events-none h-20">
-      <div class="mr-auto mb-1">
+      <div class=" mb-1">
         {{ potreeRef.props.moveSpeed }}
       </div>
 
-      <memory-usage-demo />
+      <memory-usage-demo v-if="$nuxt.context.isDev" class="ml-10" />
 
       <div class="pointer-events-auto cursor-pointer ml-4" @click="resize">
         {{ windowWidth }} x {{ windowHeight }}
-      </div>
-
-      <div class="btn pointer-events-auto" @click="toggleSidebar">
-        Toggle Panel
       </div>
     </div>
 
@@ -70,9 +66,7 @@ export default {
     isSidebarOpen.value = $('#potree_sidebar_container').is(':visible')
 
     // hide toolbar if production mode
-    if (!this.$nuxt.context.isDev || this.$config.isMuseumApp) {
-      this.toggleSidebar()
-    }
+    this.toggleSidebar()
 
     initViewer(this.$refs.potree_container)
 
