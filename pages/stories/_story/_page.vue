@@ -261,9 +261,9 @@ export default {
       }))
 
       // If museum app, return
-      if (this.$config.isMuseumApp) {
-        return
-      }
+      // if (this.$config.isMuseumApp) {
+      //   return
+      // }
 
       // Go to the first page if reached the last one
       this.$router.push(`/stories/${this.$route.params.story}/${this.next.slug}`)
