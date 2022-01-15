@@ -1,41 +1,67 @@
 <!DOCTYPE html>
 <!-- the main language of the page declared -->
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <!-- a viewport declaration which does not disable zooming -->
   <meta name="viewport" content="width=device-width">
-  <title>Title</title>
+  <title>Via Appia Web Sockets</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <style type="text/tailwindcss">
-    .btn{
-      @apply cursor-pointer bg-gray-100 p-3 hover:bg-gray-200 active:bg-gray-300 transition
+    h1 {
+      @apply text-2xl
+    }
+
+    .btn {
+      @apply cursor-pointer bg-gray-100 p-3 hover:bg-gray-200 active:bg-gray-300 transition m-1
     }
   </style>
+  <script src="https://unpkg.com/vue"></script>
 </head>
+
 <body class="p-3">
 
-<div class="text-2xl mb-3">Websocket example, navigate to stories.</div>
-<button class="btn" onclick="toStory('story_6/01_o_01_jhp-1080p')" >
-  go to story 1
-</button>
-<button class="btn" onclick="toStory('story_6/02_o_02_tha-1080p')">
-  go to story 2
-</button>
+  <div id="app">
+    <!-- <button class="btn" @click="socket.send(JSON.stringify({ type: 'openInFullHd'}))">Open in full hd window </button> -->
+    <div class="mb-3 text-2xl">Websocket example, navigate to stories.</div>
 
+    <div v-for="(story,key) in stories" :key="key">
+      <h1>{{ key }}</h1>
+      <button class="btn" v-for="i in story" @click="toStory(key+'/'+i)" :key="i+key">
+        {{ i }}
+      </button>
+    </div>
 
-<script>
-  const socket = new WebSocket('ws://localhost:8080')
+  </div>
 
-  function toStory (page) {
-    console.log('🎹 go to story', page)
-    socket.send(JSON.stringify({
-      type: 'path',
-      page
-    }))
-  }
+  <script>
 
-</script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        socket: new WebSocket('ws://localhost:8080'),
+        stories: {
+          c: ['01_c_01_gbp-1080p', '02_c_02_cl-1080p', '03_c_03_lc-1080p', '04_c_04_rmacp1850s-1080p', '05_c_05_rmacp1862-1080p', '06_c_06_da1890-1080p', '07_c_07_gec1900-1080p', '08_c_08_c-gca1900-1080p', '09_c_09_anonearly1900-1080p', '10_c_10_1905a-1080p', '11_c_11_1905d-1080p', '12_c_12_1905e-1080p', '13_c_13_er1930-1080p', '14_c_14_anon1930-1080p', '15_c_15_tv1956-1080p', 'monument', 'reconstruction'],
+          cr: ['01_cr_01_gbp-1080p', '02_cr_02_cl-1080p', '03_cr_03_jgc-1080p', '04_cr_04_anonrs1869-1080p', '05_cr_05_fllia-doc1210-1080p', '06_cr_06_fllia1890-1080p', '07_cr_07_da1890-1080p', '08_cr_09_ppm-0159-1080p', '09_cr_10_tha-1080p', '10_cr_08_ppm-1847-1080p', '11_cr_11_anonred1890-1080p', '12_cr_12_anonblew1900-1080p', '13_cr_13_bulwerc1890-1080p', '14_cr_14_bs-1080p', '15_cr_15_1905-1080p', '16_cr_16_emigliorini-1080p', '17_cr_18_gs-1080p', '18_cr_19_pdea1-1080p', '19_cr_20_pdea2-1080p', '20_cr_17_italynews-1080p', '21_cr_21_eisner-1080p', '22_cr_22_en-709-1080p', '23_cr_23_en-5851-1080p', '24_cr_24_en-1853-1080p', '25_cr_25_en-5855-1080p', '26_cr_26_mgc-1080p', 'monument', 'reconstruction'],
+          l: ['01_l_01_gbp-1080p', '02_l_02_cl-1080p', '03_l_03_lc-1080p', '04_l_04_repropb-1080p', '05_l_05_doc1024-1080p', '06_l_06_da-1080p', '07_l_07_tha-1080p', '08_l_08_anonaftera-1080p', '09_l_09_uu-1080p', '10_l_10_morpurgodoc1183-1080p', '11_l_11_gb-1080p', '12_l_12_mh-1080p', '13_l_13_en-1080p', 'monument'],
+          mr: ['01_mr_01_da1-1080p', '02_mr_02_da2-1080p', '03_mr_03_fllida-1080p', '04_mr_04_erf-1080p', '05_mr_05_anon1-1080p', '06_mr_06_anon2-1080p', '07_mr_07_c-gca1900-1080p', '08_mr_08_anon1900-1080p', '09_mr_09_1905a-1080p', '10_mr_10_1905g-1080p', '11_mr_11_s-tco1908-1080p', '12_mr_12_fllia1-1080p', '13_mr_13_fllia2-1080p', '14_mr_14_cinec-1080p', '15_mr_15_bfr-1080p', '16_mr_16_doc1164-1080p', '17_mr_17_mh-1080p', '18_mr_18_jhl-1080p', '19_mr_19_en-1080p', '20_mr_20_anon1973-1080p', 'monument', 'reconstruction'],
+          o: ['01_o_01_jhp-1080p', '02_o_02_tha-1080p', '03_o_03_PPM-1856-1080p', '04_o_04_PPM-0131-1080p', '05_o_05_fllia-doc1243-1080p', '06_o_06_fllia-doc1205-1080p', '07_o_07_av-1080p', '08_o_08_stereoph1900-1080p', '09_o_09_anon1905-1080p', '10_o_10_anonbc-1080p', '11_o_11_cf-1080p', '12_o_12_kh1925-1080p', '13_o_13_wwm1931-1080p', '14_o_14_ld1957-1080p', '15_o_15_en710-1080p', '16_o_16_en8962-1080p', 'monument', 'reconstruction'],
+          p: ['01_p_01_gbp-1080p', '02_p_02_cl-1080p', '03_p_03_lc-1080p', '04_p_04_doc1294-1080p', '05_p_05_jhp-1080p', '06_p_06_anon741a-1080p', '07_p_07_da1890-1080p', '08_p_08_da1920-1080p', '09_p_09_tha1313-1080p', '10_p_10_tha1314-1080p', '11_p_11_anonls-1080p', '12_p_12_cf1911-1080p', '13_p_13_bdc1919-1938-1080p', '14_p_14_gb-1080p', '15_p_15_am1950s-1080p', '16_p_16_cinec1955-1080p', '17_p_17_ppp-1080p', '18_p_18_en8961-1080p', '19_p_19_en5859-1080p', '20_p_20_js-1080p', 'monument', 'reconstruction'],
+        }
+      },
+      methods: {
+        toStory(page) {
+          console.log('🎹 go to story:', page)
+          this.socket.send(JSON.stringify({
+            type: 'path',
+            page
+          }))
+        }
+      }
+    })
+  </script>
 </body>
+
 </html>

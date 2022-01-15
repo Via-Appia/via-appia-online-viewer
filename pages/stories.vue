@@ -30,7 +30,8 @@
 </template>
 
 <script >
-import { useRoute, computed } from '@nuxtjs/composition-api'
+import { useRoute, computed, watch, watchEffect } from '@nuxtjs/composition-api'
+import { useMagicKeys } from '@vueuse/core'
 import { isSidebarOpen } from '~/components/PotreeContainer'
 import { potreeRef } from '~/api/VAPotree'
 import { socket } from '~/api/websocket'
@@ -40,6 +41,25 @@ export default {
   setup () {
     const route = useRoute()
     const story = computed(() => route.value.params.story)
+
+    const { shift, a, Equal /* keys you want to monitor */ } = useMagicKeys()
+
+    watch(Equal, (v) => {
+      if (v) {
+        console.log('space has been pressed')
+        window.open(
+          'http://localhost:3000/stories',
+          '',
+          'width=1280, height=721, directories=no,titlebar=no,toolbar=no, location=no, status=no, menubar=no, scrollbars=no, resizable=no'
+        )
+      }
+    })
+    watchEffect(() => {
+      if (shift.value && a.value) {
+        console.log('Shift + A have been pressed')
+      }
+    })
+
     return { isSidebarOpen, story }
   },
 
@@ -67,6 +87,23 @@ export default {
     }
   },
   mounted () {
+    socket.onmessage = ({ data }) => {
+      console.log('🎹 ')
+      const message = JSON.parse(data)
+      if (message.type === 'path') {
+        console.log('🏴‍☠️ messge from the server', message.page)
+        this.$router.push(`/stories/${message.page}`)
+      }
+
+      // if (message.type === 'openInFullHd') {
+      //   console.log('🎹 open in full')
+      //   window.open(
+      //     'http://localhost:3000/stories',
+      //     '',
+      //     'width=1280, height=721, directories=no,titlebar=no,toolbar=no, location=no, status=no, menubar=no, scrollbars=no, resizable=no')
+      // }
+    }
+
     const router = this.$router
     setInterval(() => {
       potreeRef.idleTimer++
