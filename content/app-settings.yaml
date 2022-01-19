@@ -4,10 +4,10 @@
 cameraMoveDT: 20 # 10, Camera movement to viewpoint, ease in/out
 fadeInDT: 5 # 5, Video opacity from 0 to 1
 startDT: 1 # 3,Time delay between the end of the fading and the start of the video
-playDT: 30 # 30, Video playback time
-stopDT: 1 # 3, Time delay between end of video and start of the fade out
-fadeOutDT: 3 # 5, Video from 1 to 0 opacity
-waitUntilNextVideo: 1 # 3 Wait until the movement of the next video
+playDT: 40 # 30, Video playback time
+stopDT: 5 # 3, Time delay between end of video and start of the fade out
+fadeOutDT: 5 # 5, Video from 1 to 0 opacity
+waitUntilNextVideo: 0 # 3 Wait until the movement of the next video
 
 resetViewTimeInMinutes: 5 # In the museum app, the App will restart to the 'Monument' viewpoint
 
