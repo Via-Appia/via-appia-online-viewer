@@ -9,14 +9,11 @@
       <nuxt-link v-if="$nuxt.context.isDev && allPages && allPages[monumentPage] &&allPages[monumentPage].slug" :to="`/stories/${$route.params.story}/${allPages[monumentPage].slug}`" class="btn btn-outline ">
         Monument
       </nuxt-link>
-
+      <div class="btn">
+        {{ potreeRef.viewer && potreeRef.viewer.useEDL }}
+      </div>
       <nuxt-link
-        v-if="
-          allPages
-            &&
-            allPages[reconstructionPage]
-            &&
-            allPages[reconstructionPage].slug"
+        v-if="allPages && allPages[reconstructionPage] && allPages[reconstructionPage].slug"
         :to="`/stories/${$route.params.story}/${allPages[reconstructionPage].slug}`"
         class="btn btn-outline ml-4"
       >
@@ -130,7 +127,7 @@ export default {
         await tweenToPromisify(videoMesh?.material, { opacity: 0 }, 1000)// fadeOutDT * 1000)
         // Delete previous video on the page
         removeVideo(previousVideoPath)
-        potreeRef.viewer.useEDL = true
+        potreeRef.viewer.useEDL = false
       }
     }
   },
@@ -145,10 +142,16 @@ export default {
       const pageId = this.$route.params.page
 
       // Set Eye-Dome-Lighting, needed to make the pointcloud transparent.
-      potreeRef.viewer.useEDL = true
       potreeRef.viewer.edlStrength = strengthEDL
       potreeRef.viewer.radius = radiousEDL
       potreeRef.viewer.edlOpacity = 1
+      potreeRef.viewer.useEDL = false
+      potreeRef.viewer.scene.pointclouds[0].visible = true
+
+      // Set viewer FOV
+      const fov = this.page?.cameraFOV || 60
+      potreeRef.fov = fov
+      potreeRef.viewer.setFOV(fov)
 
       /**
        * Add media to the scene
@@ -157,10 +160,6 @@ export default {
       if (this.page.mediaPath) {
         loadVideo(this.page) // Load page video
       }
-      // Set viewer FOV
-      const fov = this.page?.cameraFOV || 60
-      potreeRef.fov = fov
-      potreeRef.viewer.setFOV(fov)
 
       // calculate complete flow duration
       const completeDurationInSecs =
@@ -193,7 +192,6 @@ export default {
       // Set video parameters and times
       const video = videos.value[this.page.mediaPath]
       const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(this.page.mediaPath)
-      videoMesh.material.opacity -= 0.01
       video.playbackRate = video.duration / playDT // make the video duration as long as the setting
 
       // 1. Hide the PointCloud to see the video in between.
@@ -201,7 +199,10 @@ export default {
       if (pageId !== this.$route.params.page) {
         return
       }
+      potreeRef.viewer.useEDL = true
       await tweenToPromisify(potreeRef.viewer, { edlOpacity: 0 }, startDT * 1000)
+      potreeRef.viewer.scene.pointclouds[0].visible = false
+      potreeRef.viewer.useEDL = false
 
       // 2. Wait to start playing the video.
       // console.log(pageId === this.$route.params.page && '🎹 2. Wait to start playing the video.')
@@ -229,6 +230,8 @@ export default {
       if (pageId !== this.$route.params.page) {
         return
       }
+      potreeRef.viewer.useEDL = true
+      potreeRef.viewer.scene.pointclouds[0].visible = true
       await tweenToPromisify(potreeRef.viewer, { edlOpacity: 1 }, 2000)
       potreeRef.viewer.useEDL = false
 

@@ -67,6 +67,12 @@ export function initViewer (DOMElement) {
     viewer.scene.view.yaw = 0.3
     viewer.scene.view.pitch = 0
 
+    // Add fog to th scene
+    const color = 0xFFFFFF
+    viewer.scene.fog = new THREE.Fog(color, 1000, 5000)
+    console.log('🎹 view: ' + viewer.scene.fog)
+    // debugger
+
     // Potree leave Side Panel
     viewer.toggleSidebar()
 

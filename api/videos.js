@@ -1,10 +1,12 @@
 import { ref } from '@nuxtjs/composition-api'
 
 import { potreeRef } from '~/api/VAPotree'
+import { tweenToPromisify } from '~/api/tweenUtils'
+import { fadeOutDT } from '~/content/app-settings.yaml'
 
 export const videos = ref({})
 
-export const loadVideo = ({
+export const loadVideo = async ({
   mediaPath = '/videos/counter.mp4',
   mediaPosition,
   mediaRotation,
@@ -38,10 +40,11 @@ export const loadVideo = ({
     const texture = new THREE.VideoTexture(video)
     const material = new THREE.MeshLambertMaterial({
       map: texture,
-      opacity: 1,
+      opacity: 0,
       transparent: true,
       side: THREE.DoubleSide
     })
+
     const meshFloatingVideo = new THREE.Mesh(geometry, material)
 
     // set the position of the image meshFloatingVideo in the x,y,z dimensions
@@ -65,7 +68,9 @@ export const loadVideo = ({
 
     // Add media to the scene
     scene.add(meshFloatingVideo)
-  } catch (e) {
+    tweenToPromisify(meshFloatingVideo.material, { opacity: 1 }, fadeOutDT * 1000)
+  }
+  catch (e) {
     console.error('Video could not be loaded')
   }
 }
@@ -75,7 +80,8 @@ export const removeVideo = (mediaPath = '/videos/counter.mp4') => {
     const object = potreeRef.viewer.scene.scene.getObjectByName(mediaPath)
     object.material.dispose()
     potreeRef.viewer.scene.scene.remove(object)
-  } catch (e) {
+  }
+  catch (e) {
     console.error('🚨 No video selected:', e)
   }
 }
