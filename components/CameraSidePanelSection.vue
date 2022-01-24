@@ -337,7 +337,7 @@ export default {
       if (potreeRef.selectedVideo && potreeRef.followCamera) {
         const aspectRatio = 9 / 16 // 16:9
         // const scale = 5 * 1.48 * fov / 60
-        const keep = 6.37 * this.scaleMedia
+        const keep = 6.41 * this.scaleMedia
         const scale = keep * Math.tan(fov / 2.0 * Math.PI / 180.0) * 2.0
         potreeRef.selectedVideo.scale.set(1 * scale, (aspectRatio) * scale, 1 * scale)
       }
