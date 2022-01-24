@@ -49,7 +49,7 @@ export const loadVideo = async ({
 
     // set the position of the image meshFloatingVideo in the x,y,z dimensions
     // const keep = 6.37 * this.scaleMedia
-    const keep = 6.37 * mediaScale
+    const keep = 6.41 * mediaScale
     const scale = keep * Math.tan(cameraFOV / 2.0 * Math.PI / 180.0) * 2.0
     meshFloatingVideo.scale.set(1 * scale, (aspectRatio) * scale, 1 * scale)
     meshFloatingVideo.name = mediaPath
