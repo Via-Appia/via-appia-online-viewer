@@ -1,7 +1,7 @@
 ---
 title: Piramide
 
-mediaPath: /videos/p_piramide_nl_final.mp4
+mediaPath: /videos/Piramide_NL_final.m4v
 mediaPosition:  [296255.264388564,4633689.545982254,129.91779272168478]
 mediaRotation:  [-0.7646388723342585,-0.06252773282003134,-0.05227698700136337,-0.6392845956018647]
 mediaScale: 1
