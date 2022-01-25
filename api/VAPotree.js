@@ -156,7 +156,7 @@ export function listenSelectObject () {
   const intersects = raycaster.intersectObjects(sceneChildren)
 
   // for (let i = 0; i < intersects.length; i++) {
-  if (intersects[0]?.object?.type === 'VIDEO_TYPE') {
+  if (intersects[0]?.object?.type === 'VIDEO_TYPE' && process?.env?.IS_DEV) {
     // Toggle color, DEMO
     // const isSelected = intersects[0].object.material.emissive?.getHex() === 0xFF0000
     // intersects[0].object.material.emissive?.setHex(isSelected ? 0x000000 : 0xFF0000)
