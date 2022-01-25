@@ -9,7 +9,7 @@ stopDT: 5 # 3, Time delay between end of video and start of the fade out
 fadeOutDT: 5 # 5, Video from 1 to 0 opacity
 waitUntilNextVideo: 0 # 3 Wait until the movement of the next video
 
-resetViewTimeInMinutes: 5 # In the museum app, the App will restart to the 'Monument' viewpoint
+resetViewTimeInMinutes: 6 # In the museum app, the App will restart to the 'Monument' viewpoint
 
 # Eye-Dome-Lighting
 radiousEDL: 1.0
