@@ -76,6 +76,6 @@ Next we need to convert this .las to using the potree converter 1.7 and specific
 
 Navigate to the folder where PotreeConverter is, and run the command (replace the \<names>):
 
-`./PotreeConverter.exe .\<fileName>.laz -o ./<outputDirectory> --output-format LAZ`
+`./PotreeConverter.exe .\<fileName>.las -o ./<outputDirectory> --output-format LAZ`
 
 Once the process has finished, you can drag and drop the new output directory to PotreeDesktop 1.8 to test it. In our repository the files need to be placed in `\static\pointclouds\highres\` .
