@@ -55,11 +55,11 @@ POINTS_BUDGET = 1000000
 
 ## Converting big LAS files to LAZ and viewing it in Potree Desktop
 
-To make things easier you can use windows. it is possible to compile the PotreeConverter and LasZIP for Linux and Mac but you have to do it yourself.
+To visualize point clouds, which are usually in .las format, in potree they need to be covertered using the potree converter tooling. Using the the [PotreeConverter 2](https://github.com/potree/PotreeConverter/releases/tag/2.0) is a good option, since it generated only 3 files. However, it does not compress these files which results in  a converted point cloud which will be as big as the original LAS file. It therefore makes sense to use the .laz conversion from the [PotreeConverter 1.7](https://github.com/potree/PotreeConverter/releases/tag/1.7). Converting a LAS file (in our case 21GB) to LAZ for potree is easiest using windows. It is possible to compile the PotreeConverter and LasZIP for Linux and Mac but you have to do it yourself. 
 
 ### What you need:
 
-*   Your LAS files, (in our case has been a 17GB size files).
+*   Your LAS file(s), (in our case has been a 21GB size files).
 *   Lastools
     *   Download here https://rapidlasso.com/lastools/     
 *   PotreeConverter
@@ -68,14 +68,14 @@ To make things easier you can use windows. it is possible to compile the PotreeC
     *   Web: [https://github.com/potree/PotreeDesktop/releases/tag/1.8](https://github.com/potree/PotreeDesktop/releases/tag/1.8)
     *   File: [**PotreeDesktop\_1.8\_windows\_x64.zip**](https://github.com/potree/PotreeDesktop/releases/download/1.8/PotreeDesktop_1.8_windows_x64.zip)
 
-First we need to merge the various .las files into one file. To do so we use lastools browse to the bin folder and run 
+1. First we need to merge the various .las files (if any) into one file. To do so we use lastools. Browse to the bin folder and run: 
 
 `las2las -i C:\\...\\001.las C:\\...\\002.las C:\\...\\003.las ... -merged -o C:\\...\\merged.las`   
 
-Only PotreeConverter 1.7 is able to compress the merged LAS file. It will result in many small files. PotreeConvert 2 only uses one file, but it doesn't compress, so the resulting point cloud will be as big as the original LAS.
+2. Next we need to convert this .las to using the potree converter 1.7 and specifically indicate that it need to be compressed as .laz .
 
 Navigate to the folder where PotreeConverter is, and run the command (replace the \<names>):
 
 `./PotreeConverter.exe .\<fileName>.laz -o ./<outputDirectory> --output-format LAZ`
 
-Once the process has finished, you can drag and drop the new output directory to PotreeDesktop 1.8.
+Once the process has finished, you can drag and drop the new output directory to PotreeDesktop 1.8 to test it. In our repository the files need to be placed in `\static\pointclouds\highres\` .
