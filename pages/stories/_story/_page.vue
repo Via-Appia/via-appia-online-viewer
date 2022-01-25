@@ -9,9 +9,6 @@
       <nuxt-link v-if="$nuxt.context.isDev && allPages && allPages[monumentPage] &&allPages[monumentPage].slug" :to="`/stories/${$route.params.story}/${allPages[monumentPage].slug}`" class="btn btn-outline ">
         Monument
       </nuxt-link>
-      <div class="btn">
-        {{ potreeRef.viewer && potreeRef.viewer.useEDL }}
-      </div>
       <nuxt-link
         v-if="allPages && allPages[reconstructionPage] && allPages[reconstructionPage].slug"
         :to="`/stories/${$route.params.story}/${allPages[reconstructionPage].slug}`"
