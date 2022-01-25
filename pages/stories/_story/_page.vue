@@ -32,7 +32,6 @@
       </NuxtLink>
     </div>
   </div>
-  </div>
 </template>
 
 <script>
@@ -189,7 +188,8 @@ export default {
       // Set video parameters and times
       const video = videos.value[this.page.mediaPath]
       const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(this.page.mediaPath)
-      video.playbackRate = video.duration / playDT // make the video duration as long as the setting
+      const _playDT = this.page.playDT || playDT
+      video.playbackRate = video.duration / _playDT // make the video duration as long as the setting
 
       // 1. Hide the PointCloud to see the video in between.
       // console.log(pageId === this.$route.params.page && '🎹 1. Hide the PointCloud to see the video in between.')

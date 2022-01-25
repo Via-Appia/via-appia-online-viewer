@@ -7,6 +7,8 @@ mediaRotation:  [0.042262894311928575,-0.7566631997791755,-0.6514221376413435,0.
 mediaScale: 1
 cameraFOV: 40.12
 
+playDT: 306  # 5.06 min
+
 # Pair of camera points and targets: [final point], ... , [entrance point]
 cameraPath: [
     [[296267.28,4633684.83,128.93],[296269.52326544083,4633664.811245235,131.9580698203426]],
