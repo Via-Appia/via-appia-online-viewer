@@ -199,10 +199,12 @@ export default {
       if (pageId !== this.$route.params.page) {
         return
       }
-      potreeRef.viewer.useEDL = true
-      await tweenToPromisify(potreeRef.viewer, { edlOpacity: 0 }, startDT * 1000)
-      potreeRef.viewer.scene.pointclouds[0].visible = false
-      potreeRef.viewer.useEDL = false
+      if (this.$config.isMuseumApp) {
+        potreeRef.viewer.useEDL = true
+        await tweenToPromisify(potreeRef.viewer, { edlOpacity: 0 }, startDT * 1000)
+        potreeRef.viewer.scene.pointclouds[0].visible = false
+        potreeRef.viewer.useEDL = false
+      }
 
       // 2. Wait to start playing the video.
       // console.log(pageId === this.$route.params.page && '🎹 2. Wait to start playing the video.')
@@ -230,11 +232,12 @@ export default {
       if (pageId !== this.$route.params.page) {
         return
       }
-      potreeRef.viewer.useEDL = true
-      potreeRef.viewer.scene.pointclouds[0].visible = true
-      await tweenToPromisify(potreeRef.viewer, { edlOpacity: 1 }, 2000)
-      potreeRef.viewer.useEDL = false
-
+      if (this.$config.isMuseumApp) {
+        potreeRef.viewer.useEDL = true
+        potreeRef.viewer.scene.pointclouds[0].visible = true
+        await tweenToPromisify(potreeRef.viewer, { edlOpacity: 1 }, 2000)
+        potreeRef.viewer.useEDL = false
+      }
       // 6. Wait for the video to fade out
       // console.log(pageId === this.$route.params.page && '🎹 6. Wait for the video to fade out')
       if (pageId !== this.$route.params.page) {
