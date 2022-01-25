@@ -68,11 +68,11 @@ To visualize point clouds, which are usually in .las format, in potree they need
     *   Web: [https://github.com/potree/PotreeDesktop/releases/tag/1.8](https://github.com/potree/PotreeDesktop/releases/tag/1.8)
     *   File: [**PotreeDesktop\_1.8\_windows\_x64.zip**](https://github.com/potree/PotreeDesktop/releases/download/1.8/PotreeDesktop_1.8_windows_x64.zip)
 
-1. First we need to merge the various .las files (if any) into one file. To do so we use lastools. Browse to the bin folder and run: 
+First we need to merge the various .las files (if any) into one file. To do so we use lastools. Browse to the bin folder and run: 
 
 `las2las -i C:\\...\\001.las C:\\...\\002.las C:\\...\\003.las ... -merged -o C:\\...\\merged.las`   
 
-2. Next we need to convert this .las to using the potree converter 1.7 and specifically indicate that it need to be compressed as .laz .
+Next we need to convert this .las to using the potree converter 1.7 and specifically indicate that it need to be compressed as .laz .
 
 Navigate to the folder where PotreeConverter is, and run the command (replace the \<names>):
 
