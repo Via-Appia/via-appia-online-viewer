@@ -71,11 +71,10 @@ export function initViewer (DOMElement) {
     viewer.scene.view.yaw = 0.3
     viewer.scene.view.pitch = 0
 
-    // Add fog to th scene
-    const color = 0xFFFFFF
-    viewer.scene.fog = new THREE.Fog(color, 1000, 5000)
-    console.log('🎹 view: ' + viewer.scene.fog)
-    // debugger
+    // TODO: Add fog to th scene
+    // const color = 0xFFFFFF
+    // viewer.scene.fog = new THREE.Fog(color, 1000, 5000)
+    // console.log('🎹 view: ' + viewer.scene.fog)
 
     // Potree leave Side Panel
     viewer.toggleSidebar()
@@ -88,7 +87,9 @@ export function initViewer (DOMElement) {
 
     addFloor()
     addLights()
-    listenSelectObject()
+    if (config.isDev) {
+      listenSelectObject()
+    }
     // addBunnyExample()
   })
 }
@@ -137,8 +138,9 @@ function initOpacityKeys () {
     setOpacity(potreeRef.selectedVideo, opacity)
     history = opacity
   }
-
-  document.addEventListener('keydown', handleKeyPress)
+  if (config.isDev) {
+    document.addEventListener('keydown', handleKeyPress)
+  }
 }
 
 export function listenSelectObject () {
