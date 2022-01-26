@@ -20,3 +20,6 @@ stopSecuence: false # (true/false) stops the sequence to continue to the next vi
 
 # Production settings are inside the .env file.
 # They are needed at building time.
+
+# only for development
+visiblePointCloud: false

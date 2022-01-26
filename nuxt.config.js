@@ -1,4 +1,5 @@
 export default {
+  isDev: process.env.NODE_ENV !== 'production',
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
   ssr: false,

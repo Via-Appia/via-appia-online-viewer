@@ -2,7 +2,8 @@
 import { reactive } from '@nuxtjs/composition-api'
 import { VAFirstPersonControls } from '~/api/VAFirstPersonControls'
 import { moveToVideo } from '~/api/videos'
-
+import { visiblePointCloud } from '~/content/app-settings.yaml'
+import config from '~/nuxt.config'
 export const potreeRef = reactive(
   {
     viewer: null, // shortcut
@@ -30,7 +31,10 @@ export function initViewer (DOMElement) {
   // potreeRef.cameraControls = new CameraControls(potreeRef.camera, DOMElement)
 
   const viewer = potreeRef.viewer
-  loadInitialPointCloud()
+
+  if (config.isDev && visiblePointCloud) {
+    loadInitialPointCloud()
+  }
 
   viewer.loadGUI(() => {
     viewer.setLanguage('en')
