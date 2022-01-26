@@ -1,11 +1,13 @@
 ---
 title: VII Horatio
 
-mediaPath: /videos/o_tumuli_nl_final.mp4
+mediaPath: /videos/Tumuli_NL_final.m4v
 mediaPosition:  [296267.6764461834,4633681.292140067,129.4651425209769]
 mediaRotation:  [0.042262894311928575,-0.7566631997791755,-0.6514221376413435,0.03638472832248394]
 mediaScale: 1
 cameraFOV: 40.12
+
+playDT: 306  # 5.06 min
 
 # Pair of camera points and targets: [final point], ... , [entrance point]
 cameraPath: [

@@ -9,9 +9,6 @@
       <nuxt-link v-if="$nuxt.context.isDev && allPages && allPages[monumentPage] &&allPages[monumentPage].slug" :to="`/stories/${$route.params.story}/${allPages[monumentPage].slug}`" class="btn btn-outline ">
         Monument
       </nuxt-link>
-      <div class="btn">
-        {{ potreeRef.viewer && potreeRef.viewer.useEDL }}
-      </div>
       <nuxt-link
         v-if="allPages && allPages[reconstructionPage] && allPages[reconstructionPage].slug"
         :to="`/stories/${$route.params.story}/${allPages[reconstructionPage].slug}`"
@@ -34,7 +31,6 @@
         Next
       </NuxtLink>
     </div>
-  </div>
   </div>
 </template>
 
@@ -192,17 +188,20 @@ export default {
       // Set video parameters and times
       const video = videos.value[this.page.mediaPath]
       const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(this.page.mediaPath)
-      video.playbackRate = video.duration / playDT // make the video duration as long as the setting
+      const _playDT = this.page.playDT || playDT
+      video.playbackRate = video.duration / _playDT // make the video duration as long as the setting
 
       // 1. Hide the PointCloud to see the video in between.
       // console.log(pageId === this.$route.params.page && '🎹 1. Hide the PointCloud to see the video in between.')
       if (pageId !== this.$route.params.page) {
         return
       }
-      potreeRef.viewer.useEDL = true
-      await tweenToPromisify(potreeRef.viewer, { edlOpacity: 0 }, startDT * 1000)
-      potreeRef.viewer.scene.pointclouds[0].visible = false
-      potreeRef.viewer.useEDL = false
+      if (this.$config.isMuseumApp) {
+        potreeRef.viewer.useEDL = true
+        await tweenToPromisify(potreeRef.viewer, { edlOpacity: 0 }, startDT * 1000)
+        potreeRef.viewer.scene.pointclouds[0].visible = false
+        potreeRef.viewer.useEDL = false
+      }
 
       // 2. Wait to start playing the video.
       // console.log(pageId === this.$route.params.page && '🎹 2. Wait to start playing the video.')
@@ -230,11 +229,12 @@ export default {
       if (pageId !== this.$route.params.page) {
         return
       }
-      potreeRef.viewer.useEDL = true
-      potreeRef.viewer.scene.pointclouds[0].visible = true
-      await tweenToPromisify(potreeRef.viewer, { edlOpacity: 1 }, 2000)
-      potreeRef.viewer.useEDL = false
-
+      if (this.$config.isMuseumApp) {
+        potreeRef.viewer.useEDL = true
+        potreeRef.viewer.scene.pointclouds[0].visible = true
+        await tweenToPromisify(potreeRef.viewer, { edlOpacity: 1 }, 2000)
+        potreeRef.viewer.useEDL = false
+      }
       // 6. Wait for the video to fade out
       // console.log(pageId === this.$route.params.page && '🎹 6. Wait for the video to fade out')
       if (pageId !== this.$route.params.page) {
@@ -255,10 +255,10 @@ export default {
         message: 'Viewpoint finished'
       }))
 
-      // If museum app, return
-      // if (this.$config.isMuseumApp) {
-      //   return
-      // }
+      // If it is not in slideshow mode then stop de animation
+      if (!this.$config.slideshow) {
+        return
+      }
 
       // Go to the first page if reached the last one
       this.$router.push(`/stories/${this.$route.params.story}/${this.next.slug}`)

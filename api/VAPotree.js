@@ -156,7 +156,7 @@ export function listenSelectObject () {
   const intersects = raycaster.intersectObjects(sceneChildren)
 
   // for (let i = 0; i < intersects.length; i++) {
-  if (intersects[0]?.object?.type === 'VIDEO_TYPE') {
+  if (intersects[0]?.object?.type === 'VIDEO_TYPE' && process?.env?.IS_DEV) {
     // Toggle color, DEMO
     // const isSelected = intersects[0].object.material.emissive?.getHex() === 0xFF0000
     // intersects[0].object.material.emissive?.setHex(isSelected ? 0x000000 : 0xFF0000)
@@ -172,7 +172,7 @@ export function loadInitialPointCloud () {
   const POINT_CLOUD_URL = process.env.isLocalPointClouds
     // locally
     // ? 'http://localhost:3000/pointclouds/DRIVE_1_V3_levels_8/cloud.js'
-    ? 'http://localhost:3000/pointclouds/highres/metadata.json'
+    ? 'http://localhost:3000/pointclouds/highres/cloud.js'
     // Cloud storage
     : 'https://storage.googleapis.com/via-appia-20540.appspot.com/cloud.js'
 
