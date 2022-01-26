@@ -1,8 +1,16 @@
 export const socket = new WebSocket('ws://localhost:8080')
+const slug = window.location.href.split('#')[1]
+console.log('slug', slug)
+
 
 // Listen for messages
 socket.onmessage = (data) => {
   console.log('🔥 messge at the server', data)
+}
+
+socket.onopen = (event) => {
+
+  socket.send(JSON.stringify({ type: 'CONNECT', payload: { id: slug } }))
 }
 
 /* 
