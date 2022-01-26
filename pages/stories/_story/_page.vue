@@ -142,7 +142,7 @@ export default {
       potreeRef.viewer.radius = radiousEDL
       potreeRef.viewer.edlOpacity = 1
       potreeRef.viewer.useEDL = false
-      potreeRef.viewer.scene.pointclouds[0].visible = true
+      potreeRef.viewer.scene.pointclouds[0] && (potreeRef.viewer.scene.pointclouds[0].visible = true)
 
       // Set viewer FOV
       const fov = this.page?.cameraFOV || 60
@@ -199,7 +199,7 @@ export default {
       if (this.$config.isMuseumApp) {
         potreeRef.viewer.useEDL = true
         await tweenToPromisify(potreeRef.viewer, { edlOpacity: 0 }, startDT * 1000)
-        potreeRef.viewer.scene.pointclouds[0].visible = false
+        potreeRef.viewer.scene.pointclouds[0] && (potreeRef.viewer.scene.pointclouds[0].visible = false)
         potreeRef.viewer.useEDL = false
       }
 
@@ -231,7 +231,7 @@ export default {
       }
       if (this.$config.isMuseumApp) {
         potreeRef.viewer.useEDL = true
-        potreeRef.viewer.scene.pointclouds[0].visible = true
+        potreeRef.viewer.scene.pointclouds[0] && (potreeRef.viewer.scene.pointclouds[0].visible = true)
         await tweenToPromisify(potreeRef.viewer, { edlOpacity: 1 }, 2000)
         potreeRef.viewer.useEDL = false
       }
