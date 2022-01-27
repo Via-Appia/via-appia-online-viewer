@@ -260,18 +260,20 @@ export default {
         return
       }
 
+      // hide the video title after 3-5 seconds
+      setTimeout(() => {
+        this.showSubtitle = false
+      }, 3000)
+
       if (this.$config.isMuseumApp) {
         this.showOverlayVideo = true
         this.$refs.video.playbackRate = video.duration / _playDT
         this.$refs.video.play()
+        await promiseTimeout(_playDT * 1000) // await x seconds
       }
       else {
         await promisifyVideo(video)
       }
-
-      // hide the video title after 3-5 seconds
-      setTimeout(() => (this.showSubtitle = false), 4000)
-      await promiseTimeout(_playDT * 1000) // await x seconds
 
       // 4. Time delay between end of video and start of the fade out.
       // =================================================================
