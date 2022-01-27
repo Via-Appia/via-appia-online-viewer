@@ -29,7 +29,6 @@
 <script>
 import { ref } from '@nuxtjs/composition-api'
 import { potreeRef, addAnimationPath, initViewer, listenSelectObject } from '~/api/VAPotree'
-
 export const isSidebarOpen = ref(false)
 
 export default {

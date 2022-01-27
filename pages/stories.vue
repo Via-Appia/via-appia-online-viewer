@@ -41,7 +41,6 @@ export default {
   setup () {
     const route = useRoute()
     const story = computed(() => route.value.params.story)
-
     const { shift, a, Equal /* keys you want to monitor */ } = useMagicKeys()
 
     watch(Equal, (v) => {

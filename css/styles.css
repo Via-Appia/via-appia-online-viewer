@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  @font-face {
+    font-family: "HelveticaRounded";
+    src: local("HelveticaRounded"), url(~assets/HelveticaRounded-Bold.otf) format("truetype");
+  }
+}
 body{
   background-color: black;
 }
@@ -24,5 +30,4 @@ body{
 .nuxt-content-editor{
   min-width: 500px;
   width:100%;
-  background: black;
 }

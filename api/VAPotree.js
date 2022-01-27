@@ -32,7 +32,7 @@ export function initViewer (DOMElement) {
 
   const viewer = potreeRef.viewer
 
-  if (config.isDev && visiblePointCloud) {
+  if (visiblePointCloud) {
     loadInitialPointCloud()
   }
 
