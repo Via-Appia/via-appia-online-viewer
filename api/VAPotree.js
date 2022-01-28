@@ -13,7 +13,8 @@ export const potreeRef = reactive(
     selectedVideo: null,
     followCamera: false,
     fov: 60,
-    idleTimer: 0
+    idleTimer: 0,
+    isWebPanelOpen: true
   })
 
 /*

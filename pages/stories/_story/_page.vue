@@ -27,10 +27,6 @@
         <div v-if="$nuxt.context.isDev">
           idle: {{ potreeRef.idleTimer }} : {{ resetViewTimeInMinutes }}
         </div>
-
-        <div v-if="!$config.isMuseumApp" class="fixed top-0 right-0 h-screen ">
-          <steps-timeline-links :pages="pages" />
-        </div>
       </div>
     </div>
   </div>
@@ -63,10 +59,11 @@ import { socket } from '~/api/websocket'
 
 import viewpoints from '~/content/viewpoints.json'
 import monuments from '~/content/monuments.json'
+import { story } from '~/api/story'
 
 export default {
   setup () {
-    return { videos, potreeRef, removeVideo, resetViewTimeInMinutes, THREE, viewpoints, monuments, showSubtitles }
+    return { story, videos, potreeRef, removeVideo, resetViewTimeInMinutes, THREE, viewpoints, monuments, showSubtitles }
   },
   data () {
     return {
@@ -94,7 +91,7 @@ export default {
       })
 
     // Get the list of pages of the story
-    this.allPages = await this.$content(params.story)
+    this.story.pages = await this.$content(params.story)
       .sortBy('slug', 'asc')
       .only(['title', 'description', 'path', 'exclude', 'slug'])
       .fetch()
@@ -102,11 +99,11 @@ export default {
         console.error({ statusCode: 404, message: 'Page not found', error: err })
       })
 
-    this.reconstructionPage = this.allPages.findIndex(page => page?.slug === 'reconstruction')
-    this.monumentPage = this.allPages.findIndex(page => page?.slug === 'monument')
+    this.reconstructionPage = this.story.pages.findIndex(page => page?.slug === 'reconstruction')
+    this.monumentPage = this.story.pages.findIndex(page => page?.slug === 'monument')
 
     // Exclude monument pages and reconstruction pages from the list
-    this.pages = this.allPages.filter(page => page.slug !== 'monument' && page.slug !== 'reconstruction')
+    this.pages = this.story.pages.filter(page => page.slug !== 'monument' && page.slug !== 'reconstruction')
 
     // Next and previous pages links
     const currentIndex = this.pages.findIndex(page => page?.path === this.page?.path)

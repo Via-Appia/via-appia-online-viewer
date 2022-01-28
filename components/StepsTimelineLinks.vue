@@ -1,19 +1,24 @@
 <template>
-  <div v-if="pages && pages[0].path" class="w-[180px] flex flex-col h-screen items-center text-center overflow-hidden bg-gray-700">
+  <div
+    v-if="story.pages && story.pages[0] && story.pages[0].path"
+    class="w-[180px] flex flex-col h-screen items-center text-center overflow-hidden bg-gray-700"
+  >
     <div class="text-xl text-medium primary-text mt-2">
       REVISITED <br>Via Appia
     </div>
 
     <explore-stories-button class="mt-2" />
-
-    <div class="mt-2 bg-gray-700 px-2 rounded-xl">
-      Tomba a Piramide
+    <div v-show="false">
+      {{ modal }}
+    </div>
+    <div class="flex flex-col items-center w-full mt-2 bg-gray-700 px-2 rounded-xl">
       <img
-        class="mt-2 rounded-xl w-[145px] h-[130px]"
+        class="cursor-pointer mb-2 rounded-xl w-[145px] h-[130px] hover:scale-95 transition"
         :src="`/images/menu/${$route.params.story}.jpg`"
         alt="Monuments image"
-        @click="modal.value.checked = true "
+        @click="modal.checked = true"
       >
+      {{ monuments[$route.params.story].title }}
     </div>
 
     <nuxt-link
@@ -46,7 +51,7 @@
     </div>
 
     <div class="flex flex-col overflow-y-auto items-center w-full flex-1 ">
-      <div v-for="(page,i) in pages" :key="i" class="flex flex-col md:grid mx-auto text-blue-50">
+      <div v-for="(page,i) in story.pages" :key="i" class="flex flex-col md:grid mx-auto text-blue-50">
         <div class="mr-10 mx-auto relative h-20">
           <div class="h-full w-6 flex items-center justify-center">
             <div class="h-full w-1 bg-gray-800" />
@@ -71,9 +76,11 @@
 <script setup>
 import { defineProps } from '@nuxtjs/composition-api'
 import { modal } from '~/components/ExploreStoriesButton'
+import { story } from '~/api/story'
+import monuments from '~/content/monuments.json'
 
+console.log('🎹  modal.checked', modal.checked)
 defineProps({
-  pages: { type: Array, required: false, default: () => [] },
   showReconstructionButton: { type: Boolean, default: false }
 })
 
