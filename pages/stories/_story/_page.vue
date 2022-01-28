@@ -45,6 +45,7 @@ import {
   cameraMoveDT,
   fadeOutDT,
   playDT,
+  fadeInDT,
   radiousEDL,
   resetViewTimeInMinutes,
   startDT,
@@ -177,21 +178,21 @@ export default {
       //
       // calculate complete flow duration
       //
-      // const completeDurationInSecs =
-      //   this.page.animationEntry || cameraMoveDT + // camera movement animation
-      //   startDT + // wait for the pointcloud to dissapear
-      //   startDT + // wait until the video starts
-      //   playDT + // duration of the video
-      //   stopDT + // wait for the video to fadeout
-      //   waitUntilNextVideo // wait until move to the next video in slide mode
-      //
-      // // Send the time duration inside the WebSocket
-      // socket.send(JSON.stringify({
-      //   type: 'message',
-      //   message: 'Animation duration',
-      //   duration: completeDurationInSecs
-      // }))
-      // console.log('🔥 completeDurationInSecs', completeDurationInSecs, 'seconds')
+      const completeDurationInSecs =
+        this.page.animationEntry || cameraMoveDT + // camera movement animation
+        fadeInDT + // wait for the pointcloud to dissapear
+        startDT + // wait until the video starts
+        playDT + // duration of the video
+        stopDT + // wait for the video to fadeout
+        waitUntilNextVideo // wait until move to the next video in slide mode
+
+      // Send the time duration inside the WebSocket
+      socket.send(JSON.stringify({
+        type: 'message',
+        message: 'Animation duration',
+        duration: completeDurationInSecs
+      }))
+      console.log('🔥 completeDurationInSecs', completeDurationInSecs, 'seconds')
 
       /*
       * Story sequence
