@@ -4,28 +4,28 @@ items:
   #  route: /stories
 
   - title: Sepolcri in Laterizio
-    image: /images/menu/Slice 1.jpg
-    route: /stories/l/01_l_01_gbp-1080p
+    image: /images/menu/l.jpg
+    route: /stories/l/monument
 
   - title: Tomba a Piramide
-    image: /images/menu/Slice 2.jpg
-    route: /stories/p/01_p_01_gbp-1080p
+    image: /images/menu/p.jpg
+    route: /stories/p/monument
 
   - title: Mausoleo di Casal Rotondo
-    image: /images/menu/Slice 3.jpg
-    route: /stories/cr/01_cr_01_gbp-1080p
+    image: /images/menu/cr.jpg
+    route: /stories/cr/monument
 
   - title: Mausoleo Rotondo
-    image: /images/menu/Slice 4.jpg
-    route: /stories/mr/01_mr_01_da1-1080p
+    image: /images/menu/mr.jpg
+    route: /stories/mr/monument
 
   - title: Tumulo dei Curiazi
-    image: /images/menu/Slice 5.jpg
-    route: /stories/c/01_c_01_gbp-1080p
+    image: /images/menu/c.jpg
+    route: /stories/c/monument
 
   - title: Tumuli degli Orazi
-    image: /images/menu/Slice 6.jpg
-    route: /stories/o/01_o_01_jhp-1080p
+    image: /images/menu/o.jpg
+    route: /stories/o/monument
 
 #1 ma rotondo
 #2 laterizio

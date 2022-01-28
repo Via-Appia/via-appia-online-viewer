@@ -28,30 +28,9 @@
           idle: {{ potreeRef.idleTimer }} : {{ resetViewTimeInMinutes }}
         </div>
 
-        <nuxt-link v-if="$nuxt.context.isDev && allPages && allPages[monumentPage] && allPages[monumentPage].slug" :to="`/stories/${$route.params.story}/${allPages[monumentPage].slug}`" class="btn btn-outline ">
-          Monument
-        </nuxt-link>
-        <nuxt-link
-          v-if="allPages && allPages[reconstructionPage] && allPages[reconstructionPage].slug"
-          :to="`/stories/${$route.params.story}/${allPages[reconstructionPage].slug}`"
-          class="btn btn-outline ml-4"
-        >
-          Reconstruction
-        </nuxt-link>
-        <NuxtLink
-          :disabled="!prev"
-          class="btn ml-4"
-          :to="{ to: 'stories', params: {story: $route.params.story, page: prev && prev.slug}}"
-        >
-          Back
-        </NuxtLink>
-        <NuxtLink
-          :disabled="!next"
-          class="btn ml-4"
-          :to="{ to: 'stories', params: {story: $route.params.story, page: next && next.slug}}"
-        >
-          Next
-        </NuxtLink>
+        <div v-if="!$config.isMuseumApp" class="fixed top-0 right-0 h-screen ">
+          <steps-timeline-links :pages="pages" />
+        </div>
       </div>
     </div>
   </div>
@@ -191,7 +170,7 @@ export default {
        * Add media to the scene
        */
       // this.loadImageExample() // Single image example
-      if (this.page.mediaPath) {
+      if (this.page?.mediaPath) {
         loadVideo(this.page) // Load page video
       }
 
@@ -220,14 +199,14 @@ export default {
       await this.goToCameraPosition(this.page.cameraPath)
 
       // Development only, do not end the animation if setting the media coordinates
-      if (stopSecuence || !this.page.mediaPath) {
+      if (stopSecuence || !this.page?.mediaPath) {
         potreeRef.viewer.useEDL = false
         return
       }
 
       // Set video parameters and times
-      const video = videos.value[this.page.mediaPath]
-      const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(this.page.mediaPath)
+      const video = videos.value[this.page?.mediaPath]
+      const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(this.page?.mediaPath)
       const _playDT = this.page.playDT || playDT
       video.playbackRate = video.duration / _playDT // make the video duration as long as the setting
 
@@ -267,7 +246,7 @@ export default {
 
       if (this.$config.isMuseumApp) {
         this.showOverlayVideo = true
-        this.$refs.video.playbackRate = video.duration / _playDT
+        this.$refs.video.playbackRate = video?.duration / _playDT
         this.$refs.video.play()
         await promiseTimeout(_playDT * 1000) // await x seconds
       }
@@ -371,7 +350,6 @@ export default {
       animation.visible = false
       animation.duration = this.page.animationEntry || cameraMoveDT
       // Wait for the camera animation transition to finish
-      console.log('🎹 animation.duration', animation.duration)
       await animation.play()
       // }
     },

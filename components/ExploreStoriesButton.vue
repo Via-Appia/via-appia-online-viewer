@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label for="my-modal-2" class="button modal-button ">Explore stories</label>
+    <label for="my-modal-2" class="btn modal-button">Monuments</label>
     <input
       id="my-modal-2"
       ref="modal"
@@ -21,7 +21,7 @@
               @click="$router.push(item.route)"
             >
               <div class="text-center text-2xl mb-2 h-[60px] mx-auto">{{ item.title }}</div>
-              <div class="rounded-xl bg-[#F6F6F6] p-3 group-hover:scale-95 transition">
+              <div class="rounded-xl bg-[#F6F6F6] p-1 group-hover:scale-95 transition">
                 <img class="object-cover mx-auto h-[130px]" :src="item.image || '/images/menu/placeholder.jpg'">
               </div>
             </label>
@@ -38,7 +38,7 @@
               class="cursor-pointer group rounded w-1/3 "
               @click="$router.push(item.route)"
             >
-              <div class="rounded-xl bg-[#F6F6F6] p-3 group-hover:scale-95 transition">
+              <div class="rounded-xl bg-[#F6F6F6] p-1 group-hover:scale-95 transition">
                 <img class="object-cover mx-auto h-[130px]" :src="item.image || '/images/menu/placeholder.jpg'">
               </div>
               <div class="text-center text-2xl mt-2 h-[50px]">{{ item.title }}</div>
@@ -68,7 +68,8 @@ import menu from '~/content/menu-items.yaml'
 const menuPart1 = [menu.items[0], menu.items[1], menu.items[2]]
 const menuPart2 = [menu.items[3], menu.items[4], menu.items[5]]
 
-const modal = ref()
+export const modal = ref('false')
+
 const props = defineProps({
   open: { type: Boolean, default: false }
 })
