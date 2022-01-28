@@ -1,35 +1,58 @@
 <template>
-  <div class="flex mb-4">
-    <div class="flex-grow" />
-    <div v-if="!$config.isMuseumApp" class="fixed top-2 right-[180px] flex">
-      <div v-if="$nuxt.context.isDev">
-        idle: {{ potreeRef.idleTimer }} < {{ resetViewTimeInMinutes }}
-      </div>
+  <div>
+    <transition :name="pageId !== $route.params.page? 'fade':'videofade'">
+      <video
+        v-show="showOverlayVideo"
+        ref="video"
+        autoplay
+        class="fixed w-screen h-screen top-0 left-0 bg-black "
+        muted="muted"
+        :src="page && page.mediaPath"
+      />
+    </transition>
 
-      <nuxt-link v-if="$nuxt.context.isDev && allPages && allPages[monumentPage] &&allPages[monumentPage].slug" :to="`/stories/${$route.params.story}/${allPages[monumentPage].slug}`" class="btn btn-outline ">
-        Monument
-      </nuxt-link>
-      <nuxt-link
-        v-if="allPages && allPages[reconstructionPage] && allPages[reconstructionPage].slug"
-        :to="`/stories/${$route.params.story}/${allPages[reconstructionPage].slug}`"
-        class="btn btn-outline ml-4"
-      >
-        Reconstruction
-      </nuxt-link>
-      <NuxtLink
-        :disabled="!prev"
-        class="btn ml-4"
-        :to="{ to: 'stories', params: {story: $route.params.story, page: prev && prev.slug}}"
-      >
-        Back
-      </NuxtLink>
-      <NuxtLink
-        :disabled="!next"
-        class="btn ml-4"
-        :to="{ to: 'stories', params: {story: $route.params.story, page: next && next.slug}}"
-      >
-        Next
-      </NuxtLink>
+    <div v-if="showSubtitles">
+      <transition :name="pageId !== $route.params.page? '':'fade'">
+        <div v-show="showSubtitle" class="fixed bottom-3 left-0 flex w-screen">
+          <div class="subtitles m-auto py-2 px-6 rounded-xl">
+            {{ vp.TITEL }}
+          </div>
+        </div>
+      </transition>
+    </div>
+
+    <div class="flex mb-4">
+      <div class="flex-grow" />
+      <div v-if="!$config.isMuseumApp" class="fixed top-2 right-[180px] flex">
+        <div v-if="$nuxt.context.isDev">
+          idle: {{ potreeRef.idleTimer }} : {{ resetViewTimeInMinutes }}
+        </div>
+
+        <nuxt-link v-if="$nuxt.context.isDev && allPages && allPages[monumentPage] && allPages[monumentPage].slug" :to="`/stories/${$route.params.story}/${allPages[monumentPage].slug}`" class="btn btn-outline ">
+          Monument
+        </nuxt-link>
+        <nuxt-link
+          v-if="allPages && allPages[reconstructionPage] && allPages[reconstructionPage].slug"
+          :to="`/stories/${$route.params.story}/${allPages[reconstructionPage].slug}`"
+          class="btn btn-outline ml-4"
+        >
+          Reconstruction
+        </nuxt-link>
+        <NuxtLink
+          :disabled="!prev"
+          class="btn ml-4"
+          :to="{ to: 'stories', params: {story: $route.params.story, page: prev && prev.slug}}"
+        >
+          Back
+        </NuxtLink>
+        <NuxtLink
+          :disabled="!next"
+          class="btn ml-4"
+          :to="{ to: 'stories', params: {story: $route.params.story, page: next && next.slug}}"
+        >
+          Next
+        </NuxtLink>
+      </div>
     </div>
   </div>
 </template>
@@ -49,7 +72,8 @@ import {
   stopDT,
   stopSecuence,
   strengthEDL,
-  waitUntilNextVideo
+  waitUntilNextVideo,
+  showSubtitles
 } from '~/content/app-settings.yaml'
 
 import { VACameraAnimation } from '~/api/VACameraAnimation'
@@ -57,9 +81,12 @@ import { promisifyVideo, tweenToPromisify } from '~/api/tweenUtils'
 
 import { socket } from '~/api/websocket'
 
+import viewpoints from '~/content/viewpoints.json'
+import monuments from '~/content/monuments.json'
+
 export default {
   setup () {
-    return { videos, potreeRef, removeVideo, resetViewTimeInMinutes, THREE }
+    return { videos, potreeRef, removeVideo, resetViewTimeInMinutes, THREE, viewpoints, monuments, showSubtitles }
   },
   data () {
     return {
@@ -70,7 +97,10 @@ export default {
       pages: null,
       page: null,
       prev: null,
-      next: null
+      next: null,
+      showOverlayVideo: false,
+      showSubtitle: false,
+      pageId: null
     }
   },
   async fetch () {
@@ -95,13 +125,19 @@ export default {
     this.reconstructionPage = this.allPages.findIndex(page => page?.slug === 'reconstruction')
     this.monumentPage = this.allPages.findIndex(page => page?.slug === 'monument')
 
-    this.pages = this.allPages.filter(page => !page.exclude)
+    // Exclude monument pages and reconstruction pages from the list
+    this.pages = this.allPages.filter(page => page.slug !== 'monument' && page.slug !== 'reconstruction')
 
-    // remove the do
     // Next and previous pages links
     const currentIndex = this.pages.findIndex(page => page?.path === this.page?.path)
     this.prev = (currentIndex - 1) < 0 ? this.pages[this.pages.length - 1] : this.pages[currentIndex - 1]
     this.next = (currentIndex + 1) === this.pages.length ? this.pages[0] : this.pages[currentIndex + 1]
+  },
+  computed: {
+    // Return viewpoint object
+    vp () {
+      return viewpoints[viewpoints.findIndex(v => v.CODES_NEW === this.$route.params.page.slice(3).replace('-1080p', ''))] || {}
+    }
   },
   watch: {
     // When changing pages, refetch the content page and reload the method
@@ -134,15 +170,17 @@ export default {
     async initPagePosition () {
       // Reset time of for the museum app
       potreeRef.idleTimer = 0
+      this.showSubtitle = false
 
       const pageId = this.$route.params.page
+      this.pageId = pageId
 
       // Set Eye-Dome-Lighting, needed to make the pointcloud transparent.
       potreeRef.viewer.edlStrength = strengthEDL
       potreeRef.viewer.radius = radiousEDL
       potreeRef.viewer.edlOpacity = 1
       potreeRef.viewer.useEDL = false
-      potreeRef.viewer.scene.pointclouds[0].visible = true
+      potreeRef.viewer.scene.pointclouds[0] && (potreeRef.viewer.scene.pointclouds[0].visible = true)
 
       // Set viewer FOV
       const fov = this.page?.cameraFOV || 60
@@ -157,22 +195,24 @@ export default {
         loadVideo(this.page) // Load page video
       }
 
+      //
       // calculate complete flow duration
-      const completeDurationInSecs =
-        this.page.animationEntry || cameraMoveDT + // camera movement animation
-        startDT * 1000 + // wait for the pointcloud to dissapear
-        startDT * 1000 + // wait until the video starts
-        playDT + // duration of the video
-        stopDT * 1000 // wait for the video to fadeout
-      // waitUntilNextVideo * 1000 // wait until move to the next video in slide mode
-
-      // Send the time duration inside the WebSocket
-      socket.send(JSON.stringify({
-        type: 'message',
-        message: 'Animation duration',
-        duration: completeDurationInSecs
-      }))
-      // console.log('🔥 completeDurationInSecs', completeDurationInSecs)
+      //
+      // const completeDurationInSecs =
+      //   this.page.animationEntry || cameraMoveDT + // camera movement animation
+      //   startDT + // wait for the pointcloud to dissapear
+      //   startDT + // wait until the video starts
+      //   playDT + // duration of the video
+      //   stopDT + // wait for the video to fadeout
+      //   waitUntilNextVideo // wait until move to the next video in slide mode
+      //
+      // // Send the time duration inside the WebSocket
+      // socket.send(JSON.stringify({
+      //   type: 'message',
+      //   message: 'Animation duration',
+      //   duration: completeDurationInSecs
+      // }))
+      // console.log('🔥 completeDurationInSecs', completeDurationInSecs, 'seconds')
 
       /*
       * Story sequence
@@ -192,18 +232,21 @@ export default {
       video.playbackRate = video.duration / _playDT // make the video duration as long as the setting
 
       // 1. Hide the PointCloud to see the video in between.
+      // ===================================================
       // console.log(pageId === this.$route.params.page && '🎹 1. Hide the PointCloud to see the video in between.')
       if (pageId !== this.$route.params.page) {
         return
       }
-      if (this.$config.isMuseumApp) {
-        potreeRef.viewer.useEDL = true
-        await tweenToPromisify(potreeRef.viewer, { edlOpacity: 0 }, startDT * 1000)
-        potreeRef.viewer.scene.pointclouds[0].visible = false
-        potreeRef.viewer.useEDL = false
-      }
+      // if (this.$config.isMuseumApp) {
+      //   potreeRef.viewer.useEDL = true
+      //   await tweenToPromisify(potreeRef.viewer, { edlOpacity: 0 }, startDT * 1000)
+      //   potreeRef.viewer.scene.pointclouds[0] && (potreeRef.viewer.scene.pointclouds[0].visible = false)
+      //   potreeRef.viewer.useEDL = false
+      // }
 
+      this.showSubtitle = true
       // 2. Wait to start playing the video.
+      // ======================================
       // console.log(pageId === this.$route.params.page && '🎹 2. Wait to start playing the video.')
       if (pageId !== this.$route.params.page) {
         return
@@ -211,13 +254,29 @@ export default {
       await promiseTimeout(startDT * 1000)
 
       // 3. Play the video and wait until the video is finished.
+      // ========================================================
       // console.log(pageId === this.$route.params.page && '🎹 3. Play the video and wait until the video is finished.')
       if (pageId !== this.$route.params.page) {
         return
       }
-      await promisifyVideo(video)
+
+      // hide the video title after 3-5 seconds
+      setTimeout(() => {
+        this.showSubtitle = false
+      }, 3000)
+
+      if (this.$config.isMuseumApp) {
+        this.showOverlayVideo = true
+        this.$refs.video.playbackRate = video.duration / _playDT
+        this.$refs.video.play()
+        await promiseTimeout(_playDT * 1000) // await x seconds
+      }
+      else {
+        await promisifyVideo(video)
+      }
 
       // 4. Time delay between end of video and start of the fade out.
+      // =================================================================
       // console.log(pageId === this.$route.params.page && '🎹 4. Time delay between end of video and start of the fade out.')
       if (pageId !== this.$route.params.page) {
         return
@@ -225,24 +284,38 @@ export default {
       await promiseTimeout(stopDT * 1000)
 
       // 5. Set back the Pointcloud opacity to 1.
+      // ==========================================
       // console.log(pageId === this.$route.params.page && '🎹 5. Set back the Pointcloud opacity to 1.')
       if (pageId !== this.$route.params.page) {
         return
       }
-      if (this.$config.isMuseumApp) {
-        potreeRef.viewer.useEDL = true
-        potreeRef.viewer.scene.pointclouds[0].visible = true
-        await tweenToPromisify(potreeRef.viewer, { edlOpacity: 1 }, 2000)
-        potreeRef.viewer.useEDL = false
-      }
+      // if (this.$config.isMuseumApp) {
+      //   potreeRef.viewer.useEDL = true
+      //   potreeRef.viewer.scene.pointclouds[0] && (potreeRef.viewer.scene.pointclouds[0].visible = true)
+      //   await tweenToPromisify(potreeRef.viewer, { edlOpacity: 1 }, 2000)
+      //   potreeRef.viewer.useEDL = false
+      // }
+
       // 6. Wait for the video to fade out
+      // =====================================
       // console.log(pageId === this.$route.params.page && '🎹 6. Wait for the video to fade out')
       if (pageId !== this.$route.params.page) {
         return
       }
-      await tweenToPromisify(videoMesh.material, { opacity: 0 }, fadeOutDT * 1000)
+
+      // in museum app, show video overlay
+      if (this.$config.isMuseumApp) {
+        videoMesh.material.opacity = 0
+        this.showOverlayVideo = false
+      }
+      // else: web version
+      else {
+        await tweenToPromisify(videoMesh.material, { opacity: 0 }, fadeOutDT * 1000)
+      }
+      await promiseTimeout(fadeOutDT * 1000) // await x seconds
 
       // 7. Wait until move to the next viewpoint.
+      // ==========================================
       // console.log(pageId === this.$route.params.page && '🎹 7. Wait until move to the next viewpoint.')
       if (pageId !== this.$route.params.page) {
         return
@@ -269,7 +342,7 @@ export default {
      */
     async goToCameraPosition () {
       // if there are not any camera points defined, then don't do anything.
-      if (this.page.cameraPath.length === 0) {
+      if (this.page.cameraPath?.length === 0) {
         return
       }
       //
@@ -298,6 +371,7 @@ export default {
       animation.visible = false
       animation.duration = this.page.animationEntry || cameraMoveDT
       // Wait for the camera animation transition to finish
+      console.log('🎹 animation.duration', animation.duration)
       await animation.play()
       // }
     },
@@ -332,3 +406,20 @@ export default {
   }
 }
 </script>
+<style>
+
+.subtitles{
+  color: white;
+  font-family: "HelveticaRounded";
+  font-size: 2.5vw;
+  font-weight: 500;
+  letter-spacing: 0.15rem;
+  -webkit-text-stroke: 0.1rem black;
+}
+.fade-enter-active,.fade-leave-active {transition: opacity 1s;}
+.fade-enter, .fade-leave-to  {opacity: 0}
+
+.videofade-enter-active { transition: opacity 1s; }
+.videofade-leave-active { transition: opacity 5s; }
+.videofade-enter, .videofade-leave-to  { opacity: 0; }
+</style>

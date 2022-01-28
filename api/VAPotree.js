@@ -2,7 +2,8 @@
 import { reactive } from '@nuxtjs/composition-api'
 import { VAFirstPersonControls } from '~/api/VAFirstPersonControls'
 import { moveToVideo } from '~/api/videos'
-
+import { visiblePointCloud } from '~/content/app-settings.yaml'
+import config from '~/nuxt.config'
 export const potreeRef = reactive(
   {
     viewer: null, // shortcut
@@ -30,7 +31,10 @@ export function initViewer (DOMElement) {
   // potreeRef.cameraControls = new CameraControls(potreeRef.camera, DOMElement)
 
   const viewer = potreeRef.viewer
-  loadInitialPointCloud()
+
+  if (visiblePointCloud) {
+    loadInitialPointCloud()
+  }
 
   viewer.loadGUI(() => {
     viewer.setLanguage('en')
@@ -67,11 +71,10 @@ export function initViewer (DOMElement) {
     viewer.scene.view.yaw = 0.3
     viewer.scene.view.pitch = 0
 
-    // Add fog to th scene
-    const color = 0xFFFFFF
-    viewer.scene.fog = new THREE.Fog(color, 1000, 5000)
-    console.log('🎹 view: ' + viewer.scene.fog)
-    // debugger
+    // TODO: Add fog to th scene
+    // const color = 0xFFFFFF
+    // viewer.scene.fog = new THREE.Fog(color, 1000, 5000)
+    // console.log('🎹 view: ' + viewer.scene.fog)
 
     // Potree leave Side Panel
     viewer.toggleSidebar()
@@ -84,7 +87,9 @@ export function initViewer (DOMElement) {
 
     addFloor()
     addLights()
-    listenSelectObject()
+    if (config.isDev) {
+      listenSelectObject()
+    }
     // addBunnyExample()
   })
 }
@@ -133,8 +138,9 @@ function initOpacityKeys () {
     setOpacity(potreeRef.selectedVideo, opacity)
     history = opacity
   }
-
-  document.addEventListener('keydown', handleKeyPress)
+  if (config.isDev) {
+    document.addEventListener('keydown', handleKeyPress)
+  }
 }
 
 export function listenSelectObject () {
@@ -156,7 +162,7 @@ export function listenSelectObject () {
   const intersects = raycaster.intersectObjects(sceneChildren)
 
   // for (let i = 0; i < intersects.length; i++) {
-  if (intersects[0]?.object?.type === 'VIDEO_TYPE' && process?.env?.IS_DEV) {
+  if (intersects[0]?.object?.type === 'VIDEO_TYPE' && config.isDev) {
     // Toggle color, DEMO
     // const isSelected = intersects[0].object.material.emissive?.getHex() === 0xFF0000
     // intersects[0].object.material.emissive?.setHex(isSelected ? 0x000000 : 0xFF0000)

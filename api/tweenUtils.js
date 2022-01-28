@@ -20,7 +20,7 @@ export const promisifyVideo = video => new Promise((resolve, reject) => {
   video.play()
   video.addEventListener('ended', () => {
     video.pause()
-    resolve()
     video.removeEventListener('ended', null)
+    resolve()
   })
 })

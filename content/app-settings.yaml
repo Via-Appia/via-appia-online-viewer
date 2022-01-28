@@ -1,15 +1,15 @@
 #Global Default values for the application
 #Time is measured in SECONDS
 
-cameraMoveDT: 20 # 10, Camera movement to viewpoint, ease in/out
-fadeInDT: 5 # 5, Video opacity from 0 to 1
-startDT: 1 # 3,Time delay between the end of the fading and the start of the video
-playDT: 40 # 30, Video playback time
-stopDT: 5 # 3, Time delay between end of video and start of the fade out
-fadeOutDT: 5 # 5, Video from 1 to 0 opacity
-waitUntilNextVideo: 0 # 3 Wait until the movement of the next video
+cameraMoveDT: 20      # 20, Camera movement to viewpoint, ease in/out
+fadeInDT: 5           # 5, Video opacity from 0 to 1
+startDT: 1            # 1,Time delay between the end of the fading and the start of the video
+playDT: 40            # 40, Video playback time
+stopDT: 5             # 5, Time delay between end of video and start of the fade out
+fadeOutDT: 5          # 5, Video from 1 to 0 opacity
+waitUntilNextVideo: 0 # 0 Wait until the movement of the next video
 
-resetViewTimeInMinutes: 5 # In the museum app, the App will restart to the 'Monument' viewpoint
+resetViewTimeInMinutes: 6 # In the museum app, the App will restart to the 'Monument' viewpoint
 
 # Eye-Dome-Lighting
 radiousEDL: 1.0
@@ -20,3 +20,7 @@ stopSecuence: false # (true/false) stops the sequence to continue to the next vi
 
 # Production settings are inside the .env file.
 # They are needed at building time.
+
+# only for development
+visiblePointCloud: true
+showSubtitles: true
