@@ -208,7 +208,7 @@ export default {
       const video = videos.value[this.page?.mediaPath]
       const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(this.page?.mediaPath)
       const _playDT = this.page.playDT || playDT
-      video.playbackRate = video.duration / _playDT // make the video duration as long as the setting
+      video.playbackRate = video?.duration / _playDT // make the video duration as long as the setting
 
       // 1. Hide the PointCloud to see the video in between.
       // ===================================================
@@ -348,7 +348,7 @@ export default {
       })
 
       animation.visible = false
-      animation.duration = this.page.animationEntry || cameraMoveDT
+      animation.duration = this.page?.animationEntry || cameraMoveDT
       // Wait for the camera animation transition to finish
       await animation.play()
       // }
