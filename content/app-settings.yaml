@@ -22,5 +22,5 @@ strengthEDL: 0 # 0.1 ...
 # Only for Development
 
 stopSecuence: false # (true/false) stops the sequence to continue to the next video and helpt to reference the images
-visiblePointCloud: false
+visiblePointCloud: true
 showSubtitles: true
