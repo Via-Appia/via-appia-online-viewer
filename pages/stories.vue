@@ -91,6 +91,7 @@ export default {
       const message = JSON.parse(data)
       if (message.type === 'path') {
         console.log('🏴‍☠️ messge from the server', message.page)
+        console.log('completeMessage', message)
         this.$router.push(`/stories/${message.page}`)
       }
 
