@@ -12,7 +12,7 @@
     </transition>
     <transition name="panel">
       <div
-        v-if="monuments && $route.params.page ==='monument' && !modal"
+        v-if="monuments && $route.params.page ==='monument' && !modal && !$config.isMuseumApp"
         class="bg-gray-700 bg-opacity-80 rounded-xl w-[350px] md:w-[600px] p-4 overflow-auto"
       >
         <div class="h-[85vh] md:h-auto">

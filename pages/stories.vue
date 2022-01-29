@@ -23,7 +23,7 @@
         :class="{'left-[350px]':isSidebarOpen}"
       />
     </transition>
-    <div class="flex w-screen h-screen items-start justify-center">
+    <div v-if="!$config.isMuseumApp" class="flex w-screen h-screen items-start justify-center">
       <monuments-modal-content v-if="!$route.params.story" />
     </div>
   </div>
