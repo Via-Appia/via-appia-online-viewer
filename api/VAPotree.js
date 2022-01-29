@@ -14,7 +14,8 @@ export const potreeRef = reactive(
     followCamera: false,
     fov: 60,
     idleTimer: 0,
-    isWebPanelOpen: true
+    isWebPanelOpen: true,
+    lang: 'nl'
   })
 
 /*
