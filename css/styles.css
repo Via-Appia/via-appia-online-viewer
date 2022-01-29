@@ -27,7 +27,23 @@ body{
           capitalize
 }
 
-.nuxt-content-editor{
-  min-width: 500px;
-  width:100%;
+/*.nuxt-content-editor{*/
+/*  min-width: 500px;*/
+/*  width:100%;*/
+/*}*/
+
+.primary-text{
+  color: #FD0
+}
+
+
+
+.modal-enter-active,.modal-leave-active
+{
+  transition: all 0.2s ease;
+  /*transform: translateY(0);*/
+}
+.modal-enter, .modal-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  /*transform: translateY(10px);*/
 }

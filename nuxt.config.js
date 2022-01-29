@@ -26,7 +26,7 @@ export default {
     title: 'via-appia-viewer',
     htmlAttrs: {
       lang: 'en',
-      'data-theme': 'dark' // https://daisyui.com/docs/default-themes
+      'data-theme': 'viaappia' // https://daisyui.com/docs/default-themes
     },
     meta: [
       { charset: 'utf-8' },

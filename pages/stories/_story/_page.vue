@@ -10,6 +10,41 @@
         :src="page && page.mediaPath"
       />
     </transition>
+    <transition name="panel">
+      <div
+        v-if="monuments && $route.params.page ==='monument' && !modal"
+        class="bg-gray-700 bg-opacity-80 rounded-xl w-[350px] md:w-[600px] p-4 overflow-auto"
+      >
+        <div class="h-[85vh] md:h-auto">
+          <locale-switch />
+          <div class="text-2xl mb-3 mt-2">
+            {{ monuments[$route.params.story].title }}
+          </div>
+
+          <div v-if="potreeRef.lang==='nl'">
+            {{ monuments[$route.params.story].Tekst_NL }}
+          </div>
+          <div v-if="potreeRef.lang==='en'">
+            {{ monuments[$route.params.story].Tekst_EN }}
+          </div>
+          <div v-if="potreeRef.lang==='de'">
+            {{ monuments[$route.params.story].Tekst_DE }}
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!--    <transition name="'fade'">-->
+    <!--      <div class="bg-gray-700 rounded">-->
+    <!--        <pre>-->
+
+    <!--        {{ vp }}-->
+    <!--        {{ vp.Auteur }}-->
+
+    <!--        </pre>-->
+    <!--        {{ potreeRef.lang }}-->
+    <!--      </div>-->
+    <!--    </transition>-->
 
     <div v-if="showSubtitles">
       <transition :name="pageId !== $route.params.page? '':'fade'">
@@ -27,31 +62,6 @@
         <div v-if="$nuxt.context.isDev">
           idle: {{ potreeRef.idleTimer }} : {{ resetViewTimeInMinutes }}
         </div>
-
-        <nuxt-link v-if="$nuxt.context.isDev && allPages && allPages[monumentPage] && allPages[monumentPage].slug" :to="`/stories/${$route.params.story}/${allPages[monumentPage].slug}`" class="btn btn-outline ">
-          Monument
-        </nuxt-link>
-        <nuxt-link
-          v-if="allPages && allPages[reconstructionPage] && allPages[reconstructionPage].slug"
-          :to="`/stories/${$route.params.story}/${allPages[reconstructionPage].slug}`"
-          class="btn btn-outline ml-4"
-        >
-          Reconstruction
-        </nuxt-link>
-        <NuxtLink
-          :disabled="!prev"
-          class="btn ml-4"
-          :to="{ to: 'stories', params: {story: $route.params.story, page: prev && prev.slug}}"
-        >
-          Back
-        </NuxtLink>
-        <NuxtLink
-          :disabled="!next"
-          class="btn ml-4"
-          :to="{ to: 'stories', params: {story: $route.params.story, page: next && next.slug}}"
-        >
-          Next
-        </NuxtLink>
       </div>
     </div>
   </div>
@@ -66,6 +76,7 @@ import {
   cameraMoveDT,
   fadeOutDT,
   playDT,
+  fadeInDT,
   radiousEDL,
   resetViewTimeInMinutes,
   startDT,
@@ -78,20 +89,22 @@ import {
 
 import { VACameraAnimation } from '~/api/VACameraAnimation'
 import { promisifyVideo, tweenToPromisify } from '~/api/tweenUtils'
-
 import { socket } from '~/api/websocket'
 
 import viewpoints from '~/content/viewpoints.json'
 import monuments from '~/content/monuments.json'
+import { story } from '~/api/story'
+import LocaleSwitch from '~/components/LocaleSwitch'
+import { modal } from '~/components/ExploreStoriesButton'
 
 export default {
+  components: { LocaleSwitch },
   setup () {
-    return { videos, potreeRef, removeVideo, resetViewTimeInMinutes, THREE, viewpoints, monuments, showSubtitles }
+    return { modal, story, videos, potreeRef, removeVideo, resetViewTimeInMinutes, THREE, viewpoints, monuments, showSubtitles }
   },
   data () {
     return {
       error: false,
-      reconstructionPage: null,
       monumentPage: null,
       allPages: null,
       pages: null,
@@ -114,24 +127,25 @@ export default {
       })
 
     // Get the list of pages of the story
-    this.allPages = await this.$content(params.story)
+    this.story.pages = await this.$content(params.story)
       .sortBy('slug', 'asc')
       .only(['title', 'description', 'path', 'exclude', 'slug'])
       .fetch()
       .catch((err) => {
         console.error({ statusCode: 404, message: 'Page not found', error: err })
       })
-
-    this.reconstructionPage = this.allPages.findIndex(page => page?.slug === 'reconstruction')
-    this.monumentPage = this.allPages.findIndex(page => page?.slug === 'monument')
+    this.story.reconstructionPage = this.story.pages[this.story.pages.findIndex(page => page?.slug === 'reconstruction')]
+    this.story.pages = this.story.pages.filter(page => page.slug !== 'reconstruction')
+    this.story.pages.unshift(this.story.pages.at(-1))
+    this.story.pages.pop()
 
     // Exclude monument pages and reconstruction pages from the list
-    this.pages = this.allPages.filter(page => page.slug !== 'monument' && page.slug !== 'reconstruction')
+    this.pages = this.story.pages.filter(page => page.slug !== 'monument' && page.slug !== 'reconstruction')
 
     // Next and previous pages links
-    const currentIndex = this.pages.findIndex(page => page?.path === this.page?.path)
-    this.prev = (currentIndex - 1) < 0 ? this.pages[this.pages.length - 1] : this.pages[currentIndex - 1]
-    this.next = (currentIndex + 1) === this.pages.length ? this.pages[0] : this.pages[currentIndex + 1]
+    const currentIndex = this.story.pages.findIndex(page => page?.path === this.page?.path)
+    this.story.prev = (currentIndex - 1) < 0 ? this.story.pages[this.story.pages.length - 1] : this.story.pages[currentIndex - 1]
+    this.story.next = (currentIndex + 1) === this.story.pages.length ? this.story.pages[0] : this.story.pages[currentIndex + 1]
   },
   computed: {
     // Return viewpoint object
@@ -191,28 +205,28 @@ export default {
        * Add media to the scene
        */
       // this.loadImageExample() // Single image example
-      if (this.page.mediaPath) {
+      if (this.page?.mediaPath) {
         loadVideo(this.page) // Load page video
       }
 
       //
       // calculate complete flow duration
       //
-      // const completeDurationInSecs =
-      //   this.page.animationEntry || cameraMoveDT + // camera movement animation
-      //   startDT + // wait for the pointcloud to dissapear
-      //   startDT + // wait until the video starts
-      //   playDT + // duration of the video
-      //   stopDT + // wait for the video to fadeout
-      //   waitUntilNextVideo // wait until move to the next video in slide mode
-      //
-      // // Send the time duration inside the WebSocket
-      // socket.send(JSON.stringify({
-      //   type: 'message',
-      //   message: 'Animation duration',
-      //   duration: completeDurationInSecs
-      // }))
-      // console.log('🔥 completeDurationInSecs', completeDurationInSecs, 'seconds')
+      const completeDurationInSecs =
+        this.page.animationEntry || cameraMoveDT + // camera movement animation
+        fadeInDT + // wait for the pointcloud to dissapear
+        startDT + // wait until the video starts
+        playDT + // duration of the video
+        stopDT + // wait for the video to fadeout
+        waitUntilNextVideo // wait until move to the next video in slide mode
+
+      // Send the time duration inside the WebSocket
+      socket.send(JSON.stringify({
+        type: 'message',
+        message: 'Animation duration',
+        duration: completeDurationInSecs
+      }))
+      console.log('🔥 completeDurationInSecs', completeDurationInSecs, 'seconds')
 
       /*
       * Story sequence
@@ -220,16 +234,16 @@ export default {
       await this.goToCameraPosition(this.page.cameraPath)
 
       // Development only, do not end the animation if setting the media coordinates
-      if (stopSecuence || !this.page.mediaPath) {
+      if (stopSecuence || !this.page?.mediaPath) {
         potreeRef.viewer.useEDL = false
         return
       }
 
       // Set video parameters and times
-      const video = videos.value[this.page.mediaPath]
-      const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(this.page.mediaPath)
+      const video = videos.value[this.page?.mediaPath]
+      const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(this.page?.mediaPath)
       const _playDT = this.page.playDT || playDT
-      video.playbackRate = video.duration / _playDT // make the video duration as long as the setting
+      video.playbackRate = video?.duration / _playDT // make the video duration as long as the setting
 
       // 1. Hide the PointCloud to see the video in between.
       // ===================================================
@@ -267,7 +281,7 @@ export default {
 
       if (this.$config.isMuseumApp) {
         this.showOverlayVideo = true
-        this.$refs.video.playbackRate = video.duration / _playDT
+        this.$refs.video.playbackRate = video?.duration / _playDT
         this.$refs.video.play()
         await promiseTimeout(_playDT * 1000) // await x seconds
       }
@@ -351,8 +365,8 @@ export default {
       const animation = new VACameraAnimation(potreeRef.viewer)
 
       // Get the positions and tagets from the markdown file
-      const positions = this.page.cameraPath.map(position => position[0])
-      const targets = this.page.cameraPath.map(target => target[1])
+      const positions = this.page.cameraPath?.map(position => position[0]) || []
+      const targets = this.page.cameraPath?.map(target => target[1]) || []
 
       // Add to the current camera point to the camera path to animate from it
       positions.push(potreeRef.viewer.scene.getActiveCamera().position.toArray())
@@ -369,9 +383,8 @@ export default {
       })
 
       animation.visible = false
-      animation.duration = this.page.animationEntry || cameraMoveDT
+      animation.duration = this.page?.animationEntry || cameraMoveDT
       // Wait for the camera animation transition to finish
-      console.log('🎹 animation.duration', animation.duration)
       await animation.play()
       // }
     },
@@ -418,6 +431,10 @@ export default {
 }
 .fade-enter-active,.fade-leave-active {transition: opacity 1s;}
 .fade-enter, .fade-leave-to  {opacity: 0}
+
+.panel-enter-active {transition: opacity 0.2s;}
+.panel-leave-active {transition: opacity 0s;}
+.panel-enter, .panel-leave-to  {opacity: 0}
 
 .videofade-enter-active { transition: opacity 1s; }
 .videofade-leave-active { transition: opacity 5s; }

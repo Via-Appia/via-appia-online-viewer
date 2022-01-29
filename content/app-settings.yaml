@@ -15,12 +15,12 @@ resetViewTimeInMinutes: 6 # In the museum app, the App will restart to the 'Monu
 radiousEDL: 1.0
 strengthEDL: 0 # 0.1 ...
 
-# Developmnet:
-stopSecuence: false # (true/false) stops the sequence to continue to the next video and helpt to reference the images
 
 # Production settings are inside the .env file.
 # They are needed at building time.
 
-# only for development
+# Only for Development
+
+stopSecuence: false # (true/false) stops the sequence to continue to the next video and helpt to reference the images
 visiblePointCloud: true
 showSubtitles: true
