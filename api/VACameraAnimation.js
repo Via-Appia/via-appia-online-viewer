@@ -4,8 +4,6 @@ import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
 import { Utils } from './utils.js'
 
-import { potreeRef } from '~/api/VAPotree'
-
 const { Potree, THREE } = window
 
 class ControlPoint {
@@ -119,7 +117,8 @@ export class VACameraAnimation extends Potree.EventDispatcher {
             cp.positionHandle.svg.style.left = x - cp.positionHandle.svg.clientWidth / 2
             cp.positionHandle.svg.style.top = y - cp.positionHandle.svg.clientHeight / 2
             cp.positionHandle.svg.style.display = ''
-          } else {
+          }
+          else {
             cp.positionHandle.svg.style.display = 'none'
           }
         }
@@ -136,7 +135,8 @@ export class VACameraAnimation extends Potree.EventDispatcher {
             cp.targetHandle.svg.style.left = x - cp.targetHandle.svg.clientWidth / 2
             cp.targetHandle.svg.style.top = y - cp.targetHandle.svg.clientHeight / 2
             cp.targetHandle.svg.style.display = ''
-          } else {
+          }
+          else {
             cp.targetHandle.svg.style.display = 'none'
           }
         }
@@ -175,7 +175,8 @@ export class VACameraAnimation extends Potree.EventDispatcher {
 
       const tDir = cp1.target.clone().sub(cp2.target).multiplyScalar(0.5)
       cp.target.copy(cp1.target).add(tDir)
-    } else if (this.controlPoints.length >= 2 && index === this.controlPoints.length) {
+    }
+    else if (this.controlPoints.length >= 2 && index === this.controlPoints.length) {
       const cp1 = this.controlPoints[this.controlPoints.length - 2]
       const cp2 = this.controlPoints[this.controlPoints.length - 1]
 
@@ -184,7 +185,8 @@ export class VACameraAnimation extends Potree.EventDispatcher {
 
       const tDir = cp2.target.clone().sub(cp1.target).multiplyScalar(0.5)
       cp.target.copy(cp2.target).add(tDir)
-    } else if (this.controlPoints.length >= 2) {
+    }
+    else if (this.controlPoints.length >= 2) {
       const cp1 = this.controlPoints[index - 1]
       const cp2 = this.controlPoints[index]
 
@@ -364,7 +366,8 @@ export class VACameraAnimation extends Potree.EventDispatcher {
   at (t) {
     if (t > 1) {
       t = 1
-    } else if (t < 0) {
+    }
+    else if (t < 0) {
       t = 0
     }
 

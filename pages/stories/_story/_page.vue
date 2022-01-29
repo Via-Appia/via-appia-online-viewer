@@ -13,21 +13,23 @@
     <transition name="panel">
       <div
         v-if="monuments && $route.params.page ==='monument' && !modal"
-        class="bg-gray-700 bg-opacity-80 rounded-xl w-[600px] p-4 hidden sm:block"
+        class="bg-gray-700 bg-opacity-80 rounded-xl w-[350px] md:w-[600px] p-4 overflow-auto"
       >
-        <locale-switch />
-        <div class="text-2xl mb-3 mt-2">
-          {{ monuments[$route.params.story].title }}
-        </div>
+        <div class="h-[85vh] md:h-auto">
+          <locale-switch />
+          <div class="text-2xl mb-3 mt-2">
+            {{ monuments[$route.params.story].title }}
+          </div>
 
-        <div v-if="potreeRef.lang==='nl'">
-          {{ monuments[$route.params.story].Tekst_NL }}
-        </div>
-        <div v-if="potreeRef.lang==='en'">
-          {{ monuments[$route.params.story].Tekst_EN }}
-        </div>
-        <div v-if="potreeRef.lang==='de'">
-          {{ monuments[$route.params.story].Tekst_DE }}
+          <div v-if="potreeRef.lang==='nl'">
+            {{ monuments[$route.params.story].Tekst_NL }}
+          </div>
+          <div v-if="potreeRef.lang==='en'">
+            {{ monuments[$route.params.story].Tekst_EN }}
+          </div>
+          <div v-if="potreeRef.lang==='de'">
+            {{ monuments[$route.params.story].Tekst_DE }}
+          </div>
         </div>
       </div>
     </transition>
@@ -363,8 +365,8 @@ export default {
       const animation = new VACameraAnimation(potreeRef.viewer)
 
       // Get the positions and tagets from the markdown file
-      const positions = this.page.cameraPath?.map(position => position[0])
-      const targets = this.page.cameraPath?.map(target => target[1])
+      const positions = this.page.cameraPath?.map(position => position[0]) || []
+      const targets = this.page.cameraPath?.map(target => target[1]) || []
 
       // Add to the current camera point to the camera path to animate from it
       positions.push(potreeRef.viewer.scene.getActiveCamera().position.toArray())

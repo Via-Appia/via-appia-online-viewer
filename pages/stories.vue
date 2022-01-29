@@ -2,7 +2,7 @@
   <div class="flex">
     <div
       v-if="!$config.isMuseumApp"
-      class="btn btn-sm pointer-events-auto fixed top-3 left-3 p-0 w-[40px]"
+      class="btn btn-sm pointer-events-auto fixed top-3 left-3 p-0 w-[40px] hidden md:block"
       :class="{'left-[310px]':isSidebarOpen}"
       @click="toggleSidebar"
     >
@@ -19,7 +19,7 @@
     <transition name="page">
       <NuxtChild
         id="steps"
-        class="absolute top-20 min-w-[500px] left-4 p-3"
+        class="absolute top-0 md:top-20 left-4 p-3"
         :class="{'left-[350px]':isSidebarOpen}"
       />
     </transition>

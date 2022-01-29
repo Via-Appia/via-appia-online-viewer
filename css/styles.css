@@ -27,10 +27,10 @@ body{
           capitalize
 }
 
-.nuxt-content-editor{
-  min-width: 500px;
-  width:100%;
-}
+/*.nuxt-content-editor{*/
+/*  min-width: 500px;*/
+/*  width:100%;*/
+/*}*/
 
 .primary-text{
   color: #FD0

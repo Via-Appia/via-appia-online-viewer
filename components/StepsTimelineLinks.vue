@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="story.pages && story.pages[0] && story.pages[0].path"
-    class="w-[180px] flex flex-col h-screen items-center text-center overflow-hidden bg-gray-700 p-2"
+    class="w-[180px] flex flex-col h-screen items-center text-center overflow-y-scroll bg-gray-700 p-2"
   >
     <div class="text-xl text-medium primary-text mt-2">
       REVISITED <br>Via Appia
@@ -60,7 +60,7 @@
       </NuxtLink>
     </div>
 
-    <div class="flex flex-col overflow-y-auto items-center w-full flex-1 ">
+    <div class="flex flex-col overflow-y-auto items-center w-full flex-1 min-h-[150px] ">
       <div v-for="(page,i) in story.pages" :key="i" class="flex flex-col  mx-auto text-white">
         <div class=" mx-auto relative h-20">
           <div class="h-full w-6 flex items-center justify-center">

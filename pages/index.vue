@@ -10,8 +10,8 @@
       <locale-switch class="absolute top-[15%] right-[15%]" />
 
       <div class="text-white py-20">
-        <div class="container mx-auto flex flex-col md:flex-row items-center my-12 md:my-24">
-          <div class="flex flex-col w-1/3 justify-center items-start p-8">
+        <div class="container mx-auto flex flex-row items-center my-12 md:my-24">
+          <div class="flex flex-col w-2/3 md:w-1/3 justify-center items-start p-8">
             <h1 class="text-3xl md:text-5xl py-2 text-yellow-300 tracking-loose">
               REVISITED <br>Via Appia
             </h1>
@@ -49,12 +49,8 @@
               </nuxt-link>
             </div>
           </div>
-          <div class="p-8 mt-12 mb-6  ml-0 justify-center">
-            <div class="h-48 flex flex-wrap content-center">
-              <div>
-                <img class="inline-block mt-28 " src="banner.webp">
-              </div>
-            </div>
+          <div class="p-0 md:p-8 mt-12 mb-6 w-1/3 md:w-2/3 ml-0 justify-center align-center">
+            <img src="banner.webp">
           </div>
         </div>
       </div>
