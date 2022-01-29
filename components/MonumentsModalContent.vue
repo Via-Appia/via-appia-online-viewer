@@ -1,5 +1,5 @@
 <template>
-  <div class="modal-box max-w-[650px]">
+  <div class="modal-box max-w-[650px] " style="height: fit-content">
     <div class="mt-3 py-6">
       <div class="flex gap-5 justify-center">
         <label
@@ -49,7 +49,10 @@
         tab-index="0"
         class="text-center text-xl"
       >
-        choose a monument
+        <div v-if="potreeRef.lang==='nl'">kies een monument</div>
+        <div v-if="potreeRef.lang==='en'">choose a monument</div>
+        <div v-if="potreeRef.lang==='de'">Wähle ein Denkmal</div>
+
       </label>
     </div>
   </div>
@@ -57,6 +60,7 @@
 
 <script setup>
 import menu from '~/content/menu-items.yaml'
+import { potreeRef } from '~/api/VAPotree'
 
 const menuPart1 = [menu.items[0], menu.items[1], menu.items[2]]
 const menuPart2 = [menu.items[3], menu.items[4], menu.items[5]]

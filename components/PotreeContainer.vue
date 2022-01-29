@@ -16,7 +16,6 @@
       class="flex w-full absolute left-4 bottom-4 z-20 items-end pr-10 pointer-events-none"
       :class="{'pl-[300px]':isSidebarOpen}"
     >
-      {{ webPanelOpened }} {{ $route.params.story }}
       <img src="/app/keys.svg" alt="Keys Helper" class="select-none pointer-events-none h-20">
       <div class=" mb-1">
         {{ potreeRef.props.moveSpeed }}

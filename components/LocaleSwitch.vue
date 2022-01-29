@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="select-none">
     <span
       class="cursor-pointer hover:underline"
       :class="{'primary-text':potreeRef.lang==='nl'}"
@@ -14,6 +14,14 @@
       @click="changeLocale('en')"
     >
       en
+    </span>
+    |
+    <span
+      class="cursor-pointer hover:underline"
+      :class="{'primary-text':potreeRef.lang==='de'}"
+      @click="changeLocale('de')"
+    >
+      de
     </span>
   </div>
 </template>

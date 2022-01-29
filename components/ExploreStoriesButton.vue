@@ -1,16 +1,18 @@
 <template>
   <div>
-    <label for="my-modal-2" class="btn modal-button">Monuments</label>
-    <input
-      id="my-modal-2"
-      ref="modal"
-      type="checkbox"
-      class="modal-toggle"
-    >
-    <label class="modal" for="my-modal-2">
-      <!--      <div class="modal-box max-w-[650px] bg-[#646363]">-->
-      <monuments-modal-content />
-    </label>
+    <div class="btn" @click="modal=!modal">
+      Monuments
+    </div>
+    <transition name="modal">
+      <div
+        v-if="modal"
+        class="fixed top-0 left-0 right-0 bottom-0 flex align-center justify-center bg-black bg-opacity-30"
+        @click="modal=!modal"
+      >
+        <monuments-modal-content />
+      </div>
+    <!--    </label>-->
+    </transition>
   </div>
 </template>
 
@@ -26,7 +28,7 @@ const props = defineProps({
 onMounted(() => {
   // Open the explore stories modal if it is the main stories page
   if (props.open) {
-    modal.value.checked = true
+    modal.value = true
   }
 })
 </script>

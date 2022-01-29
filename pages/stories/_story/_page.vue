@@ -10,6 +10,39 @@
         :src="page && page.mediaPath"
       />
     </transition>
+    <transition name="panel">
+      <div
+        v-if="monuments && $route.params.page ==='monument' && !modal"
+        class="bg-gray-700 bg-opacity-80 rounded-xl w-[600px] p-4 hidden sm:block"
+      >
+        <locale-switch />
+        <div class="text-2xl mb-3 mt-2">
+          {{ monuments[$route.params.story].title }}
+        </div>
+
+        <div v-if="potreeRef.lang==='nl'">
+          {{ monuments[$route.params.story].Tekst_NL }}
+        </div>
+        <div v-if="potreeRef.lang==='en'">
+          {{ monuments[$route.params.story].Tekst_EN }}
+        </div>
+        <div v-if="potreeRef.lang==='de'">
+          {{ monuments[$route.params.story].Tekst_DE }}
+        </div>
+      </div>
+    </transition>
+
+    <!--    <transition name="'fade'">-->
+    <!--      <div class="bg-gray-700 rounded">-->
+    <!--        <pre>-->
+
+    <!--        {{ vp }}-->
+    <!--        {{ vp.Auteur }}-->
+
+    <!--        </pre>-->
+    <!--        {{ potreeRef.lang }}-->
+    <!--      </div>-->
+    <!--    </transition>-->
 
     <div v-if="showSubtitles">
       <transition :name="pageId !== $route.params.page? '':'fade'">
@@ -54,21 +87,22 @@ import {
 
 import { VACameraAnimation } from '~/api/VACameraAnimation'
 import { promisifyVideo, tweenToPromisify } from '~/api/tweenUtils'
-
 import { socket } from '~/api/websocket'
 
 import viewpoints from '~/content/viewpoints.json'
 import monuments from '~/content/monuments.json'
 import { story } from '~/api/story'
+import LocaleSwitch from '~/components/LocaleSwitch'
+import { modal } from '~/components/ExploreStoriesButton'
 
 export default {
+  components: { LocaleSwitch },
   setup () {
-    return { story, videos, potreeRef, removeVideo, resetViewTimeInMinutes, THREE, viewpoints, monuments, showSubtitles }
+    return { modal, story, videos, potreeRef, removeVideo, resetViewTimeInMinutes, THREE, viewpoints, monuments, showSubtitles }
   },
   data () {
     return {
       error: false,
-      reconstructionPage: null,
       monumentPage: null,
       allPages: null,
       pages: null,
@@ -98,17 +132,18 @@ export default {
       .catch((err) => {
         console.error({ statusCode: 404, message: 'Page not found', error: err })
       })
-
-    this.reconstructionPage = this.story.pages.findIndex(page => page?.slug === 'reconstruction')
-    this.monumentPage = this.story.pages.findIndex(page => page?.slug === 'monument')
+    this.story.reconstructionPage = this.story.pages[this.story.pages.findIndex(page => page?.slug === 'reconstruction')]
+    this.story.pages = this.story.pages.filter(page => page.slug !== 'reconstruction')
+    this.story.pages.unshift(this.story.pages.at(-1))
+    this.story.pages.pop()
 
     // Exclude monument pages and reconstruction pages from the list
     this.pages = this.story.pages.filter(page => page.slug !== 'monument' && page.slug !== 'reconstruction')
 
     // Next and previous pages links
-    const currentIndex = this.pages.findIndex(page => page?.path === this.page?.path)
-    this.prev = (currentIndex - 1) < 0 ? this.pages[this.pages.length - 1] : this.pages[currentIndex - 1]
-    this.next = (currentIndex + 1) === this.pages.length ? this.pages[0] : this.pages[currentIndex + 1]
+    const currentIndex = this.story.pages.findIndex(page => page?.path === this.page?.path)
+    this.story.prev = (currentIndex - 1) < 0 ? this.story.pages[this.story.pages.length - 1] : this.story.pages[currentIndex - 1]
+    this.story.next = (currentIndex + 1) === this.story.pages.length ? this.story.pages[0] : this.story.pages[currentIndex + 1]
   },
   computed: {
     // Return viewpoint object
@@ -328,8 +363,8 @@ export default {
       const animation = new VACameraAnimation(potreeRef.viewer)
 
       // Get the positions and tagets from the markdown file
-      const positions = this.page.cameraPath.map(position => position[0])
-      const targets = this.page.cameraPath.map(target => target[1])
+      const positions = this.page.cameraPath?.map(position => position[0])
+      const targets = this.page.cameraPath?.map(target => target[1])
 
       // Add to the current camera point to the camera path to animate from it
       positions.push(potreeRef.viewer.scene.getActiveCamera().position.toArray())
@@ -394,6 +429,10 @@ export default {
 }
 .fade-enter-active,.fade-leave-active {transition: opacity 1s;}
 .fade-enter, .fade-leave-to  {opacity: 0}
+
+.panel-enter-active {transition: opacity 0.2s;}
+.panel-leave-active {transition: opacity 0s;}
+.panel-enter, .panel-leave-to  {opacity: 0}
 
 .videofade-enter-active { transition: opacity 1s; }
 .videofade-leave-active { transition: opacity 5s; }

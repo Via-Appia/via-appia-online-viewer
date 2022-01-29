@@ -13,20 +13,20 @@
         <div class="container mx-auto flex flex-col md:flex-row items-center my-12 md:my-24">
           <div class="flex flex-col w-1/3 justify-center items-start p-8">
             <h1 class="text-3xl md:text-5xl py-2 text-yellow-300 tracking-loose">
-              REVISITED Via Appia
+              REVISITED <br>Via Appia
             </h1>
             <div v-if="potreeRef.lang ==='nl'">
               <p class="text-sm md:text-base my-4">
-                Reis in tijd en ruimte langs de belangrijkste oude Romeinse weg.
+                Reis in tijd en ruimte langs de belangrijkste oudste Romeinse weg.
               </p>
               <p class="text-sm md:text-base mb-4">
-                Zes monumenten en meer dan honderd uitzichtpunten laten zien hoe de Via Appia Antica in de loop van de tijd door kunstenaars en fotografen werd gezien.
+                Zes monumenten en meer dan honderd standpunten laten zien hoe de Via Appia Antica in de loop van de tijd door kunstenaars en fotografen werd gezien.
               </p>
               <nuxt-link to="stories" class="button">
                 BEGIN met verkennen
               </nuxt-link>
             </div>
-            <div v-else>
+            <div v-if="potreeRef.lang ==='en'">
               <p class="text-sm md:text-base my-4">
                 Travel in time and space along the most important ancient Roman road.
               </p>
@@ -35,6 +35,17 @@
               </p>
               <nuxt-link to="stories" class="button">
                 START exploring
+              </nuxt-link>
+            </div>
+            <div v-if="potreeRef.lang ==='de'">
+              <p class="text-sm md:text-base my-4">
+                Reisen Sie durch Zeit und Raum entlang der wichtigsten alten Römerstraße.
+              </p>
+              <p class="text-sm md:text-base mb-4">
+                Sechs Denkmäler und mehr als hundert Aussichtspunkte zeigen, wie die Via Appia Antica im Laufe der Zeit von Künstlern und Fotografen gesehen wurde.
+              </p>
+              <nuxt-link to="stories" class="button">
+                BEGINNEN Sie zu erkunden
               </nuxt-link>
             </div>
           </div>
