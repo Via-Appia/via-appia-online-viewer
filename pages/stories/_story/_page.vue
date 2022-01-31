@@ -4,7 +4,6 @@
       <video
         v-show="showOverlayVideo"
         ref="video"
-        autoplay
         class="fixed w-screen h-screen top-0 left-0 bg-black "
         muted="muted"
         :src="page && page.mediaPath"
