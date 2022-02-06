@@ -13,7 +13,7 @@
     <!--  <div v-if="$nuxt.context.isDev" id="potree_sidebar_container" /> -->
     <div
       v-if="!$config.isMuseumApp"
-      class="flex w-full absolute left-4 bottom-4 z-20 items-end pr-10 pointer-events-none hidden md:block"
+      class="w-full absolute left-4 bottom-4 z-20 items-end pr-10 pointer-events-none hidden md:flex"
       :class="{'pl-[300px]':isSidebarOpen}"
     >
       <img src="/app/keys.svg" alt="Keys Helper" class="select-none pointer-events-none h-20">
