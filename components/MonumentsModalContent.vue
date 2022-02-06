@@ -1,5 +1,5 @@
 <template>
-  <div class="modal-box max-w-[650px] min-h-[300px] overflow-scroll" style="height: fit-content">
+  <div class="modal-box max-w-[650px] min-h-[300px] overflow-auto h-full fit">
     <div class="min-h-[300px]">
       <div class="mt-3 py-6">
         <div class="flex gap-5 justify-center">
