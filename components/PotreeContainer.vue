@@ -21,7 +21,7 @@
         {{ potreeRef.props.moveSpeed }}
       </div>
 
-      <memory-usage-demo v-if="$nuxt.context.isDev" class="ml-10" />
+      <!--      <memory-usage-demo v-if="$nuxt.context.isDev" class="ml-10" />-->
 
       <!--      <div class="pointer-events-auto cursor-pointer ml-4" @click="resize">-->
       <!--        {{ windowWidth }} x {{ windowHeight }}-->

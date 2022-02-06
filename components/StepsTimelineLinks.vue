@@ -15,12 +15,14 @@
       <div class="font-bold">
         {{ monuments[$route.params.story].title }}
       </div>
-      <img
-        class="cursor-pointer mt-2  rounded-xl  hover:scale-95 transition"
-        :src="`/images/menu/${$route.params.story}.jpg`"
-        alt="Monuments image"
-        @click="modal = !modal"
-      >
+      <nuxt-link :to="{ to: 'stories', params: {story: $route.params.story, page: 'monument'}}">
+        <img
+          class="cursor-pointer mt-2 rounded-xl hover:scale-95 transition"
+          :src="`/images/menu/${$route.params.story}.jpg`"
+          alt="Monuments image"
+        >
+        <!--        @click="modal = !modal"-->
+      </nuxt-link>
     </div>
 
     <nuxt-link
@@ -69,11 +71,9 @@
           <div class="w-6 h-6 absolute top-1/4 -mt-3 flex justify-center">
             <div class="relative py-3 mx-auto">
               <div class="group cursor-pointer relative inline-block text-center">
-                <!--                <div :data-tip=" page.path" class="tooltip tooltip-left">-->
                 <router-link :to="'/stories' + page.path" class="btn btn-circle text-white">
                   <span> {{ i }}</span>
                 </router-link>
-                <!--                </div>-->
               </div>
             </div>
           </div>
