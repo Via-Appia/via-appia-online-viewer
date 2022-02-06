@@ -23,7 +23,7 @@
                 Zes monumenten en meer dan honderd standpunten laten zien hoe de Via Appia Antica in de loop van de tijd door kunstenaars en fotografen werd gezien.
               </p>
               <nuxt-link to="stories" class="button">
-                BEGIN met verkennen
+                BEGIN Verkenning
               </nuxt-link>
             </div>
             <div v-if="potreeRef.lang ==='en'">
