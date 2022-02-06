@@ -31,7 +31,7 @@
       class="btn mt-2 "
     >
       <div v-if="potreeRef.lang==='nl'">
-        Wederopbouw
+        Reconstructie
       </div>
       <div v-if="potreeRef.lang==='en'">
         Reconstruction
