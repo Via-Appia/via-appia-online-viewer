@@ -10,6 +10,7 @@
         :src="page && page.mediaPath"
       />
     </transition>
+    <!-- Monument text-->
     <transition name="panel">
       <div
         v-if="monuments && $route.params.page ==='monument' && !modal && !$config.isMuseumApp"
@@ -34,18 +35,63 @@
       </div>
     </transition>
 
-    <!--    <transition name="'fade'">-->
-    <!--      <div class="bg-gray-700 rounded">-->
-    <!--        <pre>-->
+    <!-- Point view text-->
+    <div
+      v-if="viewpoints && $route.params.page !=='monument' && $route.params.page !=='reconstruction' && !modal && !$config.isMuseumApp"
+      class="
+      bg-gray-800 bg-opacity-90 rounded-xl p-4 transition flex justify-end translate-y-[56px] translate-x-[-1000px]
+      hover:cursor-pointer hover:bg-gray-700"
+      :class="{'translate-x-[-580px]': !viewPointText}"
+      @click="viewPointText = !viewPointText"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+      </svg>
+    </div>
+    <transition name="panel">
+      <div
+        v-if="viewpoints && $route.params.page !=='monument' && $route.params.page !=='reconstruction' && !modal && !$config.isMuseumApp"
+        class="bg-gray-700 bg-opacity-90 rounded-xl w-[350px] md:w-[600px] p-4 overflow-auto transition"
+        :class="{'translate-x-[-1000px]': !viewPointText}"
+      >
+        <div class="h-[85vh] md:h-auto">
+          <div class="flex justify-between">
+            <locale-switch :langs="{nl:true, en:true}" />
+            <div class="btn btn-circle btn-sm" @click="viewPointText = !viewPointText">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+              </svg>
+            </div>
+          </div>
 
-    <!--        {{ vp }}-->
-    <!--        {{ vp.Auteur }}-->
+          <div class="text-2xl mb-3 mt-2">
+            {{ vp.title }}
+          </div>
 
-    <!--        </pre>-->
-    <!--        {{ potreeRef.lang }}-->
-    <!--      </div>-->
-    <!--    </transition>-->
+          <div v-if="potreeRef.lang==='nl'">
+            {{ vp.Tekst_NL }}
+          </div>
+          <div v-if="potreeRef.lang==='en'">
+            {{ vp.Tekst_EN }}
+          </div>
+          <div v-if="potreeRef.lang==='de' && !!vp.Tekst_DE">
+            {{ vp.Tekst_DE }}
+          </div>
 
+          <div class="flex justify-center mt-5 h-10">
+            <div :class="{'btn-disabled':!showGoPlay}" class="btn" @click="go">
+              PLay Video
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Subtitles-->
     <div v-if="showSubtitles">
       <transition :name="pageId !== $route.params.page? '':'fade'">
         <div v-show="showSubtitle" class="fixed bottom-3 left-0 flex w-screen">
@@ -94,11 +140,9 @@ import { socket } from '~/api/websocket'
 import viewpoints from '~/content/viewpoints.json'
 import monuments from '~/content/monuments.json'
 import { story } from '~/api/story'
-import LocaleSwitch from '~/components/LocaleSwitch'
 import { modal } from '~/components/ExploreStoriesButton'
 
 export default {
-  components: { LocaleSwitch },
   setup () {
     return { modal, story, videos, potreeRef, removeVideo, resetViewTimeInMinutes, THREE, viewpoints, monuments, showSubtitles }
   },
@@ -113,7 +157,12 @@ export default {
       next: null,
       showOverlayVideo: false,
       showSubtitle: false,
-      pageId: null
+      pageId: null,
+      viewPointText: true,
+      // local variables
+      // eslint-disable-next-line vue/no-reserved-keys
+      _pageId: null,
+      showGoPlay: false
     }
   },
   async fetch () {
@@ -182,12 +231,13 @@ export default {
   },
   methods: {
     async initPagePosition () {
+      this.showGoPlay = false
       // Reset time of for the museum app
       potreeRef.idleTimer = 0
       this.showSubtitle = false
 
-      const pageId = this.$route.params.page
-      this.pageId = pageId
+      this._pageId = this.$route.params.page
+      this.pageId = this._pageId
 
       // Set Eye-Dome-Lighting, needed to make the pointcloud transparent.
       potreeRef.viewer.edlStrength = strengthEDL
@@ -226,7 +276,7 @@ export default {
         message: 'Animation duration',
         duration: completeDurationInSecs
       }))
-      console.log('🔥 completeDurationInSecs', completeDurationInSecs, 'seconds')
+      // console.log('🔥 completeDurationInSecs', completeDurationInSecs, 'seconds')
 
       /*
       * Story sequence
@@ -239,16 +289,10 @@ export default {
         return
       }
 
-      // Set video parameters and times
-      const video = videos.value[this.page?.mediaPath]
-      const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(this.page?.mediaPath)
-      const _playDT = this.page.playDT || playDT
-      video.playbackRate = video?.duration / _playDT // make the video duration as long as the setting
-
       // 1. Hide the PointCloud to see the video in between.
       // ===================================================
       // console.log(pageId === this.$route.params.page && '🎹 1. Hide the PointCloud to see the video in between.')
-      if (pageId !== this.$route.params.page) {
+      if (this._pageId !== this.$route.params.page) {
         return
       }
       // if (this.$config.isMuseumApp) {
@@ -259,18 +303,34 @@ export default {
       // }
 
       this.showSubtitle = true
+      this.showGoPlay = true
       // 2. Wait to start playing the video.
       // ======================================
       // console.log(pageId === this.$route.params.page && '🎹 2. Wait to start playing the video.')
-      if (pageId !== this.$route.params.page) {
+      if (this._pageId !== this.$route.params.page) {
         return
       }
       await promiseTimeout(startDT * 1000)
 
       // 3. Play the video and wait until the video is finished.
       // ========================================================
+      if (this.$config.isMuseumApp) {
+        this.continueSequence()
+      }
+    },
+
+    /**
+    * Continue sequence
+     */
+    async continueSequence () {
+      // Set video parameters and times
+      const video = videos.value[this.page?.mediaPath]
+      const videoMesh = potreeRef.viewer.scene.scene.getObjectByName(this.page?.mediaPath)
+      const _playDT = this.page.playDT || playDT
+      video.playbackRate = video?.duration / _playDT // make the video duration as long as the setting
+
       // console.log(pageId === this.$route.params.page && '🎹 3. Play the video and wait until the video is finished.')
-      if (pageId !== this.$route.params.page) {
+      if (this._pageId !== this.$route.params.page) {
         return
       }
 
@@ -291,16 +351,16 @@ export default {
 
       // 4. Time delay between end of video and start of the fade out.
       // =================================================================
-      // console.log(pageId === this.$route.params.page && '🎹 4. Time delay between end of video and start of the fade out.')
-      if (pageId !== this.$route.params.page) {
+      // console.log(this._pageId === this.$route.params.page && '🎹 4. Time delay between end of video and start of the fade out.')
+      if (this._pageId !== this.$route.params.page) {
         return
       }
       await promiseTimeout(stopDT * 1000)
 
       // 5. Set back the Pointcloud opacity to 1.
       // ==========================================
-      // console.log(pageId === this.$route.params.page && '🎹 5. Set back the Pointcloud opacity to 1.')
-      if (pageId !== this.$route.params.page) {
+      // console.log(this._pageId === this.$route.params.page && '🎹 5. Set back the Pointcloud opacity to 1.')
+      if (this._pageId !== this.$route.params.page) {
         return
       }
       // if (this.$config.isMuseumApp) {
@@ -312,8 +372,8 @@ export default {
 
       // 6. Wait for the video to fade out
       // =====================================
-      // console.log(pageId === this.$route.params.page && '🎹 6. Wait for the video to fade out')
-      if (pageId !== this.$route.params.page) {
+      // console.log(this._pageId === this.$route.params.page && '🎹 6. Wait for the video to fade out')
+      if (this._pageId !== this.$route.params.page) {
         return
       }
 
@@ -331,7 +391,7 @@ export default {
       // 7. Wait until move to the next viewpoint.
       // ==========================================
       // console.log(pageId === this.$route.params.page && '🎹 7. Wait until move to the next viewpoint.')
-      if (pageId !== this.$route.params.page) {
+      if (this._pageId !== this.$route.params.page) {
         return
       }
       await promiseTimeout(waitUntilNextVideo * 1000)
@@ -350,7 +410,6 @@ export default {
       // Go to the first page if reached the last one
       this.$router.push(`/stories/${this.$route.params.story}/${this.next.slug}`)
     },
-
     /**
      * Camera Animation
      */
@@ -415,6 +474,15 @@ export default {
         // add the image to the scene
         scene.add(mesh)
       }
+    },
+
+    /**
+     * Play video in web version under demand and hide the text box
+     */
+    go () {
+      this.viewPointText = !this.viewPointText
+      this.continueSequence()
+      this.showGoPlay = false
     }
   }
 }

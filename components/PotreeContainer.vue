@@ -29,7 +29,7 @@
     </div>
 
     <camera-side-panel-section v-if="!$config.isMuseumApp && camera" />
-    <div id="potree_sidebar_container" />
+    <div id="potree_sidebar_container" style="z-index:10" />
   </div>
 </template>
 

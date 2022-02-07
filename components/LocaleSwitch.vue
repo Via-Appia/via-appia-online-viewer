@@ -9,14 +9,18 @@
       nl
     </span>
 
+    <span v-if="langs.en">|</span>
+
     <span
       v-if="langs.en"
       class="cursor-pointer hover:underline"
       :class="{'primary-text':potreeRef.lang==='en'}"
       @click="changeLocale('en')"
     >
-      | en
+      en
     </span>
+
+    <span v-if="langs.de">|</span>
 
     <span
       v-if="langs.de"
@@ -24,7 +28,7 @@
       :class="{'primary-text':potreeRef.lang==='de'}"
       @click="changeLocale('de')"
     >
-      | de
+      de
     </span>
   </div>
 </template>
