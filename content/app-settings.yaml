@@ -4,7 +4,7 @@
 cameraMoveDT: 10     # 20, Camera movement to viewpoint, ease in/out
 fadeInDT: 5           # 5, Video opacity from 0 to 1
 startDT: 1            # 1,Time delay between the end of the fading and the start of the video
-playDT: 15           # 40, Video playback time
+playDT: 28           # 40, Video playback time
 stopDT: 1             # 5, Time delay between end of video and start of the fade out
 fadeOutDT: 2          # 5, Video from 1 to 0 opacity
 waitUntilNextVideo: 0 # 0 Wait until the movement of the next video
