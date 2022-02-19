@@ -62,21 +62,13 @@
       </NuxtLink>
     </div>
 
-    <div class="flex flex-col overflow-y-auto items-center w-full flex-1 min-h-[150px] ">
-      <div v-for="(page,i) in story.pages" :key="i" class="flex flex-col  mx-auto text-white">
-        <div class=" mx-auto relative h-20">
-          <div class="h-full w-6 flex items-center justify-center">
-            <div class="h-full w-1 bg-gray-800" />
-          </div>
-          <div class="w-6 h-6 absolute top-1/4 -mt-3 flex justify-center">
-            <div class="relative py-3 mx-auto">
-              <div class="group cursor-pointer relative inline-block text-center">
-                <router-link :to="'/stories' + page.path" class="btn btn-circle text-white">
-                  <span> {{ i }}</span>
-                </router-link>
-              </div>
-            </div>
-          </div>
+    <div class="flex flex-col overflow-y-auto items-center w-full flex-1 min-h-[150px]">
+      <div v-for="(page,i) in story.pages" :key="i" class="flex flex-col items-center">
+        <div class="h-5 w-1 bg-gray-800" />
+        <div class="group cursor-pointer inline-block text-center">
+          <router-link :to="'/stories' + page.path" class="btn btn-circle  text-white">
+            <span> {{ i }}</span>
+          </router-link>
         </div>
       </div>
     </div>
