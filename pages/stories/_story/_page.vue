@@ -65,9 +65,8 @@
           </div>
 
           <div class="text-2xl mb-3 mt-2">
-            {{ vp.title }}
+            {{ vp.TITEL }}
           </div>
-          {{ monumentPage }}
           <div v-if="potreeRef.lang==='nl'">
             {{ $route.params.page ==='reconstruction'? monuments[$route.params.story].Reconstructie_NL: vp.Tekst_NL }}
           </div>
