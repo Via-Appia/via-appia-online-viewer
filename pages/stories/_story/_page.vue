@@ -51,7 +51,7 @@
     <transition name="panel">
       <div
         v-if="viewpoints && $route.params.page !=='monument' && !modal && !$config.isMuseumApp"
-        class="bg-gray-700 bg-opacity-90 rounded-xl w-[350px] md:w-[600px] p-4 overflow-auto transition duration-700"
+        class="bg-gray-700 bg-opacity-90 rounded-xl w-[350px] md:w-[600px] p-4 overflow-auto transition duration-1000"
         :class="{'translate-x-[-1000px]': !viewPointText}"
       >
         <div class="h-[85vh] md:h-auto">
@@ -157,7 +157,7 @@ export default {
       showOverlayVideo: false,
       showSubtitle: false,
       pageId: null,
-      viewPointText: true,
+      viewPointText: false,
       // local variables
       // eslint-disable-next-line vue/no-reserved-keys
       _pageId: null,
@@ -231,6 +231,7 @@ export default {
   methods: {
     async initPagePosition () {
       this.showGoPlay = false
+      this.viewPointText = false
       // Reset time of for the museum app
       potreeRef.idleTimer = 0
       this.showSubtitle = false
@@ -300,7 +301,7 @@ export default {
       //   potreeRef.viewer.scene.pointclouds[0] && (potreeRef.viewer.scene.pointclouds[0].visible = false)
       //   potreeRef.viewer.useEDL = false
       // }
-
+      this.viewPointText = true
       this.showSubtitle = true
       this.showGoPlay = true
       // 2. Wait to start playing the video.
