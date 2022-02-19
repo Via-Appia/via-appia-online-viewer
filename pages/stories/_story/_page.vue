@@ -50,7 +50,7 @@
     </div>
     <transition name="panel">
       <div
-        v-if="viewpoints && $route.params.page !=='monument' && $route.params.page !=='reconstruction' && !modal && !$config.isMuseumApp"
+        v-if="viewpoints && $route.params.page !=='monument' && !modal && !$config.isMuseumApp"
         class="bg-gray-700 bg-opacity-90 rounded-xl w-[350px] md:w-[600px] p-4 overflow-auto transition duration-700"
         :class="{'translate-x-[-1000px]': !viewPointText}"
       >
@@ -67,15 +67,15 @@
           <div class="text-2xl mb-3 mt-2">
             {{ vp.title }}
           </div>
-
+          {{ monumentPage }}
           <div v-if="potreeRef.lang==='nl'">
-            {{ vp.Tekst_NL }}
+            {{ $route.params.page ==='reconstruction'? monuments[$route.params.story].Reconstructie_NL: vp.Tekst_NL }}
           </div>
           <div v-if="potreeRef.lang==='en'">
-            {{ vp.Tekst_EN }}
+            {{ $route.params.page ==='reconstruction'? monuments[$route.params.story].Reconstructie_EN: vp.Tekst_EN }}
           </div>
           <div v-if="potreeRef.lang==='de' && !!vp.Tekst_DE">
-            {{ vp.Tekst_DE }}
+            {{ $route.params.page ==='reconstruction'? monuments[$route.params.story].Reconstructie_DE: vp.Tekst_DE }}
           </div>
 
           <div class="flex justify-center mt-5 h-10">
