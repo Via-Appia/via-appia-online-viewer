@@ -65,7 +65,6 @@ export default {
     socket.onmessage = ({ data }) => {
       const message = JSON.parse(data)
       if (message.type === 'path') {
-        console.log('🏴‍☠️ messge from the server', message.page)
         this.$router.push(`/stories/${message.page}`)
       }
     }
