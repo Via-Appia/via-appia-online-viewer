@@ -51,7 +51,7 @@
     <transition name="panel">
       <div
         v-if="viewpoints && $route.params.page !=='monument' && $route.params.page !=='reconstruction' && !modal && !$config.isMuseumApp"
-        class="bg-gray-700 bg-opacity-90 rounded-xl w-[350px] md:w-[600px] p-4 overflow-auto transition"
+        class="bg-gray-700 bg-opacity-90 rounded-xl w-[350px] md:w-[600px] p-4 overflow-auto transition duration-700"
         :class="{'translate-x-[-1000px]': !viewPointText}"
       >
         <div class="h-[85vh] md:h-auto">
