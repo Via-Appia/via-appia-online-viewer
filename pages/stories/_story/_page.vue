@@ -136,10 +136,15 @@ import { VACameraAnimation } from '~/api/VACameraAnimation'
 import { promisifyVideo, tweenToPromisify } from '~/api/tweenUtils'
 import { socket } from '~/api/websocket'
 
-import viewpoints from '~/content/viewpoints.json'
+import data from '~/content/data.json'
+// import viewpoints from '~/content/viewpoints.json'
 import monuments from '~/content/monuments.json'
+
 import { story } from '~/api/story'
 import { modal } from '~/components/ExploreStoriesButton'
+
+const viewpoints = data.viewpoints
+// const monuments = data.monuments
 
 export default {
   setup () {
