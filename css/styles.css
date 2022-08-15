@@ -47,3 +47,7 @@ body{
   opacity: 0;
   /*transform: translateY(10px);*/
 }
+
+.potree_menu_toggle{
+  opacity: 0;
+}

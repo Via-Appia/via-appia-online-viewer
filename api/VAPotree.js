@@ -44,7 +44,7 @@ export function initViewer (DOMElement) {
     $('#menu_clipping').next().show()
     $('#menu_scene').next().show()
     // hide menu button in the sidebar
-    $('#potree_quick_buttons').hide()
+    // $('#potree_quick_buttons').hide()
     // Add custom section for Camera
     const cameraSection = $(`
         <h3 id="menu_camera" class="accordion-header ui-widget"><span>Camera</span></h3>
