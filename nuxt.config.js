@@ -51,8 +51,8 @@ export default {
 
     script: [
       { src: '/Potree_1.8/libs/jquery/jquery-3.1.1.min.js' },
-      { src: '/Potree_1.8/libs/spectrum/spectrum.js' },
       { src: '/Potree_1.8/libs/jquery-ui/jquery-ui.min.js' },
+      { src: '/Potree_1.8/libs/spectrum/spectrum.js' },
       { src: '/Potree_1.8/libs/other/BinaryHeap.js' },
       { src: '/Potree_1.8/libs/tween/tween.min.js' },
       { src: '/Potree_1.8/libs/d3/d3.js' },

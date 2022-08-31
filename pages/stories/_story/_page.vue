@@ -268,7 +268,7 @@ export default {
       // calculate complete flow duration
       //
       const completeDurationInSecs =
-        this.page.animationEntry || cameraMoveDT + // camera movement animation
+        this.page?.animationEntry || cameraMoveDT + // camera movement animation
         fadeInDT + // wait for the pointcloud to dissapear
         startDT + // wait until the video starts
         playDT + // duration of the video
@@ -286,7 +286,7 @@ export default {
       /*
       * Story sequence
       */
-      await this.goToCameraPosition(this.page.cameraPath)
+      await this.goToCameraPosition(this.page?.cameraPath)
 
       // Development only, do not end the animation if setting the media coordinates
       if (stopSecuence || !this.page?.mediaPath) {
@@ -420,7 +420,7 @@ export default {
      */
     async goToCameraPosition () {
       // if there are not any camera points defined, then don't do anything.
-      if (this.page.cameraPath?.length === 0) {
+      if (this.page?.cameraPath?.length === 0) {
         return
       }
       //
@@ -429,8 +429,8 @@ export default {
       const animation = new VACameraAnimation(potreeRef.viewer)
 
       // Get the positions and tagets from the markdown file
-      const positions = this.page.cameraPath?.map(position => position[0]) || []
-      const targets = this.page.cameraPath?.map(target => target[1]) || []
+      const positions = this.page?.cameraPath?.map(position => position[0]) || []
+      const targets = this.page?.cameraPath?.map(target => target[1]) || []
 
       // Add to the current camera point to the camera path to animate from it
       positions.push(potreeRef.viewer.scene.getActiveCamera().position.toArray())

@@ -1,10 +1,10 @@
 #Global Default values for the application
 #Time is measured in SECONDS
 
-cameraMoveDT: 10     # 20, Camera movement to viewpoint, ease in/out
-fadeInDT: 5           # 5, Video opacity from 0 to 1
+cameraMoveDT: 2     # 20, Camera movement to viewpoint, ease in/out
+fadeInDT: 2           # 5, Video opacity from 0 to 1
 startDT: 1            # 1,Time delay between the end of the fading and the start of the video
-playDT: 28           # 40, Video playback time
+playDT: 2           # 40, Video playback time
 stopDT: 1             # 5, Time delay between end of video and start of the fade out
 fadeOutDT: 2          # 5, Video from 1 to 0 opacity
 waitUntilNextVideo: 0 # 0 Wait until the movement of the next video
@@ -22,5 +22,5 @@ strengthEDL: 0 # 0.1 ...
 # Only for Development
 
 stopSecuence: false # (true/false) stops the sequence to continue to the next video and helpt to reference the images
-visiblePointCloud: false
+visiblePointCloud: true
 showSubtitles: true
