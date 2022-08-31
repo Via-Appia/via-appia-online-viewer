@@ -1,0 +1,11 @@
+{
+  "name": "VR Appia",
+  "description": "…",
+  "default_locale": "en",
+  "manifest_version": 2,
+
+  "icons": {
+    "48": "icon.png",
+    "96": "icon@2x.png"
+  }
+}

@@ -75,6 +75,8 @@ export default {
     }
   },
   mounted () {
+    // expose the router to be able to change routes inside VR Mode
+    // window.router = this.$router
     window.addEventListener('resize', () => {
       this.windowHeight = window.innerHeight
       this.windowWidth = window.innerWidth
