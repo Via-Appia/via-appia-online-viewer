@@ -104,7 +104,7 @@ export function initViewer (DOMElement) {
     // // potreeRef.viewer.scene.view.setView(vrPos, vrDir)
     // vrControls.viewer.scene.view.setView(scenePos, sceneTarget)
 
-    function toScene (vec, ref) {
+    /* function toScene (vec, ref) {
       const node = ref.clone()
       node.updateMatrix()
       node.updateMatrixWorld()
@@ -137,7 +137,7 @@ export function initViewer (DOMElement) {
     // sceneDir.normalize().multiplyScalar(scale)
     const sceneTarget = scenePos.clone().add(sceneDir)
 
-    vrControls.viewer.scene.view.setView(scenePos, sceneTarget)
+    vrControls.viewer.scene.view.setView(scenePos, sceneTarget) */
   }
 
   controller1.addEventListener('selectstart', () => {
