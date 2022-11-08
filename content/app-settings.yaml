@@ -1,11 +1,11 @@
 #Global Default values for the application
 #Time is measured in SECONDS
 
-cameraMoveDT: 2     # 20, Camera movement to viewpoint, ease in/out
-fadeInDT: 2           # 5, Video opacity from 0 to 1
+cameraMoveDT: 10      # 20, Camera movement to viewpoint, ease in/out
+fadeInDT: 3           # 5, Video opacity from 0 to 1
 startDT: 1            # 1,Time delay between the end of the fading and the start of the video
-playDT: 2           # 40, Video playback time
-stopDT: 1             # 5, Time delay between end of video and start of the fade out
+playDT: 10            # 40, Video playback time
+stopDT: 3             # 5, Time delay between end of video and start of the fade out
 fadeOutDT: 2          # 5, Video from 1 to 0 opacity
 waitUntilNextVideo: 0 # 0 Wait until the movement of the next video
 
